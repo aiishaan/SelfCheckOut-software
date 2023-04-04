@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.TreeMap;
 
+import com.autovend.Card;
 import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.external.CardIssuer;
 import com.autovend.products.Product;
@@ -587,7 +588,7 @@ public class CheckoutController {
 	// since both methods of paying by credit and debit cards are simulated the same
 	// way
 	// only one method is needed. - Arie
-	public void payByCard(CardIssuer source, BigDecimal amount) {
+	public void payByCard(CardIssuer source, BigDecimal amount, Card card) {
 		if (baggingItemLock || systemProtectionLock || payingChangeLock || source == null) {
 			return;
 		}

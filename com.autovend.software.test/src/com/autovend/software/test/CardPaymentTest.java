@@ -208,50 +208,52 @@ public class CardPaymentTest {
      * makes sense to do so here
      */
 
-
+    //This test is likely broken due to changes with payByCard
     @Test
     public void payByCardTestSuccess(){
         assertFalse(readerControllerStub.isPaying);
         controllerStub.cost=BigDecimal.ONE;
-        controllerStub.payByCard(bankStub,BigDecimal.ONE);
+        controllerStub.payByCard(bankStub,BigDecimal.ONE, cardStub);
         assertFalse(cardReaderStub.isDisabled());
         assertEquals(readerControllerStub.bank, bankStub);
 
     }
 
 
-
+    //This test is likely broken due to changes with payByCard
     @Test
     public void payByCardTestSystemProtectionLock(){
         assertTrue(cardReaderStub.isDisabled());
         controllerStub.cost=BigDecimal.ONE;
         controllerStub.systemProtectionLock=true;
-        controllerStub.payByCard(bankStub,BigDecimal.ONE);
+        controllerStub.payByCard(bankStub,BigDecimal.ONE, cardStub);
         assertTrue(cardReaderStub.isDisabled());
     }
 
+    //This test is likely broken due to changes with payByCard
     @Test
     public void payByCardTestBaggingLock(){
         assertTrue(cardReaderStub.isDisabled());
         controllerStub.cost=BigDecimal.ONE;
         controllerStub.baggingItemLock=true;
-        controllerStub.payByCard(bankStub,BigDecimal.ONE);
+        controllerStub.payByCard(bankStub,BigDecimal.ONE, cardStub);
         assertTrue(cardReaderStub.isDisabled());
     }
 
+    //This test is likely broken due to changes with payByCard
     @Test
     public void payByCardTestNullBank(){
         assertTrue(cardReaderStub.isDisabled());
         controllerStub.cost=BigDecimal.ONE;
-        controllerStub.payByCard(null,BigDecimal.ONE);
+        controllerStub.payByCard(null,BigDecimal.ONE, cardStub);
         assertTrue(cardReaderStub.isDisabled());
     }
-
+    //This test is likely broken due to changes with payByCard
     @Test
     public void payByCardTestPayMoreThanOrderCost(){
         assertTrue(cardReaderStub.isDisabled());
         controllerStub.cost = BigDecimal.ZERO;
-        controllerStub.payByCard(null,BigDecimal.ONE);
+        controllerStub.payByCard(null,BigDecimal.ONE, cardStub);
         assertTrue(cardReaderStub.isDisabled());
 
     }
