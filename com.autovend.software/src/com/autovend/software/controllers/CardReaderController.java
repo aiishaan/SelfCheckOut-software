@@ -27,6 +27,9 @@ import java.math.BigDecimal;
 public class CardReaderController extends PaymentController<CardReader, CardReaderObserver>
 		implements CardReaderObserver {
 	public boolean isPaying;
+	public boolean insertPayment;
+	public boolean tapPayment;
+	public boolean swipePayment;
 
 	public CardReaderController(CardReader newDevice) {
 		super(newDevice);
@@ -39,6 +42,7 @@ public class CardReaderController extends PaymentController<CardReader, CardRead
 	@Override
 	public void reactToCardInsertedEvent(CardReader reader) {
 		this.isPaying = true;
+		this.insertPayment = true;
 	}
 
 	@Override
@@ -49,10 +53,15 @@ public class CardReaderController extends PaymentController<CardReader, CardRead
 	// Don't need to implement below yet (use case only asks for insertion so far)
 	@Override
 	public void reactToCardTappedEvent(CardReader reader) {
+		this.isPaying = true;
+		this.tapPayment = true;
+		
 	}
 
 	@Override
 	public void reactToCardSwipedEvent(CardReader reader) {
+		this.isPaying = true;
+		this.swipePayment = true;
 	}
 
 	@Override
@@ -60,6 +69,7 @@ public class CardReaderController extends PaymentController<CardReader, CardRead
 		if (reader != this.getDevice() || !this.isPaying || this.bank==null) {
 			return;
 		}
+		if(this.tapPayment)
 		// TODO: Given the data, handle stuff with the transaction
 		int holdNum = bank.authorizeHold(data.getNumber(), this.amount);
 		if (holdNum !=-1 && (bank.postTransaction(data.getNumber(), holdNum, this.amount))) {

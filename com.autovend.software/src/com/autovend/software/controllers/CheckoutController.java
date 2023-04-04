@@ -600,6 +600,7 @@ public class CheckoutController {
 		for (PaymentController controller : validPaymentControllers) {
 			if (controller instanceof CardReaderController) {
 				((CardReaderController) controller).enablePayment(source, amount);
+				
 			}
 		}
 		// TODO: If this fails then do stuff idk
