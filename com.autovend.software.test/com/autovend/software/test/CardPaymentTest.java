@@ -17,7 +17,10 @@ Amasil Rahim Zihad 30164830
 
 package com.autovend.software.test;
 
+import com.autovend.BlockedCardException;
+import com.autovend.Card;
 import com.autovend.CreditCard;
+import com.autovend.TapFailureException;
 import com.autovend.devices.CardReader;
 import com.autovend.devices.SimulationException;
 import com.autovend.external.CardIssuer;
@@ -28,6 +31,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.math.BigDecimal;
 
 import static org.junit.Assert.*;
@@ -160,7 +164,7 @@ public class CardPaymentTest {
         bankStub.canPostTransaction = false;
         bankStub.holdAuthorized = false;
         try {
-            cardReaderStub.insert(cardStub, "1337");
+            readerControllerStub.data = cardReaderStub.insert(cardStub, "1337");
         } catch (Exception ex){
 
             fail("Exception incorrectly thrown");
@@ -258,7 +262,22 @@ public class CardPaymentTest {
 
     }
 
-
+    @Test
+    public void payWithTap() {
+    	try {
+			cardReaderStub.tap(cardStub);
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			fail("Exception incorrectly thrown");
+		}
+    	try {
+			readerControllerStub.tapPayment(cardStub, readerControllerStub.data);
+		} catch (TapFailureException | BlockedCardException e) {
+			// TODO Auto-generated catch block
+			fail("Exception incorrectly thrown");
+		}
+    	assertTrue(!readerControllerStub.isPaying);
+    }
 
 
     @After

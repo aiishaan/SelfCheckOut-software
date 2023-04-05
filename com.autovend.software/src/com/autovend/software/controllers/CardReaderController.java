@@ -103,6 +103,7 @@ public class CardReaderController extends PaymentController<CardReader, CardRead
 	public void swipePayment(Card card, CardData data) throws BlockedCardException {
 		bankPayment(data, this.bank);
 	}
+	
 	// Arie didn't fill these in, I am going to grab him and shake him later.
 	@Override
 	public void reactToCardInsertedEvent(CardReader reader) {
@@ -134,6 +135,7 @@ public class CardReaderController extends PaymentController<CardReader, CardRead
 	public void reactToCardDataReadEvent(CardReader reader, Card.CardData data)  {
 		//Data is harvested from the card and saved to the reader.
 		this.data = data;
+		
 		if (reader != this.getDevice() || !this.isPaying || this.bank==null) {
 			return;
 		}
@@ -176,7 +178,7 @@ public class CardReaderController extends PaymentController<CardReader, CardRead
 		this.amount = BigDecimal.ZERO;
 		this.bank = null;
 		// Clear bank and such if it fails to hold or not (might change this, I am tired
-		// rn so might be dumb here)
+		// rn so might be dumb here) (This is Arie's comment)
 		//Another great method from Arie, only had to rewrite all of it.
 	}
 
