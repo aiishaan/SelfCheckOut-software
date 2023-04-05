@@ -24,10 +24,15 @@ import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Scanner;
 
+import com.autovend.Card;
+import com.autovend.MembershipCard;
+import com.autovend.devices.CardReader;
+import com.autovend.software.controllers.CardReaderController;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -41,11 +46,16 @@ public class TestMembershipCardController {
 
 	@Before
 	public void setup() {
+		membershipCard = new MembershipCard("Membership", "123123123123", "XZ", true);
 	}
 
 	MembershipCardController mcc = new MembershipCardController();
 	Scanner scanner = new Scanner(System.in);
 	InputStreamReader inputReader;
+	CardReader cr = new CardReader();
+	CardReaderController crc = new CardReaderController(cr);
+	Card membershipCard;
+
 
 	@After
 	public void teardown() {
@@ -270,6 +280,13 @@ public class TestMembershipCardController {
 		System.setIn(in);
 		mcc.updateMembershipStatus();
 		assertFalse(mcc.getIsActive());
+	}
+
+	@Test
+	public void testSwipeMembershipCard() throws IOException {
+		cr.tap(membershipCard);
+		System.out.println(crc.cardData.getType());
+
 	}
 
 }

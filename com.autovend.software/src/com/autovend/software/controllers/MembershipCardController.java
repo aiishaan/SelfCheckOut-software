@@ -22,8 +22,8 @@ import java.util.Scanner;
 import com.autovend.IllegalDigitException;
 import com.autovend.MembershipCard;
 
-public class MembershipCardController {
-	private String membershipNumber;
+public class MembershipCardController{
+	public String membershipNumber;
 	private boolean isActive = false;
 	// Did a max tries of 3, having a limit would help with like not having a
 	// infinite input that is invalid,

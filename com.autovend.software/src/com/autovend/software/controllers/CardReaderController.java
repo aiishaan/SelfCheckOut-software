@@ -27,7 +27,7 @@ import java.math.BigDecimal;
 public class CardReaderController extends PaymentController<CardReader, CardReaderObserver>
 		implements CardReaderObserver {
 	public boolean isPaying;
-
+	public Card.CardData cardData;
 	public CardReaderController(CardReader newDevice) {
 		super(newDevice);
 	}
@@ -57,6 +57,11 @@ public class CardReaderController extends PaymentController<CardReader, CardRead
 
 	@Override
 	public void reactToCardDataReadEvent(CardReader reader, Card.CardData data) {
+		//
+		if(data.getType().equals("Membership")){
+			cardData = data;
+			return;
+		}
 		if (reader != this.getDevice() || !this.isPaying || this.bank==null) {
 			return;
 		}

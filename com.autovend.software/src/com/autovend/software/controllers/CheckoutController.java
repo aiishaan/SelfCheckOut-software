@@ -71,6 +71,9 @@ public class CheckoutController {
 	// create map to store weight after bags added in bagging area
 	private Map<BaggingAreaController, Double> weightWithBags = new HashMap<>();
 
+	private CardReaderController cardReaderController;
+	private MembershipCardController membershipCardController;
+
 	/**
 	 * Constructors for CheckoutController
 	 */
@@ -97,7 +100,7 @@ public class CheckoutController {
 
 		BillPaymentController billPayController = new BillPaymentController(checkout.billValidator);
 		CoinPaymentController coinPaymentController = new CoinPaymentController(checkout.coinValidator);
-		CardReaderController cardReaderController = new CardReaderController(checkout.cardReader);
+		this.cardReaderController = new CardReaderController(checkout.cardReader);
 
 		this.validPaymentControllers = new HashSet<>(
 				List.of(billPayController, coinPaymentController, cardReaderController));
@@ -666,5 +669,12 @@ public class CheckoutController {
 
 	public HashSet<BaggingAreaController> getValidBaggingControllers() {
 		return this.validBaggingControllers;
+	}
+
+	public void inputMembershipNumber(){
+		//System IO, Custom IO
+		String cardNum = cardReaderController.cardData.getNumber();
+		membershipCardController.membershipNumber = cardNum;
+		System.out.println(cardReaderController.cardData.getNumber());
 	}
 }
