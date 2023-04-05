@@ -412,6 +412,65 @@ public class CheckoutController {
 
 		baggingItemLock = true;
 	}
+	
+	
+	public void addItemViaTextSearch(String text) {
+		String[] keywords = text.split(" ");
+		boolean found = false;
+
+		for (BarcodedProduct barprod : BARCODED_PRODUCT_DATABASE.values()) {
+			String desc = barprod.getDescription();
+
+			for (String word : desc.split(" ")) {
+				int matches = 0;
+
+				for (String keyword : keywords) {
+					if (word.equals(keyword)) {
+						matches++;
+					}
+				}
+				// If all keywords are present in this product's description, then it is matched
+				if (matches == keywords.length) {
+					found = true;
+					addItem(, barprod, barprod.)
+//					addedItemViaBarcode(barprod.getBarcode()); // not aur
+					break;
+				}
+			}
+
+		}
+		if (!found) {
+			for (PLUCodedProduct pluprod : PLU_PRODUCT_DATABASE.values()) {
+				String desc = pluprod.getDescription();
+
+				for (String word : desc.split(" ")) {
+					int matches = 0;
+
+					for (String keyword : keywords) {
+						if (word.equals(keyword)) {
+							matches++;
+						}
+					}
+					// If all keywords are present in this product's description, then it is matched
+					if (matches == keywords.length) {
+						found = true;
+						addedItemViaPLU(pluprod.getPLUCode());
+						break;
+					}
+				}
+			}
+		}
+		if (!found) {
+			throw new NoSuchElementException("No item could be found in the database with all specified keywords.");
+		}
+	}
+	
+	
+	
+	
+	
+	
+	
 
 	public void addToAmountPaid(BigDecimal val) {
 		amountPaid = amountPaid.add(val);
