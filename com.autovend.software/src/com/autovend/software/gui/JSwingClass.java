@@ -2,6 +2,7 @@ package com.autovend.software.gui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.GridBagConstraints;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -30,7 +31,7 @@ public class JSwingClass {
 		audio();
 		help();
 		
-		
+		touchScreenFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		touchScreenFrame.add(touchScreenPanel2, BorderLayout.SOUTH);
 		touchScreenFrame.setVisible(true);
 	}
@@ -39,12 +40,20 @@ public class JSwingClass {
 		screensaver = new JButton("Tap the screen when ready");
 		screensaver.setBorder(BorderFactory.createLoweredBevelBorder());
 		screensaver.setContentAreaFilled(false); // removes the visual effect of clicking a button
-		screensaver.setBackground(Color.RED);
+		screensaver.setBackground(Color.LIGHT_GRAY);
 		screensaver.setOpaque(false);
 		screensaver.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				screensaver.setVisible(false);
 				touchScreenPanel = new JPanel();
+				
+				// grid bag layout setup
+				// GridBagConstraints mainscreenLayout = new GridBagConstraints();
+				//touchScreenPanel.add(mainscreenLayout);
+				
+				
+				
+				/*
 				touchScreenPanel.setLayout(new GridLayout(3,3));
 				touchScreenPanel.add(new JLabel("hello"));
 				touchScreenPanel.add(new JLabel("hello"));
@@ -55,7 +64,7 @@ public class JSwingClass {
 				touchScreenPanel.add(new JLabel("hello"));
 				touchScreenPanel.add(new JLabel("hello"));
 				touchScreenPanel.setBackground(Color.RED);
-				
+				*/
 				touchScreenFrame.add(touchScreenPanel, BorderLayout.CENTER);
 			}
 		});
