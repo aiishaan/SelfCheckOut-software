@@ -29,6 +29,7 @@ import java.util.Scanner;
 import java.util.TreeMap;
 
 import com.autovend.devices.SelfCheckoutStation;
+import com.autovend.devices.SimulationException;
 import com.autovend.external.CardIssuer;
 import com.autovend.products.Product;
 
@@ -73,6 +74,9 @@ public class CheckoutController {
 	
 	// Tells the system about the current attendant
 	public AttendantController Attendant;
+	// Tells the system if an attendant is logged in
+	public boolean Log_in_Status;
+	public String Attendant_ID;
 
 	/**
 	 * Constructors for CheckoutController
@@ -86,6 +90,7 @@ public class CheckoutController {
 		this.changeDispenserControllers = new TreeMap<>();
 		this.changeSlotControllers = new LinkedHashSet<>();
 		clearOrder();
+		this.Log_in_Status=false;
 	}
 
 	public CheckoutController(SelfCheckoutStation checkout) {
@@ -671,6 +676,7 @@ public class CheckoutController {
 		return this.validBaggingControllers;
 	}
 	
+	// Function to Sign Up a new attendant
 	public void Sign_UpAttendant(String userID, String password) {
 		// if no input is provided
 		if(userID == null || password==null) throw new NullPointerException("Please input a username and password");
@@ -680,7 +686,22 @@ public class CheckoutController {
 		attendant.add_attendant(userID, password);
 	}
 	
-	public void Log_in_Attendant() {
+	// Function to Log in
+	public void Log_in_Attendant(String userID, String password) {
+		// Already Logged in
+		if (Log_in_Status==true) {
+			throw new SimulationException("An Attendant is currently Logged in");
+		}
+		// New Log In 
+		if (Attendant.AttendantList.containsKey(userID) && Attendant.AttendantList.get(userID).equals(password)) {
+			// Sets log in status to true
+			Log_in_Status =true;
+			// Updates the name of current Attendant on the System
+			Attendant_ID=userID;
+		}else {
+			
+				throw new SimulationException("The login credentials do not match any Attendant.");
+		}
 		
 	}
 	
