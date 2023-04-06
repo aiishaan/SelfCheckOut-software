@@ -73,9 +73,10 @@ public class CheckoutController {
 	private Map<BaggingAreaController, Double> weightWithBags = new HashMap<>();
 	
 	// Tells the system about the current attendant
-	public AttendantController Attendant;
+	public AttendantController Attendant ;
 	// Tells the system if an attendant is logged in
 	public boolean Log_in_Status;
+	// String to Display the name of current Attendant in charge
 	public String Attendant_ID;
 
 	/**
@@ -116,6 +117,14 @@ public class CheckoutController {
 		// TODO: Finish Coin Tray Controller and add to controllers set
 		this.changeSlotControllers = new LinkedHashSet<>(List.of(billChangeSlotController, coinChangeSlotController));
 		this.changeDispenserControllers = new TreeMap<>();
+		
+		// Attendant
+		// Tells the system if an attendant is logged in
+		Log_in_Status=false;
+		// String to Display the name of current Attendant in charge
+		Attendant_ID=null;
+		Attendant = new AttendantController("Tom", "6234523");
+		
 
 		// TODO: Also add coin dispensers to changeDispenserControllers (once done)
 
@@ -676,15 +685,6 @@ public class CheckoutController {
 		return this.validBaggingControllers;
 	}
 	
-	// Function to Sign Up a new attendant
-	public void Sign_UpAttendant(String userID, String password) {
-		// if no input is provided
-		if(userID == null || password==null) throw new NullPointerException("Please input a username and password");
-		AttendantController attendant = new AttendantController(userID , password);
-		// Adds new attendant
-		
-		attendant.add_attendant(userID, password);
-	}
 	
 	// Function to Log in
 	public void Log_in_Attendant(String userID, String password) {
@@ -698,6 +698,10 @@ public class CheckoutController {
 			Log_in_Status =true;
 			// Updates the name of current Attendant on the System
 			Attendant_ID=userID;
+			
+			// Add code for Attendant is permitted to use the station
+			System.out.println("The attendant is allowed to use the station");
+			
 		}else {
 			throw new SimulationException("The login credentials do not match any Attendant.");
 		}
@@ -713,7 +717,10 @@ public class CheckoutController {
 			// Resets the Attendant ID and Log in Status
 			Attendant_ID=null;
 			this.Log_in_Status=false;
-		}
-	}
+			// Add code for Attendant is not-permitted to use the station
+		
+			System.out.println("The attendant is not allowed to use the station.");
+		}	
+	}		
 	
 }
