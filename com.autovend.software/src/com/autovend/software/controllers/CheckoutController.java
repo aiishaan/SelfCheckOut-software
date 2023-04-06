@@ -70,6 +70,9 @@ public class CheckoutController {
 	private Map<BaggingAreaController, Double> weight = new HashMap<>();
 	// create map to store weight after bags added in bagging area
 	private Map<BaggingAreaController, Double> weightWithBags = new HashMap<>();
+	
+	// Tells the system about the current attendant
+	public AttendantController Attendant;
 
 	/**
 	 * Constructors for CheckoutController
