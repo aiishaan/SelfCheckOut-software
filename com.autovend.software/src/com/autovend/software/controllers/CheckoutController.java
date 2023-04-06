@@ -25,11 +25,15 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 import java.util.TreeMap;
 
 import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.external.CardIssuer;
+import com.autovend.external.ProductDatabases;
+import com.autovend.products.BarcodedProduct;
+import com.autovend.products.PLUCodedProduct;
 import com.autovend.products.Product;
 
 @SuppressWarnings("rawtypes")
@@ -38,6 +42,7 @@ public class CheckoutController {
 	private static int IDcounter = 1;
 	private int stationID = IDcounter++;
 
+	private ProductDatabases database;
 	private LinkedHashMap<Product, Number[]> order;
 	public BigDecimal cost;
 	protected BigDecimal amountPaid;
@@ -414,11 +419,11 @@ public class CheckoutController {
 	}
 	
 	
-	public void addItemViaTextSearch(String text) {
+	public void addItemViaTextSearch(ItemAdderController adder, String text) {
 		String[] keywords = text.split(" ");
 		boolean found = false;
 
-		for (BarcodedProduct barprod : BARCODED_PRODUCT_DATABASE.values()) {
+		for (BarcodedProduct barprod : database.BARCODED_PRODUCT_DATABASE.values()) {
 			String desc = barprod.getDescription();
 
 			for (String word : desc.split(" ")) {
@@ -432,7 +437,7 @@ public class CheckoutController {
 				// If all keywords are present in this product's description, then it is matched
 				if (matches == keywords.length) {
 					found = true;
-					addItem(, barprod, barprod.)
+					this.addItem(adder, barprod, barprod.getExpectedWeight());
 //					addedItemViaBarcode(barprod.getBarcode()); // not aur
 					break;
 				}
@@ -440,7 +445,7 @@ public class CheckoutController {
 
 		}
 		if (!found) {
-			for (PLUCodedProduct pluprod : PLU_PRODUCT_DATABASE.values()) {
+			for (PLUCodedProduct pluprod : database.PLU_PRODUCT_DATABASE.values()) {
 				String desc = pluprod.getDescription();
 
 				for (String word : desc.split(" ")) {
@@ -454,7 +459,7 @@ public class CheckoutController {
 					// If all keywords are present in this product's description, then it is matched
 					if (matches == keywords.length) {
 						found = true;
-						addedItemViaPLU(pluprod.getPLUCode());
+						//this.addItem(adder, pluprod, pluprod.);//WIll call when Aman implements add by plu code.
 						break;
 					}
 				}
