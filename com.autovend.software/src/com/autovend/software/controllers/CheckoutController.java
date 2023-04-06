@@ -699,10 +699,21 @@ public class CheckoutController {
 			// Updates the name of current Attendant on the System
 			Attendant_ID=userID;
 		}else {
-			
-				throw new SimulationException("The login credentials do not match any Attendant.");
+			throw new SimulationException("The login credentials do not match any Attendant.");
 		}
 		
+	}
+	
+	public void Log_Out_Attendant() {
+		if (Log_in_Status==false) {
+			throw new SimulationException("There is no attendant who is currenlty logged in.");
+			
+		}
+		if (Log_in_Status==true) {
+			// Resets the Attendant ID and Log in Status
+			Attendant_ID=null;
+			this.Log_in_Status=false;
+		}
 	}
 	
 }
