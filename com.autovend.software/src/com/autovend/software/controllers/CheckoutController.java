@@ -670,4 +670,18 @@ public class CheckoutController {
 	public HashSet<BaggingAreaController> getValidBaggingControllers() {
 		return this.validBaggingControllers;
 	}
+	
+	public void Sign_UpAttendant(String userID, String password) {
+		// if no input is provided
+		if(userID == null || password==null) throw new NullPointerException("Please input a username and password");
+		AttendantController attendant = new AttendantController(userID , password);
+		// Adds new attendant
+		
+		attendant.add_attendant(userID, password);
+	}
+	
+	public void Log_in_Attendant() {
+		
+	}
+	
 }
