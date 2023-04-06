@@ -1,5 +1,6 @@
 package com.autovend.software.test;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.math.BigDecimal;
@@ -23,9 +24,15 @@ public class AttendantIDTest{
 	
 	SelfCheckoutStation station = new SelfCheckoutStation(c, BillDenomiantions, coinDenominations, 1000000, 1);
 	
+	/** Log In Test
+	 * Test 1: Failed to Log in as the user does not exist 
+	 * Test 2: Successful Log in with correct credentials
+	 * Test 3: Check what happens when someone tries to log in again when another attendant is logged in**/
+	
+	
 	// Failed to Log in as the user does not exist
 	@Test (expected = SimulationException.class)
-	public void failed_Log_in() {
+	public void Failed_Log_in() {
 		// Creating Station Instance for Test 1
 		CheckoutController stationTest1= new CheckoutController(station);
 		// Adding New Attendant
@@ -34,8 +41,8 @@ public class AttendantIDTest{
 		stationTest1.Log_in_Attendant("Tom", "3523rq12ui3r");
 		
 	}
-	// Successful Log in with correct credentials
 	
+	// Successful Log in with correct credentials
 	@Test 
 	public void Successful_Log_in(){
 		// Creating Station Instance for Test 1
@@ -63,5 +70,36 @@ public class AttendantIDTest{
 		
 		
 	}
+	/** Log Out Test
+	 * Test 1: No accounts are logged in
+	 * Test 2: Successful Logout
+	 * Test 3: **/
+	
+	//No accounts are logged in
+	@Test (expected = SimulationException.class)
+	public void Failed_Log_Out() {
+		CheckoutController stationTest4= new CheckoutController(station);
+		// Adding New Attendant
+		stationTest4.Attendant.add_attendant("Samuel", "oper14xj65");
+		stationTest4.Attendant.add_attendant("Babar", "52618");
+		
+		// Calling Log out when no one is logged in
+		stationTest4.Log_Out_Attendant();
+		
+	}
+	@Test
+	public void Succesfull_Log_Out() {
+		CheckoutController stationTest4= new CheckoutController(station);
+		// Adding New Attendant
+		stationTest4.Attendant.add_attendant("Samuel", "oper14xj65");
+		stationTest4.Attendant.add_attendant("Babar", "52618");
+		
+		// Calling Log out when no one is logged in
+		stationTest4.Log_in_Attendant("Babar", "52618");
+		stationTest4.Log_Out_Attendant();
+		assertFalse(stationTest4.Log_in_Status);
+		
+	}
+	
 	
 }
