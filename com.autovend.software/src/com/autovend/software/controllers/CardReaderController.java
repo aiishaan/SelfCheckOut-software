@@ -56,7 +56,7 @@ public class CardReaderController extends PaymentController<CardReader, CardRead
 	 * @throws BlockedCardException 
 	 */
 	public void bankPayment(CardData localdata, CardIssuer localbank) throws BlockedCardException {
-		int holdNum = bank.authorizeHold(localdata.getNumber(), this.amount);
+		int holdNum = localbank.authorizeHold(localdata.getNumber(), this.amount);
 		if (holdNum !=-1 && (localbank.postTransaction(localdata.getNumber(), holdNum, this.amount))) {
 			getMainController().addToAmountPaid(this.amount);
 		}
@@ -79,7 +79,6 @@ public class CardReaderController extends PaymentController<CardReader, CardRead
 		else {
 			bankPayment(data, this.bank);
 		}
-		this.isPaying = false;
 	}
 	
 	/**
@@ -95,7 +94,6 @@ public class CardReaderController extends PaymentController<CardReader, CardRead
 		}
 		else {
 			bankPayment(data, this.bank);
-			this.isPaying = false;
 		}
 	}
 	
@@ -174,6 +172,9 @@ public class CardReaderController extends PaymentController<CardReader, CardRead
 			}
 		}
 		
+		this.insertPayment = false;
+		this.swipePayment = false;
+		this.tapPayment = false;
 		this.disableDevice();
 		this.amount = BigDecimal.ZERO;
 		this.bank = null;
