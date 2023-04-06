@@ -1,4 +1,4 @@
-package com.autovend.software;
+package com.autovend.software.gui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
