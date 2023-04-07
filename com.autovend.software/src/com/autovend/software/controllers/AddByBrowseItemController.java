@@ -25,8 +25,6 @@ public class AddByBrowseItemController extends ItemAdderController<TouchScreen, 
 	BarcodedProduct barcodedItem;
     double itemWeight;
     
-	
-	
 	/*
 	 * get browsed Item
 	 * parameter(item name, quantity of items) get these from gui
