@@ -1,6 +1,9 @@
 package com.autovend.software.controllers;
 import com.autovend.BarcodedUnit;
 import com.autovend.devices.SelfCheckoutStation;
+import com.autovend.devices.SimulationException;
+import com.autovend.devices.TouchScreen;
+import com.autovend.devices.observers.TouchScreenObserver;
 import com.autovend.external.ProductDatabases;
 import com.autovend.products.BarcodedProduct;
 
@@ -9,11 +12,20 @@ import java.util.*;
 
 
 
-public class AddByBrowseItemController {
-	private SelfCheckoutStation selfCheckoutStation;
+public class AddByBrowseItemController extends ItemAdderController<TouchScreen, TouchScreenObserver> implements TouchScreenObserver{
+	
+	public AddByBrowseItemController(TouchScreen newDevice) {
+		super(newDevice);
+		// TODO Auto-generated constructor stub
+	}
+
 	List<BarcodedProduct> browsedItem = new ArrayList<BarcodedProduct>();
-	BarcodedUnit BarcodedItem;
+	BarcodedUnit barcodedUnit;
 	BigDecimal itemPrice;
+	BigDecimal itemTotalPrice;
+	BarcodedProduct barcodedItem;
+    double itemWeight;
+    
 	
 	
 	/*
@@ -26,58 +38,48 @@ public class AddByBrowseItemController {
 		BigDecimal itemQuntity = new BigDecimal(quantity);
 		for(BarcodedProduct product : ProductDatabases.BARCODED_PRODUCT_DATABASE.values()) {
 			if(product.getDescription().equals(itemName)) {
-				BarcodedItem = new BarcodedUnit(product.getBarcode(), product.getExpectedWeight());
-				itemPrice = product.getPrice().multiply(itemQuntity);
+				barcodedItem = product;
+				itemPrice = product.getPrice();	//price of item 
+				itemTotalPrice = product.getPrice().multiply(itemQuntity); //item price x quantity 
+				itemWeight = product.getExpectedWeight(); //item weight 
+				//barcodedUnit = new BarcodedUnit(product.getBarcode(), product.getExpectedWeight()); not needed 
 			}
 		}		
 	}
 	
 	
 	/*
-	 * not sure if a method described below is need or its done thorugh the gui
+	 * not sure if a method described below is needed or its done through the gui
 	 */
-
-	//selects a brocaded item
-		//add item weight to expected weight  
-		//signal to system that item has been added,  item info to display (gui?)
-		//block system 
-	
-			//if( check item is bagging area = weight has changed as expected )
+	public void AddByBrowsingEvent() {
 		
-			//else if (weight has changed incorrect amount)
+		//display visual catalog (gui)
+			//selects product name (gui?) return itemName
+		
+			//and product quantity (gui?) return quantity
+		
+		//cancel browse option (gui)
+			//return user back to original state prior to catalog screen 
 
-				//call attendant
-
-		 
-	/*
-	 * Block Station method 
-	 */
-	public void blockStation() {
-		//disable station 
-		selfCheckoutStation.mainScanner.disable();
-		selfCheckoutStation.handheldScanner.disable();
-		selfCheckoutStation.printer.disable();
-		selfCheckoutStation.billInput.disable();
-		selfCheckoutStation.billOutput.disable();
-		selfCheckoutStation.billStorage.disable();
-		selfCheckoutStation.billValidator.disable();
-		selfCheckoutStation.screen.disable();
-
-	}
-	
-	/*
-	 * UnBlock Station method 
-	 */
-	public void unBlockStation() {
-		//enable station 
-		selfCheckoutStation.mainScanner.enable();
-		selfCheckoutStation.handheldScanner.enable();
-		selfCheckoutStation.printer.enable();
-		selfCheckoutStation.billInput.enable();
-		selfCheckoutStation.billOutput.enable();
-		selfCheckoutStation.billStorage.enable();
-		selfCheckoutStation.billValidator.enable();
-		selfCheckoutStation.screen.enable();
+		
+		disableDevice();  // Blocks the self-checkout system from further customer interaction.
+		//run the selectedProduct method to get info 
+		SelecetedProduct(selectedItem, SelectedQuantity);
+		
+		if (barcodedItem != null) {
+			this.getMainController().addItem(this, barcodedItem, itemWeight);
+			
+		}
+		else {
+			throw new SimulationException("Null Product");
+		}
+		
+		//signal to customer to place item in baggin area (gui)
+		
+		enableDevice();	//Unblocks the self-checkout system
+		//return back to state prior to entering catalog (gui) 
+;
+			
 	}
 	
 
