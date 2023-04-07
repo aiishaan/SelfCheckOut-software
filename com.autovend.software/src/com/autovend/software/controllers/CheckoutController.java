@@ -720,7 +720,8 @@ public class CheckoutController {
 			// Add code for Attendant is not-permitted to use the station
 		
 			System.out.println("The attendant is not allowed to use the station.");
-		}	
+		}
+		
 	}		
 	
 }

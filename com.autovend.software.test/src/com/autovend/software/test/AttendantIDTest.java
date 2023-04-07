@@ -1,6 +1,7 @@
 package com.autovend.software.test;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.math.BigDecimal;
@@ -97,8 +98,8 @@ public class AttendantIDTest{
 	
 	/** Log Out Test
 	 * Test 1: No accounts are logged in
-	 * Test 2: Successful Logout
-	 * Test 3: **/
+	 * Test 2: Successful Logout ---> Checks is Attendant ID is null
+	 * Test 3: Successful Logout ----> Checks if Login Status is false**/
 	
 	//No accounts are logged in
 	@Test (expected = SimulationException.class)
@@ -112,6 +113,21 @@ public class AttendantIDTest{
 		stationTest4.Log_Out_Attendant();
 		
 	}
+	// Checks if the current attendant is null after logging out
+	@Test 
+	public void Succesful_Log_Out_2() {
+		CheckoutController stationTest4= new CheckoutController(station);
+		// Adding New Attendant
+		stationTest4.Attendant.add_attendant("Samuel", "oper14xj65");
+		stationTest4.Attendant.add_attendant("Babar", "52618");
+		// Logged in as James
+		stationTest4.Log_in_Attendant("James", "4628");
+		// Calling Log out when no one is logged in
+		stationTest4.Log_Out_Attendant();
+		assertNull(stationTest4.Attendant_ID);
+	}
+	
+	//Successful Log Out
 	@Test
 	public void Succesfull_Log_Out() {
 		CheckoutController stationTest4= new CheckoutController(station);
