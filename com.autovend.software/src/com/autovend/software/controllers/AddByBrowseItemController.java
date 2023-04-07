@@ -29,8 +29,8 @@ public class AddByBrowseItemController extends ItemAdderController<TouchScreen, 
 	
 	
 	/*
-	 * get browsed Item 
-	 * parameter(item name, quantity of items)
+	 * get browsed Item
+	 * parameter(item name, quantity of items) get these from gui
 	 * set the value of barcoded item and the price (Barcode, expected weight)
 	 */
 	public void SelecetedProduct(String itemName, String quantity) {
