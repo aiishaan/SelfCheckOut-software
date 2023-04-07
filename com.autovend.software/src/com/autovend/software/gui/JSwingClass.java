@@ -2,231 +2,248 @@ package com.autovend.software.gui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.GridLayout;
-import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.*;
+import javax.swing.border.BevelBorder;
+import java.awt.Component;
 public class JSwingClass {
 	JFrame touchScreenFrame;
+	JComboBox languageBox;
 	JPanel touchScreenPanel;
-	JPanel touchScreenPanel2;
+	JPanel tapScreenPanel;
+	JPanel mainPanel;
+	JPanel secondaryPanel;
+	JLayeredPane layeredPane;
 	JButton screensaver;
 	JButton helpButton;
-	JComboBox languageButton;
 	JButton audioButton;
 	boolean audioButtonOn = false;
-	
-	JPanel mainPanel;
-	JButton addItemButton;
-	JButton membershipButton;
-	JButton bagsButton;
-	JButton removeButton;
-	JButton paymentButton;
 	
 	// create a constraints object
 	GridBagConstraints c = new GridBagConstraints();
 	final static boolean shouldFill = true;
     final static boolean shouldWeightX = true;
+    private JTextField PLUTextField;
+    private JTextField memberTextField;
+    private JTable table;
+    private JButton paymentButton;
 	
 	public JSwingClass() {
 		
 		touchScreenFrame = new JFrame("");
 		touchScreenFrame.setSize(1000, 900);
-		//touchScreenFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		touchScreenFrame.setResizable(false);
 		
-		touchScreenPanel2 = new JPanel();
-		touchScreenPanel2.setLayout(new GridLayout(1,3));
-		touchScreenPanel2.setPreferredSize(new Dimension(1000, 100));
+		touchScreenFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
+		layeredPane = new JLayeredPane();
+		touchScreenFrame.getContentPane().add(layeredPane, BorderLayout.CENTER);
 		
 		mainPanel = new JPanel();
-				
-		//tapScreen();
-		defaultLayerSetup();
-		language();
-		audio();
-		help();
+		mainPanel.setBackground(Color.LIGHT_GRAY);
+		mainPanel.setBounds(0, 0, 984, 785);
+		layeredPane.add(mainPanel);
+		mainPanel.setLayout(null);
 		
-		touchScreenFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		//touchScreenFrame.add(mainPanel, BorderLayout.NORTH);
-		touchScreenFrame.add(touchScreenPanel2, BorderLayout.SOUTH);
-		touchScreenFrame.setVisible(true);
-	}
-	
-	private void tapScreen() {
-		JPanel tempPanel = new JPanel();
+		PLUTextField = new JTextField();
+		PLUTextField.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		PLUTextField.setText("Scan a barcode or tap here to search with PLU");
+		PLUTextField.setHorizontalAlignment(JTextField.CENTER);
+		PLUTextField.setBounds(42, 31, 468, 40);
+		mainPanel.add(PLUTextField);
+		PLUTextField.setColumns(10);
 		
-		screensaver = new JButton("Tap the screen when ready");
-		screensaver.setBorder(BorderFactory.createLoweredBevelBorder());
-		screensaver.setContentAreaFilled(false); // removes the visual effect of clicking a button
-		screensaver.setBackground(Color.LIGHT_GRAY);
-		screensaver.setOpaque(false);
-		screensaver.addActionListener(new ActionListener() {
+		memberTextField = new JTextField();
+		memberTextField.setEditable(false);
+		memberTextField.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		memberTextField.setText("Sign in with membership for rewards");
+		memberTextField.setHorizontalAlignment(JTextField.CENTER);
+		memberTextField.setColumns(10);
+		memberTextField.setBounds(42, 106, 468, 40);
+		mainPanel.add(memberTextField);
+		
+		table = new JTable();
+		table.setBounds(564, 31, 393, 646);
+		mainPanel.add(table);
+		
+		JButton purchaseBagsButton = new JButton("Purchase Bags");
+		purchaseBagsButton.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		purchaseBagsButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				screensaver.setVisible(false);
-//				touchScreenPanel = new JPanel();
-//				touchScreenPanel.setLayout(new GridLayout(3,3));
-//				touchScreenPanel.add(new JLabel("hello"));
-//				touchScreenPanel.add(new JLabel("hello"));
-//				touchScreenPanel.add(new JLabel("hello"));
-//				touchScreenPanel.add(new JLabel("hello"));
-//				touchScreenPanel.add(new JLabel("hello"));
-//				touchScreenPanel.add(new JLabel("hello"));
-//				touchScreenPanel.add(new JLabel("hello"));
-//				touchScreenPanel.add(new JLabel("hello"));
-//				touchScreenPanel.setBackground(Color.RED);
-
-//				touchScreenFrame.add(touchScreenPanel, BorderLayout.CENTER);
-				
-				//defaultLayerSetup();
 			}
 		});
-		//tempPanel.add(screensaver, BorderLayout.CENTER);
-		//touchScreenFrame.add(tempPanel, BorderLayout.NORTH);
-		touchScreenFrame.add(screensaver, BorderLayout.CENTER);
-		//mainPanel.add(screensaver);
-		//touchScreenFrame.add(screensaver, -1);
+		
+		purchaseBagsButton.setBounds(42, 183, 468, 40);
+		mainPanel.add(purchaseBagsButton);
+		
+		Component rigidArea = Box.createRigidArea(new Dimension(20, 20));
+		rigidArea.setBounds(42, 70, 468, 39);
+		mainPanel.add(rigidArea);
+		
+		Component rigidArea_2 = Box.createRigidArea(new Dimension(20, 20));
+		rigidArea_2.setBounds(42, 144, 468, 39);
+		mainPanel.add(rigidArea_2);
+		
+		Component rigidArea_2_1 = Box.createRigidArea(new Dimension(20, 20));
+		rigidArea_2_1.setBounds(42, 219, 468, 39);
+		mainPanel.add(rigidArea_2_1);
+		
+		JButton btnNewButton_1_1 = new JButton("Remove an Item");
+		btnNewButton_1_1.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		btnNewButton_1_1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
+		btnNewButton_1_1.setBounds(42, 256, 468, 40);
+		mainPanel.add(btnNewButton_1_1);
+		
+		secondaryPanel = new JPanel();
+		secondaryPanel.setBackground(Color.LIGHT_GRAY);
+		layeredPane.setLayer(secondaryPanel, 2);
+		secondaryPanel.setBounds(0, 784, 984, 77);
+		layeredPane.add(secondaryPanel);
+		secondaryPanel.setLayout(null);
+		
+		setUpLanguage();
+		setUpAudio();
+		setUpHelp();
+		setUpPayment();
+		tapScreen();
+		ownBag();
+		
+		touchScreenFrame.setVisible(true);
 	}
-	
-	
-	private void defaultLayerSetup() {
-		//touchScreenPanel = new JPanel();
-		//JPanel p = new JPanel();
-		//tapScreen();
-		//mainPanel.setPreferredSize(new Dimension(1000, 800));
-		touchScreenFrame.add(mainPanel, BorderLayout.NORTH);
+	private void tapScreen() {
 		
-		// grid bag layout setup
-
-		// set the layout
-		mainPanel.setLayout(new GridBagLayout());
+		tapScreenPanel = new JPanel();
+		layeredPane.setLayer(tapScreenPanel, 1);
+		tapScreenPanel.setBounds(0, 0, 984, 785);
+		layeredPane.add(tapScreenPanel);
+		tapScreenPanel.setLayout(null);
 		
-
-		if (shouldFill) {
-			//natural height, maximum width
-			c.fill = GridBagConstraints.HORIZONTAL;
-		}
-		
-		addItem();
-		membership();
-		bags();
-		remove();
-		summary();
-		payment();
-	}
+		screensaver = new JButton("Welcome. \nPlease touch the screen to continue.");
+		screensaver.setDisplayedMnemonicIndex(1);
+		screensaver.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				tapScreenPanel.setVisible(false);
+			}
+		});
+		screensaver.setFont(new Font("Arial", Font.PLAIN, 40));
+		screensaver.setBorder(javax.swing.BorderFactory.createEmptyBorder());
+		//screensaver.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
+		screensaver.setBounds(0, 0, 984, 785);
+		screensaver.setContentAreaFilled(false);
+		tapScreenPanel.add(screensaver);}
 	
-	private void addItem() {
-		addItemButton = new JButton("Scan your items or tap here to search");
-		if (shouldWeightX) {
-			c.weightx = 0.5;
-		}
-		c.fill = GridBagConstraints.HORIZONTAL;
+	private void ownBag() {
+		
+		JPanel ownBag = new JPanel();
+		layeredPane.setLayer(ownBag, 1);
+		ownBag.setBounds(0, 0, 984, 785);
+		ownBag.setBackground(Color.LIGHT_GRAY);
+		layeredPane.add(ownBag);
+		ownBag.setLayout(new GridBagLayout());
+		
+		JTextField haveBag = new JTextField("Do you bring your own bag(s) today?");
+//		screensaver.setDisplayedMnemonicIndex(1);
+//		screensaver.addActionListener(new ActionListener() {
+//			public void actionPerformed(ActionEvent e) {
+//				tapScreenPanel.setVisible(false);
+//			}
+//		});
+		haveBag.setFont(new Font("Arial", Font.PLAIN, 40));
+		haveBag.setEditable(false);
+		haveBag.setBorder(javax.swing.BorderFactory.createEmptyBorder());
+		haveBag.setBackground(Color.LIGHT_GRAY);
+		//haveBag.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
+		haveBag.setBounds(0, 0, 984, 785);
+		GridBagConstraints c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = 0;
-		c.ipady = 125;
-		mainPanel.add(addItemButton, c);
-	}
-	
-	private void membership() {
-		membershipButton = new JButton("Sign in with your membership for rewards");
-		if (shouldWeightX) {
-			c.weightx = 0.5;
-		}
-		c.fill = GridBagConstraints.HORIZONTAL;
-		c.gridx = 0;
-		c.gridy = 1;
-		c.ipady = 125;
-		mainPanel.add(membershipButton, c);
-	}
-	
-	private void bags() {
-		bagsButton = new JButton("Purchase bags");
-		if (shouldWeightX) {
-			c.weightx = 0.5;
-		}
-		c.fill = GridBagConstraints.HORIZONTAL;
-		c.gridx = 0;
-		c.gridy = 2;
-		c.ipady = 125;
-		mainPanel.add(bagsButton, c);
-	}
-	
-	private void remove() {
-		removeButton = new JButton("Remove an item");
-		if (shouldWeightX) {
-			c.weightx = 0.5;
-		}
-		c.fill = GridBagConstraints.HORIZONTAL;
-		c.gridx = 0;
-		c.gridy = 3;
-		c.ipady = 125;
-		mainPanel.add(removeButton, c);
-	}
-	
-	private void summary() {
-		// Setup jtable, waiting to connect to software
-	    String[][] data = {{"Wagyu beef @$250.00", "0.50", "$125.00"},{"Pork chop @$4.67", "5.00", "$23.35"}};
-	    
-	    // column name
-		String[] cName = {"Item @cost per unit", "Count", "Total cost"};
+		c.ipady = 20;
+		ownBag.add(haveBag, c);
 		
-		JTable j = new JTable(data, cName);
-        j.setBounds(30, 40, 200, 300);
- 
-        // adding it to JScrollPane
-        JScrollPane sp = new JScrollPane(j);
-        c.fill = GridBagConstraints.HORIZONTAL;
-        c.gridx = 1;
-        c.gridy = 0;
-        c.ipady = 183;
-        c.gridheight = 4;
-        mainPanel.add(sp, c);
-	}
-	
-	private void payment() {
-		paymentButton = new JButton("Continue to payment >>>");
-		if (shouldWeightX) {
-			c.weightx = 0.5;
-		}
-		c.fill = GridBagConstraints.HORIZONTAL;
-		c.gridx = 1;
-		c.gridy = 4;
-		c.ipady = 50;
-		c.gridheight = 1;
-		c.insets = new Insets(50,0,0,0);
-		mainPanel.add(paymentButton, c);
-	}
-	
-	private void language() {
-		String[] selectedlanguageButton = {"English", "French", "Spanish"};
-		languageButton = new JComboBox(selectedlanguageButton);
-		languageButton.addActionListener(new ActionListener() {
+		JButton yb = new JButton("Yes");
+		JButton nb = new JButton("No");
+		yb.setFont(new Font("Arial", Font.PLAIN, 40));
+		nb.setFont(new Font("Arial", Font.PLAIN, 40));
+		yb.setPreferredSize(new Dimension(200, 75));
+		nb.setPreferredSize(new Dimension(200, 75));
+		c.gridy = 1;
+		ownBag.add(yb, c);
+		c.gridy = 2;
+		ownBag.add(nb, c);
+		nb.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				System.out.println(languageButton.getSelectedIndex());
-				if(languageButton.getSelectedIndex() == 0) {
+				ownBag.setVisible(false);
+			}
+		});
+		yb.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				ownBag.setVisible(false);
+				ownBagAdded();
+			}
+		});
+	}
+	
+	private void ownBagAdded() {
+		JPanel ownBagAdded = new JPanel();
+		layeredPane.setLayer(ownBagAdded, 1);
+		ownBagAdded.setBounds(0, 0, 984, 785);
+		ownBagAdded.setBackground(Color.LIGHT_GRAY);
+		layeredPane.add(ownBagAdded);
+		ownBagAdded.setLayout(null);
+		
+		JTextArea hadBag = new JTextArea("Please put your bag(s) into bagging area \n   and wait for our attendant to confirm");
+		hadBag.setFont(new Font("Arial", Font.PLAIN, 40));
+		hadBag.setEditable(false);
+		hadBag.setBorder(javax.swing.BorderFactory.createEmptyBorder());
+		hadBag.setBackground(Color.LIGHT_GRAY);
+		hadBag.setBounds(145, 350, 984, 785);
+		
+		ownBagAdded.add(hadBag);
+		boolean check = false;
+		
+		// wait for attendant to confirm and then set visible to false, rn i'm changing it right away
+		check = true;	// this will change after get acceptance from attendant
+		if (check == true) {
+			ownBagAdded.setVisible(false);
+		}
+	}
+	
+	private void setUpLanguage() {
+		String[] selectedlanguage = {"English", "French", "Spanish"};
+		languageBox = new JComboBox(selectedlanguage);
+		languageBox.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		languageBox.setBounds(10, 24, 115, 42);
+		secondaryPanel.add(languageBox);
+		languageBox.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				//System.out.println(languageBox.getSelectedIndex());
+				if(languageBox.getSelectedIndex() == 0) {
 					helpButton.setText("Need help?");
 					audioButton.setText("Text-to-speech");
 				}
-				if(languageButton.getSelectedIndex() == 1) {
+				if(languageBox.getSelectedIndex() == 1) {
 					helpButton.setText("Besoin d'aide?");
 					audioButton.setText("texte pour parler");
 				}
-				if(languageButton.getSelectedIndex() == 2) {
-					helpButton.setText("¿Necesitas ayuda?");
+				if(languageBox.getSelectedIndex() == 2) {
+					helpButton.setText("Â¿Necesitas ayuda?");
 					audioButton.setText("texto a voz");
 				}
 			}
 		});
-		touchScreenPanel2.add(languageButton);
 	}
 	
-	private void audio() {
-		audioButton = new JButton("Text-to-speech");
-		touchScreenPanel2.add(audioButton);
+	private void setUpAudio() {
+		audioButton = new JButton("Audio");
+		audioButton.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		audioButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if(audioButtonOn) {
@@ -238,18 +255,32 @@ public class JSwingClass {
 				System.out.println("Text-to-speech is: " + audioButtonOn);
 			}
 		});
+		audioButton.setBounds(135, 24, 149, 42);
+		secondaryPanel.add(audioButton);
 	}
-	
-	private void help() {
-		helpButton = new JButton("Need help?");
-		touchScreenPanel2.add(helpButton);
+		
+	private void setUpHelp() {
+		helpButton = new JButton("Help");
+		helpButton.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		helpButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				System.out.println("Calling attendant");
 			}
 		});
+		helpButton.setBounds(799, 25, 160, 41);
+		secondaryPanel.add(helpButton);
 	}
-	
+		
+	private void setUpPayment() {
+		paymentButton = new JButton("Continue to payment >>>");
+		paymentButton.setFont(new Font("Tahoma", Font.PLAIN, 17));
+		paymentButton.setBounds(564, 703, 393, 40);
+		paymentButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
+		mainPanel.add(paymentButton);
+	}
 	public static void main(String[] args) {
 		new JSwingClass();
 	}
