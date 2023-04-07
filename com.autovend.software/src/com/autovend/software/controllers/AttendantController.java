@@ -13,6 +13,7 @@ public class AttendantController {
 	public HashMap<String, String> AttendantList = new HashMap<String, String>();
 	
 	
+	
 	/** Constructs an Attendant with user ID and Password 
 	 * 
 	 * 
@@ -24,6 +25,9 @@ public class AttendantController {
 	public AttendantController(String username, String key) {
 		this.user_id= username;
 		this.password=key;
+		AttendantList.put("James", "4628");
+		AttendantList.put("Wayne", "331");
+		AttendantList.put("Shaw", "unux89");
 		
 	}
 	
