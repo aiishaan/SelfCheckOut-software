@@ -19,6 +19,16 @@ public class JSwingClass {
 	JComboBox languageButton;
 	JButton audioButton;
 	boolean audioButtonOn = false;
+	
+	JPanel mainPanel;
+	JButton addItemButton;
+	JButton membershipButton;
+	JButton bagsButton;
+	JButton removeButton;
+	JButton paymentButton;
+	
+	// create a constraints object
+	GridBagConstraints c = new GridBagConstraints();
 	final static boolean shouldFill = true;
     final static boolean shouldWeightX = true;
 	
@@ -27,21 +37,28 @@ public class JSwingClass {
 		touchScreenFrame = new JFrame("");
 		touchScreenFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		touchScreenFrame.setResizable(false);
+		
 		touchScreenPanel2 = new JPanel();
 		touchScreenPanel2.setLayout(new GridLayout(1,3));
 		touchScreenPanel2.setPreferredSize(new Dimension(1000, 100));
 		
+		mainPanel = new JPanel();
+				
 		tapScreen();
+		defaultLayerSetup();
 		language();
 		audio();
 		help();
 		
 		touchScreenFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		//touchScreenFrame.add(mainPanel, BorderLayout.NORTH);
 		touchScreenFrame.add(touchScreenPanel2, BorderLayout.SOUTH);
 		touchScreenFrame.setVisible(true);
 	}
 	
 	private void tapScreen() {
+		JPanel tempPanel = new JPanel();
+		
 		screensaver = new JButton("Tap the screen when ready");
 		screensaver.setBorder(BorderFactory.createLoweredBevelBorder());
 		screensaver.setContentAreaFilled(false); // removes the visual effect of clicking a button
@@ -50,107 +67,139 @@ public class JSwingClass {
 		screensaver.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				screensaver.setVisible(false);
-				touchScreenPanel = new JPanel();
-				JButton button;
+//				touchScreenPanel = new JPanel();
+//				touchScreenPanel.setLayout(new GridLayout(3,3));
+//				touchScreenPanel.add(new JLabel("hello"));
+//				touchScreenPanel.add(new JLabel("hello"));
+//				touchScreenPanel.add(new JLabel("hello"));
+//				touchScreenPanel.add(new JLabel("hello"));
+//				touchScreenPanel.add(new JLabel("hello"));
+//				touchScreenPanel.add(new JLabel("hello"));
+//				touchScreenPanel.add(new JLabel("hello"));
+//				touchScreenPanel.add(new JLabel("hello"));
+//				touchScreenPanel.setBackground(Color.RED);
+
+//				touchScreenFrame.add(touchScreenPanel, BorderLayout.CENTER);
 				
-				// grid bag layout setup
-
-				// set the layout
-				touchScreenPanel.setLayout(new GridBagLayout());
-				// create a constraints object
-				GridBagConstraints c = new GridBagConstraints();
-
-				// insets for all components
-				c.insets = new Insets(2,2,2,2);
-				// if condition to fill the width
-			    if (shouldFill) {
-			 
-			        // natural height, maximum width
-			        c.fill = GridBagConstraints.HORIZONTAL;
-			    }
-			    
-			    // Object initialization
-			    
-			    // add item button
-			    button = new JButton("Scan you items or tap here to search for it");
-			 
-			    // if condition
-			    if (shouldWeightX) {
-			        c.weightx = 0.5;
-			    }
-			    // column 0
-			    c.gridx = 0;
-			    // row 0
-			    c.gridy = 0;
-			    // Adding JButton "button" on JFrame.
-			    touchScreenPanel.add(button, c);
-			    
-			    // membership button
-			    button = new JButton("Sign in with your membership for rewards");
-			 
-			    // if condition
-			    if (shouldWeightX) {
-			        c.weightx = 0.5;
-			    }
-			    // column 0
-			    c.gridx = 0;
-			    // row 0
-			    c.gridy = 1;
-			    // Adding JButton "button" on JFrame.
-			    touchScreenPanel.add(button, c);
-			    
-			    // bags button
-			    button = new JButton("Purchase bags");
-			 
-			    // if condition
-			    if (shouldWeightX) {
-			        c.weightx = 0.5;
-			    }
-			    // column 0
-			    c.gridx = 0;
-			    // row 0
-			    c.gridy = 2;
-			    // Adding JButton "button" on JFrame.
-			    touchScreenPanel.add(button, c);
-			    
-			    // remove button
-			    button = new JButton("Remove an item");
-			 
-			    // if condition
-			    if (shouldWeightX) {
-			        c.weightx = 0.5;
-			    }
-			    // column 0
-			    c.gridx = 0;
-			    // row 0
-			    c.gridy = 3;
-			    // Adding JButton "button" on JFrame.
-			    touchScreenPanel.add(button, c);
-			    
-			    // Setup jtable, waiting to connect to software
-			    String[][] data = {{"Wagyu beef @$250.00", "0.50", "$125.00"},{"Pork chop @$4.67", "5.00", "$23.35"}};
-			    
-			    // column name
-				String[] cName = {"Item @cost per unit", "Count", "Total cost"};
-				
-				JTable j = new JTable(data, cName);
-		        j.setBounds(30, 40, 200, 300);
-		 
-		        // adding it to JScrollPane
-		        JScrollPane sp = new JScrollPane(j);
-		        
-		        c.gridx = 1;
-		        c.gridy = 0;
-		        c.gridheight = 5;
-		        touchScreenPanel.add(sp, c);
-
-		        
-				//touchScreenPanel.setBackground(Color.RED);
-				touchScreenFrame.add(touchScreenPanel, BorderLayout.CENTER);
+				//defaultLayerSetup();
 			}
 		});
+		//tempPanel.add(screensaver, BorderLayout.CENTER);
+		//touchScreenFrame.add(tempPanel, BorderLayout.NORTH);
 		touchScreenFrame.add(screensaver, BorderLayout.CENTER);
+		//mainPanel.add(screensaver);
+		//touchScreenFrame.add(screensaver, -1);
 	}
+	
+	
+	private void defaultLayerSetup() {
+		//touchScreenPanel = new JPanel();
+		//JPanel p = new JPanel();
+		//tapScreen();
+		
+		touchScreenFrame.add(mainPanel, BorderLayout.NORTH);
+		
+		// grid bag layout setup
+
+		// set the layout
+		mainPanel.setLayout(new GridBagLayout());
+		
+
+		if (shouldFill) {
+			//natural height, maximum width
+			c.fill = GridBagConstraints.HORIZONTAL;
+		}
+		
+		addItem();
+		membership();
+		bags();
+		remove();
+		summary();
+		payment();
+	}
+	
+	private void addItem() {
+		addItemButton = new JButton("Scan your items or tap here to search");
+		if (shouldWeightX) {
+			c.weightx = 0.5;
+		}
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.gridx = 0;
+		c.gridy = 0;
+		c.ipady = 150;
+		mainPanel.add(addItemButton, c);
+	}
+	
+	private void membership() {
+		membershipButton = new JButton("Sign in with your membership for rewards");
+		if (shouldWeightX) {
+			c.weightx = 0.5;
+		}
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.gridx = 0;
+		c.gridy = 1;
+		c.ipady = 150;
+		mainPanel.add(membershipButton, c);
+	}
+	
+	private void bags() {
+		bagsButton = new JButton("Purchase bags");
+		if (shouldWeightX) {
+			c.weightx = 0.5;
+		}
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.gridx = 0;
+		c.gridy = 2;
+		c.ipady = 150;
+		mainPanel.add(bagsButton, c);
+	}
+	
+	private void remove() {
+		removeButton = new JButton("Remove an item");
+		if (shouldWeightX) {
+			c.weightx = 0.5;
+		}
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.gridx = 0;
+		c.gridy = 3;
+		c.ipady = 150;
+		mainPanel.add(removeButton, c);
+	}
+	
+	private void summary() {
+		// Setup jtable, waiting to connect to software
+	    String[][] data = {{"Wagyu beef @$250.00", "0.50", "$125.00"},{"Pork chop @$4.67", "5.00", "$23.35"}};
+	    
+	    // column name
+		String[] cName = {"Item @cost per unit", "Count", "Total cost"};
+		
+		JTable j = new JTable(data, cName);
+        j.setBounds(30, 40, 200, 300);
+ 
+        // adding it to JScrollPane
+        JScrollPane sp = new JScrollPane(j);
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.gridx = 1;
+        c.gridy = 0;
+        c.ipady = 282;
+        c.gridheight = 4;
+        mainPanel.add(sp, c);
+	}
+	
+	private void payment() {
+		paymentButton = new JButton("Continue to payment >>>");
+		if (shouldWeightX) {
+			c.weightx = 0.5;
+		}
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.gridx = 1;
+		c.gridy = 4;
+		c.ipady = 100;
+		c.gridheight = 1;
+		c.insets = new Insets(50,0,0,0);
+		mainPanel.add(paymentButton, c);
+	}
+	
 	private void language() {
 		String[] selectedlanguageButton = {"English", "French", "Spanish"};
 		languageButton = new JComboBox(selectedlanguageButton);
