@@ -671,10 +671,10 @@ public class CheckoutController {
 		return this.validBaggingControllers;
 	}
 
-	public void inputMembershipNumber(){
+	public String inputMembershipNumber(){
 		//System IO, Custom IO
 		String cardNum = cardReaderController.cardData.getNumber();
 		membershipCardController.membershipNumber = cardNum;
-		System.out.println(cardReaderController.cardData.getNumber());
+		return cardNum;
 	}
 }
