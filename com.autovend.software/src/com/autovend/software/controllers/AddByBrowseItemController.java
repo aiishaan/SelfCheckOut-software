@@ -1,6 +1,5 @@
 package com.autovend.software.controllers;
 import com.autovend.BarcodedUnit;
-import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.devices.SimulationException;
 import com.autovend.devices.TouchScreen;
 import com.autovend.devices.observers.TouchScreenObserver;
@@ -42,29 +41,31 @@ public class AddByBrowseItemController extends ItemAdderController<TouchScreen, 
 				itemPrice = product.getPrice();	//price of item 
 				itemTotalPrice = product.getPrice().multiply(itemQuntity); //item price x quantity 
 				itemWeight = product.getExpectedWeight(); //item weight 
-				//barcodedUnit = new BarcodedUnit(product.getBarcode(), product.getExpectedWeight()); not needed 
 			}
 		}		
 	}
 	
 	
 	/*
-	 * not sure if a method described below is needed or its done through the gui
+	 * Event When item is added by browsing 
 	 */
-	public void AddByBrowsingEvent() {
+	public void AddByBrowsingEvent(String selectedItem, String SelectedQuantity) {
 		
 		//display visual catalog (gui)
 			//selects product name (gui?) return itemName
+		String item = selectedItem; 
+		
 		
 			//and product quantity (gui?) return quantity
+		String quantity = SelectedQuantity;
 		
 		//cancel browse option (gui)
 			//return user back to original state prior to catalog screen 
-
+		
 		
 		disableDevice();  // Blocks the self-checkout system from further customer interaction.
 		//run the selectedProduct method to get info 
-		SelecetedProduct(selectedItem, SelectedQuantity);
+		SelecetedProduct(item, quantity);
 		
 		if (barcodedItem != null) {
 			this.getMainController().addItem(this, barcodedItem, itemWeight);
@@ -78,8 +79,6 @@ public class AddByBrowseItemController extends ItemAdderController<TouchScreen, 
 		
 		enableDevice();	//Unblocks the self-checkout system
 		//return back to state prior to entering catalog (gui) 
-;
-			
 	}
 	
 
