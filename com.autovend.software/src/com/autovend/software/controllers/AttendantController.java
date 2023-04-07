@@ -9,7 +9,7 @@ public class AttendantController {
 	// Attendant Password
 	public String password;
 	
-	// Attendant Lists
+	// Attendant Lists for the Software
 	public HashMap<String, String> AttendantList = new HashMap<String, String>();
 	
 	
@@ -25,14 +25,19 @@ public class AttendantController {
 	public AttendantController(String username, String key) {
 		this.user_id= username;
 		this.password=key;
+		// Adding Some Preset Attendants
 		AttendantList.put("James", "4628");
 		AttendantList.put("Wayne", "331");
 		AttendantList.put("Shaw", "unux89");
 		
 	}
 	
-	// Adds a new attendant to the system
+	/** Adds the userID and password for a new attendant
+	 * 
+	 * 
+	 * **/
 	public void add_attendant(String username, String Key) {
+		
 		AttendantList.put(username, Key);
 		
 	}
@@ -40,10 +45,6 @@ public class AttendantController {
 	// Getter method for Attendant ID
 	public String getUser_id() {
 		return user_id;
-	}
-
-	public String getPassword() {
-		return password;
 	}
 
 }
