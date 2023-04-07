@@ -438,7 +438,6 @@ public class CheckoutController {
 				if (matches == keywords.length) {
 					found = true;
 					this.addItem(adder, barprod, barprod.getExpectedWeight());
-//					addedItemViaBarcode(barprod.getBarcode()); // not aur
 					break;
 				}
 			}
@@ -459,7 +458,7 @@ public class CheckoutController {
 					// If all keywords are present in this product's description, then it is matched
 					if (matches == keywords.length) {
 						found = true;
-						//this.addItem(adder, pluprod, pluprod.);//WIll call when Aman implements add by plu code.
+						this.addItemByPLU(adder, pluprod.getPLUCode(), "1");//WIll call when Aman implements add by plu code.
 						break;
 					}
 				}
