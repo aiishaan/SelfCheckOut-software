@@ -99,7 +99,7 @@ public class CardPaymentTest {
     @Test
     public void testSuccessfulTransaction(){
         assertTrue(cardReaderStub.isDisabled());
-        readerControllerStub.enablePayment(bankStub, BigDecimal.ONE);
+        readerControllerStub.enablePayment(bankStub, cardStub, BigDecimal.ONE);
         assertFalse(cardReaderStub.isDisabled());
         readerControllerStub.card = cardStub;
         bankStub.canPostTransaction = true;
@@ -110,7 +110,6 @@ public class CardPaymentTest {
         	ex.printStackTrace();
             fail("Exception incorrectly thrown");
         }
-        assertTrue(readerControllerStub.isPaying);
         assertTrue(bankStub.held);
         assertTrue(bankStub.posted);
         cardReaderStub.remove();
@@ -124,7 +123,7 @@ public class CardPaymentTest {
     @Test
     public void testPostFailed(){
         assertTrue(cardReaderStub.isDisabled());
-        readerControllerStub.enablePayment(bankStub, BigDecimal.ONE);
+        readerControllerStub.enablePayment(bankStub, cardStub, BigDecimal.ONE);
         assertFalse(cardReaderStub.isDisabled());
         bankStub.canPostTransaction = false;
         readerControllerStub.card = cardStub;
@@ -145,7 +144,7 @@ public class CardPaymentTest {
     @Test
     public void testHoldFailed(){
         assertTrue(cardReaderStub.isDisabled());
-        readerControllerStub.enablePayment(bankStub, BigDecimal.ONE);
+        readerControllerStub.enablePayment(bankStub, cardStub, BigDecimal.ONE);
         assertFalse(cardReaderStub.isDisabled());
         readerControllerStub.card = cardStub;
         bankStub.canPostTransaction = false;
@@ -256,29 +255,47 @@ public class CardPaymentTest {
 
     @Test
     public void payWithTap() {
-    	readerControllerStub.enablePayment(bankStub, BigDecimal.ONE);
-    	readerControllerStub.card = cardStub;
-    	readerControllerStub.bank = bankStub;
-    	 bankStub.canPostTransaction = true;
+    	 assertTrue(cardReaderStub.isDisabled());
+         readerControllerStub.enablePayment(bankStub, cardStub, BigDecimal.ONE);
+         assertFalse(cardReaderStub.isDisabled());
+         readerControllerStub.card = cardStub;
+         bankStub.canPostTransaction = true;
          bankStub.holdAuthorized = true;
-    	try {
-			cardReaderStub.tap(cardStub);
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			fail("Exception incorrectly thrown");
-		}
-    	try {
-			readerControllerStub.tapPayment(cardStub, readerControllerStub.data);
-		} catch (TapFailureException | BlockedCardException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			fail("Exception incorrectly thrown");
-		}
-    	readerControllerStub.card = null;
-    	assertTrue(!readerControllerStub.isPaying);
+         try {
+             cardReaderStub.tap(cardStub);
+         } catch (Exception ex){
+             fail("Exception incorrectly thrown");
+         }
+         assertTrue(bankStub.held);
+         assertTrue(bankStub.posted);
+         assertFalse(readerControllerStub.isPaying);
+
+         assertEquals(controllerStub.getRemainingAmount(), BigDecimal.valueOf(-1));
+         assertTrue(cardReaderStub.isDisabled());
+         readerControllerStub.card = null;
     }
 
+    @Test
+    public void payWithSwipe() {
+    	 assertTrue(cardReaderStub.isDisabled());
+         readerControllerStub.enablePayment(bankStub, cardStub, BigDecimal.ONE);
+         assertFalse(cardReaderStub.isDisabled());
+         readerControllerStub.card = cardStub;
+         bankStub.canPostTransaction = true;
+         bankStub.holdAuthorized = true;
+         try {
+             cardReaderStub.swipe(cardStub, new BufferedImage(10, 10, 10));
+         } catch (Exception ex){
+             fail("Exception incorrectly thrown");
+         }
+         assertTrue(bankStub.held);
+         assertTrue(bankStub.posted);
+         assertFalse(readerControllerStub.isPaying);
 
+         assertEquals(controllerStub.getRemainingAmount(), BigDecimal.valueOf(-1));
+         assertTrue(cardReaderStub.isDisabled());
+         readerControllerStub.card = null;
+    }
     @After
     public void teardown(){
         bankStub=null;

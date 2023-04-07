@@ -56,7 +56,9 @@ public class CardReaderController extends PaymentController<CardReader, CardRead
 	 * @throws BlockedCardException 
 	 */
 	public void bankPayment(CardData localdata, CardIssuer localbank) throws BlockedCardException {
+		System.out.println("Hold number");
 		int holdNum = localbank.authorizeHold(localdata.getNumber(), this.amount);
+		System.out.println(holdNum);
 		if (holdNum !=-1 && (localbank.postTransaction(localdata.getNumber(), holdNum, this.amount))) {
 			getMainController().addToAmountPaid(this.amount);
 		}
@@ -72,12 +74,12 @@ public class CardReaderController extends PaymentController<CardReader, CardRead
 	 * @throws TapFailureException If the tap fails, throw exception. Will likely communicate something when GUI is up.
 	 * @throws BlockedCardException If the card is rejected by the bank, thrown.
 	 */
-	public void tapPayment(Card card, CardData data) throws TapFailureException, BlockedCardException {
-		if(!card.hasChip || !card.isTapEnabled) {
+	public void tapPayment(Card localCard, CardData localData) throws TapFailureException, BlockedCardException {
+		if(!localCard.hasChip || !localCard.isTapEnabled) {
 			throw new TapFailureException();
 		}
 		else {
-			bankPayment(data, this.bank);
+			bankPayment(localData, this.bank);
 		}
 	}
 	
@@ -88,18 +90,18 @@ public class CardReaderController extends PaymentController<CardReader, CardRead
 	 * @throws ChipFailureException If the chip isn't read properly, throw exception.
 	 * @throws BlockedCardException If the card is rejected by the bank, thrown.
 	 */
-	public void insertPayment(Card card, CardData data) throws ChipFailureException, BlockedCardException {
-		if(!card.hasChip) {
+	public void insertPayment(Card localCard, CardData localData) throws ChipFailureException, BlockedCardException {
+		if(!localCard.hasChip) {
 			throw new ChipFailureException();
 		}
 		else {
-			bankPayment(data, this.bank);
+			bankPayment(localData, this.bank);
 		}
 	}
 	
 	// TODO: Add Messages And Stuff
-	public void swipePayment(Card card, CardData data) throws BlockedCardException {
-		bankPayment(data, this.bank);
+	public void swipePayment(Card localCard, CardData localData) throws BlockedCardException {
+		bankPayment(localData, this.bank);
 	}
 	
 	// Arie didn't fill these in, I am going to grab him and shake him later.
@@ -131,6 +133,7 @@ public class CardReaderController extends PaymentController<CardReader, CardRead
 
 	@Override
 	public void reactToCardDataReadEvent(CardReader reader, Card.CardData data)  {
+		this.isPaying = true;
 		//Data is harvested from the card and saved to the reader.
 		this.data = data;
 		
@@ -171,7 +174,7 @@ public class CardReaderController extends PaymentController<CardReader, CardRead
 				paymentFailure = true;
 			}
 		}
-		
+		this.isPaying = false;
 		this.insertPayment = false;
 		this.swipePayment = false;
 		this.tapPayment = false;
@@ -188,8 +191,9 @@ public class CardReaderController extends PaymentController<CardReader, CardRead
 	 * @param issuer Bank that issued the card (why did he set it up like this?)
 	 * @param amount Amount to be paid.
 	 */
-	public void enablePayment(CardIssuer issuer, BigDecimal amount) {
+	public void enablePayment(CardIssuer issuer, Card localCard, BigDecimal amount) {
 		this.enableDevice();
+		this.card = localCard;
 		this.bank = issuer;
 		this.amount = amount;
 	}
