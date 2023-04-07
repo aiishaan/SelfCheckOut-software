@@ -31,6 +31,9 @@ import java.util.TreeMap;
 import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.external.CardIssuer;
 import com.autovend.products.Product;
+import com.autovend.products.PLUCodedProduct;
+import java.math.BigDecimal;
+import java.util.NoSuchElementException;
 
 @SuppressWarnings("rawtypes")
 
@@ -412,6 +415,23 @@ public class CheckoutController {
 
 		baggingItemLock = true;
 	}
+	
+    public void addItemByPLU(ItemAdderController adder, String pluCode, String quantity) {
+        PLUCodedProduct pluProduct = database.PLU_PRODUCT_DATABASE.get(pluCode);
+        
+        if (pluProduct != null) {
+            BigDecimal itemQuantity = new BigDecimal(quantity);
+            BigDecimal itemPrice = pluProduct.getPrice();
+            BigDecimal itemTotalPrice = itemPrice.multiply(itemQuantity);
+            double itemWeight = pluProduct.getExpectedWeight();
+
+            // Here you can add any additional logic related to the calculated total price
+
+            addItem(adder, pluProduct, itemWeight);
+        } else {
+            throw new NoSuchElementException("No item could be found with the specified PLU code.");
+        }
+    }
 
 	public void addToAmountPaid(BigDecimal val) {
 		amountPaid = amountPaid.add(val);
