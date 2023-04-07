@@ -27,7 +27,10 @@ public class AttendantIDTest{
 	/** Log In Test
 	 * Test 1: Failed to Log in as the user does not exist 
 	 * Test 2: Successful Log in with correct credentials
-	 * Test 3: Check what happens when someone tries to log in again when another attendant is logged in**/
+	 * Test 3: Check what happens when someone tries to log in again when another attendant is logged in
+	 * Test 4: Wrong Password  Failed Log In
+	 * Test 5 : Successful Login for super attendant **/
+	
 	
 	
 	// Failed to Log in as the user does not exist
@@ -54,6 +57,7 @@ public class AttendantIDTest{
 		assertTrue(stationTest2.Log_in_Status);
 		
 	}
+	
 
 	//Check when the user is already logged in Fails
 	@Test (expected = SimulationException.class)
@@ -70,6 +74,27 @@ public class AttendantIDTest{
 		
 		
 	}
+	@Test (expected = SimulationException.class)
+	public void Failed_Log_in_WrongPassword() {
+		// Creating Station Instance for Test 1
+		CheckoutController stationTest1= new CheckoutController(station);
+		// Adding New Attendant
+		// Calling Log in
+		// inputting wrong password for James
+		stationTest1.Log_in_Attendant("James", "331");
+	}
+	
+	@Test 
+	public void Successful_Log_in_2(){
+		// Creating Station Instance for Test 1
+		CheckoutController stationTest2= new CheckoutController(station);
+		// Adding New Attendant
+		// Log in Attendant
+		stationTest2.Log_in_Attendant("James", "4628");
+		assertTrue(stationTest2.Log_in_Status);
+	}
+	
+	
 	/** Log Out Test
 	 * Test 1: No accounts are logged in
 	 * Test 2: Successful Logout
@@ -100,6 +125,7 @@ public class AttendantIDTest{
 		assertFalse(stationTest4.Log_in_Status);
 		
 	}
+	
 	
 	
 }
