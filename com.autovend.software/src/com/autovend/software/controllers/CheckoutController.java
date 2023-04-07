@@ -672,9 +672,18 @@ public class CheckoutController {
 	}
 
 	public String inputMembershipNumber(){
-		//System IO, Custom IO
-		String cardNum = cardReaderController.cardData.getNumber();
-		membershipCardController.membershipNumber = cardNum;
-		return cardNum;
+//		//System IO, Custom IO
+		for (PaymentController crc: validPaymentControllers){
+
+			CardReaderController cc;
+			try{
+				cc  = (CardReaderController) crc;
+				String cardNum = cc.cardData.getNumber();
+//				membershipCardController.membershipNumber = cardNum;
+				return cardNum;
+			} catch (Exception e){
+			}
+		}
+		return "";
 	}
 }

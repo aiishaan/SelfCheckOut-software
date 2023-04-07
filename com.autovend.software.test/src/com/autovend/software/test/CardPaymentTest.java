@@ -18,6 +18,8 @@ Amasil Rahim Zihad 30164830
 package com.autovend.software.test;
 
 import com.autovend.CreditCard;
+import com.autovend.InvalidPINException;
+import com.autovend.MembershipCard;
 import com.autovend.devices.CardReader;
 import com.autovend.devices.SimulationException;
 import com.autovend.external.CardIssuer;
@@ -28,6 +30,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.math.BigDecimal;
 
 import static org.junit.Assert.*;
@@ -38,6 +41,8 @@ public class CardPaymentTest {
     CreditCard cardStub;
     CardReader cardReaderStub;
     CardReaderController readerControllerStub;
+
+    MembershipCard mCardStub;
     private class TestBank extends CardIssuer {
         public boolean held;
         public boolean posted;
@@ -84,6 +89,7 @@ public class CardPaymentTest {
         cardStub= new CreditCard(
                 "Credit Card", "12345","Steve", "987","1337",true, true
         );
+        mCardStub  = new MembershipCard("Membership", "123123123123", "XZ", true);
         controllerStub = new CheckoutController();
         cardReaderStub = new CardReader();
         readerControllerStub = new CardReaderController(cardReaderStub);
@@ -256,7 +262,31 @@ public class CardPaymentTest {
 
     }
 
+    @Test
+    public void testBadPin() {
+        controllerStub.cost = BigDecimal.ONE;
+        CreditCard card= new CreditCard(
+                "Credit Card", "12345","Steve", "987","0000",true, true
+        );
+        controllerStub.payByCard(bankStub, BigDecimal.ONE);
+        try{
+            cardReaderStub.insert(cardStub, "1337");
+        }
+        catch (IOException e){
+            System.out.println("bad pin was detected");
+        }finally {
+            cardReaderStub.remove();
+        }
+    }
 
+    @Test
+    public void testSwipeTapMembershipCard() throws IOException {
+        controllerStub.payByCard(bankStub, BigDecimal.ONE);
+        cardReaderStub.tap(mCardStub);
+        String mNum = controllerStub.inputMembershipNumber();
+        System.out.println(mNum);
+        assertEquals("123123123123", mNum);
+    }
 
 
     @After
