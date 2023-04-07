@@ -42,7 +42,7 @@ public class CheckoutController {
 	private static int IDcounter = 1;
 	private int stationID = IDcounter++;
 
-	private ProductDatabases database;
+	
 	private LinkedHashMap<Product, Number[]> order;
 	public BigDecimal cost;
 	protected BigDecimal amountPaid;
@@ -418,8 +418,8 @@ public class CheckoutController {
 		baggingItemLock = true;
 	}
 	
-	
-	public void addItemViaTextSearch(ItemAdderController adder, String text) {
+	//redesigned to make it so that the user can pass in their own database that will be searched
+	public void addItemViaTextSearch(ItemAdderController adder, String text,  ProductDatabases database) {
 		String[] keywords = text.split(" ");
 		boolean found = false;
 
