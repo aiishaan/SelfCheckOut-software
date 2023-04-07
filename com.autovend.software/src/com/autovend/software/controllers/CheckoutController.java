@@ -28,6 +28,8 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.TreeMap;
 
+import com.autovend.devices.BillDispenser;
+import com.autovend.devices.CoinDispenser;
 import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.external.CardIssuer;
 import com.autovend.products.Product;
@@ -35,6 +37,7 @@ import com.autovend.products.Product;
 @SuppressWarnings("rawtypes")
 
 public class CheckoutController {
+	private SelfCheckoutStation station;
 	private static int IDcounter = 1;
 	private int stationID = IDcounter++;
 
@@ -666,5 +669,55 @@ public class CheckoutController {
 
 	public HashSet<BaggingAreaController> getValidBaggingControllers() {
 		return this.validBaggingControllers;
+	}
+	
+	public void stationStartup() {
+		// need to create method in attendant class that calls this method
+		
+		this.station.baggingArea.enable();
+		this.station.billInput.enable();
+		this.station.billOutput.enable();
+		this.station.billStorage.enable();
+		this.station.billValidator.enable();
+		this.station.cardReader.enable();
+		this.station.coinStorage.enable();
+		this.station.coinTray.enable();
+		this.station.coinValidator.enable();
+		this.station.handheldScanner.enable();
+		this.station.mainScanner.enable();
+		this.station.printer.enable();
+		this.station.scale.enable();
+		this.station.screen.enable();
+		for(CoinDispenser coinDispenser: this.station.coinDispensers.values()) {
+			coinDispenser.enable();
+		}
+		for(BillDispenser billDispenser: this.station.billDispensers.values()) {
+			billDispenser.enable();
+		}
+	}
+	
+	public void stationShutdown() {
+		// need to create method in attendant class that calls this method
+		
+		this.station.baggingArea.disable();
+		this.station.billInput.disable();
+		this.station.billOutput.disable();
+		this.station.billStorage.disable();
+		this.station.billValidator.disable();
+		this.station.cardReader.disable();
+		this.station.coinStorage.disable();
+		this.station.coinTray.disable();
+		this.station.coinValidator.disable();
+		this.station.handheldScanner.disable();
+		this.station.mainScanner.disable();
+		this.station.printer.disable();
+		this.station.scale.disable();
+		this.station.screen.disable();
+		for(CoinDispenser coinDispenser: this.station.coinDispensers.values()) {
+			coinDispenser.disable();
+		}
+		for(BillDispenser billDispenser: this.station.billDispensers.values()) {
+			billDispenser.disable();
+		}
 	}
 }
