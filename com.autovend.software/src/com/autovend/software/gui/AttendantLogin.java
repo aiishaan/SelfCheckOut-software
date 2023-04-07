@@ -18,6 +18,8 @@ import javax.swing.JLayeredPane;
 import javax.swing.JButton;
 import java.awt.FlowLayout;
 
+import com.autovend.software.controllers.AttendantController;
+
 
 
 public class AttendantLogin{
@@ -37,6 +39,9 @@ public class AttendantLogin{
 	private JLabel failMessage;
 	private JLabel loginText;
 	
+	private AttendantController attendant;
+	
+	
 	//constructor
 	public AttendantLogin() {
 		//creating a new JFrame
@@ -50,7 +55,7 @@ public class AttendantLogin{
 		//creating a new JPanel for the main log in screen
 		logInScreen = new JPanel();
 		//setting the size of the panel
-		logInScreen.setSize(new Dimension(1000,900));
+		logInScreen.setSize(new Dimension(985, 785));
 		//using absolute layout
 		logInScreen.setLayout(null);
 		
@@ -99,12 +104,13 @@ public class AttendantLogin{
 		loginButton.addActionListener(new ActionListener(){
 
 			public void actionPerformed(ActionEvent e) {
-				System.out.println("check username and password against the Database");
 				//check for login success or failure
-				//false for now(testing)
-				if(false) {
-					//if the credentials do not match, display the try agian message
-					System.out.println("Log in successful for now");
+				
+				attendant = new AttendantController(userName.getText(),password.getText());
+				
+				if(attendant.AttendantList.containsValue(password.getText()) && attendant.AttendantList.containsKey(userName.getText())) {
+					//if the credentials do not match, display the try again message
+					
 					logInScreen.setVisible(false);
 					logInSuccess.setVisible(true);
 					
@@ -124,7 +130,7 @@ public class AttendantLogin{
 		
 		//creating a new panel(attendant main screen)
 		logInSuccess = new JPanel();
-		logInSuccess.setSize(new Dimension(1000,900));
+		logInSuccess.setSize(new Dimension(985, 785));
 		logInSuccess.setVisible(false);
 		
 		//creating a new label for incorrect credentials
