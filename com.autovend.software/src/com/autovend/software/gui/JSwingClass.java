@@ -35,7 +35,8 @@ public class JSwingClass {
 	public JSwingClass() {
 		
 		touchScreenFrame = new JFrame("");
-		touchScreenFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+		touchScreenFrame.setSize(1000, 900);
+		//touchScreenFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		touchScreenFrame.setResizable(false);
 		
 		touchScreenPanel2 = new JPanel();
@@ -44,7 +45,7 @@ public class JSwingClass {
 		
 		mainPanel = new JPanel();
 				
-		tapScreen();
+		//tapScreen();
 		defaultLayerSetup();
 		language();
 		audio();
@@ -96,7 +97,7 @@ public class JSwingClass {
 		//touchScreenPanel = new JPanel();
 		//JPanel p = new JPanel();
 		//tapScreen();
-		
+		//mainPanel.setPreferredSize(new Dimension(1000, 800));
 		touchScreenFrame.add(mainPanel, BorderLayout.NORTH);
 		
 		// grid bag layout setup
@@ -126,7 +127,7 @@ public class JSwingClass {
 		c.fill = GridBagConstraints.HORIZONTAL;
 		c.gridx = 0;
 		c.gridy = 0;
-		c.ipady = 150;
+		c.ipady = 125;
 		mainPanel.add(addItemButton, c);
 	}
 	
@@ -138,7 +139,7 @@ public class JSwingClass {
 		c.fill = GridBagConstraints.HORIZONTAL;
 		c.gridx = 0;
 		c.gridy = 1;
-		c.ipady = 150;
+		c.ipady = 125;
 		mainPanel.add(membershipButton, c);
 	}
 	
@@ -150,7 +151,7 @@ public class JSwingClass {
 		c.fill = GridBagConstraints.HORIZONTAL;
 		c.gridx = 0;
 		c.gridy = 2;
-		c.ipady = 150;
+		c.ipady = 125;
 		mainPanel.add(bagsButton, c);
 	}
 	
@@ -162,7 +163,7 @@ public class JSwingClass {
 		c.fill = GridBagConstraints.HORIZONTAL;
 		c.gridx = 0;
 		c.gridy = 3;
-		c.ipady = 150;
+		c.ipady = 125;
 		mainPanel.add(removeButton, c);
 	}
 	
@@ -181,7 +182,7 @@ public class JSwingClass {
         c.fill = GridBagConstraints.HORIZONTAL;
         c.gridx = 1;
         c.gridy = 0;
-        c.ipady = 282;
+        c.ipady = 183;
         c.gridheight = 4;
         mainPanel.add(sp, c);
 	}
@@ -194,7 +195,7 @@ public class JSwingClass {
 		c.fill = GridBagConstraints.HORIZONTAL;
 		c.gridx = 1;
 		c.gridy = 4;
-		c.ipady = 100;
+		c.ipady = 50;
 		c.gridheight = 1;
 		c.insets = new Insets(50,0,0,0);
 		mainPanel.add(paymentButton, c);
