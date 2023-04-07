@@ -22,12 +22,14 @@ import com.autovend.Card;
 import com.autovend.Card.CardData;
 import com.autovend.ChipFailureException;
 import com.autovend.GiftCard;
+import com.autovend.GiftCard.GiftCardInsertData;
 import com.autovend.TapFailureException;
 import com.autovend.devices.CardReader;
 import com.autovend.devices.observers.CardReaderObserver;
 import com.autovend.external.CardIssuer;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 
 //A note for anyone reading this for code review, Arie has left this class a sad, desolate wasteland. 
 //I tried my best to rework everything into something usable, but there is doubtless something I have missed.
@@ -39,12 +41,14 @@ public class CardReaderController extends PaymentController<CardReader, CardRead
 	public boolean tapPayment;
 	public boolean swipePayment;
 	public Card card;
+	public GiftCardInsertData giftData;
 	public CardData data;
 	String userPin;
 	public CardIssuer bank;
 	private BigDecimal amount;
 	public boolean paymentFailure;
 	public boolean giftPayment = false;
+	public GiftCard giftCard;
 	public CardReaderController(CardReader newDevice) {
 		super(newDevice);
 	}
@@ -63,6 +67,15 @@ public class CardReaderController extends PaymentController<CardReader, CardRead
 		}
 		else {
 			throw new BlockedCardException();
+		}
+	}
+	
+	public void giftPayment (GiftCardInsertData localdata) throws ChipFailureException {
+		BigDecimal balance = localdata.getRemainingBalance();
+		if(balance.compareTo(amount) == 1 || balance.compareTo(amount) == 0){
+			System.out.println("Made it to payment");
+			localdata.deduct(amount);
+			getMainController().addToAmountPaid(this.amount);
 		}
 	}
 	
@@ -96,6 +109,11 @@ public class CardReaderController extends PaymentController<CardReader, CardRead
 		else {
 			bankPayment(localData, this.bank);
 		}
+	}
+	
+	public void insertGiftPayment(GiftCard localCard, GiftCardInsertData localData) throws ChipFailureException {
+		System.out.println("Made it to insertGift");
+		giftPayment(localData);
 	}
 	
 	// TODO: Add Messages And Stuff
@@ -135,13 +153,15 @@ public class CardReaderController extends PaymentController<CardReader, CardRead
 		this.isPaying = true;
 		//Data is harvested from the card and saved to the reader.
 		this.data = data;
+		if(giftPayment) {
+			giftData = (GiftCardInsertData) data;
+		}
 		
 		if (reader != this.getDevice() || !this.isPaying || this.bank==null) {
 			return;
 		}
 		//One of these three flags should have been set before this event happens.
 		//Tap payment, set during cardTappedEvent.
-		
 		if(this.tapPayment && !this.giftPayment) {
 			try {
 				tapPayment(this.card, this.data);
@@ -174,8 +194,13 @@ public class CardReaderController extends PaymentController<CardReader, CardRead
 				paymentFailure = true;
 			}
 		}
-		if(this.swipePayment && this.giftPayment) {
-			
+		if(this.giftPayment) {
+			try {
+				insertGiftPayment(this.giftCard, giftData);
+			} catch (ChipFailureException e) {
+				// This will likely jump back to another method once GUI is set up, possible second payment attempt?
+				paymentFailure = true;
+			}
 		}
 		this.isPaying = false;
 		this.insertPayment = false;
@@ -202,7 +227,8 @@ public class CardReaderController extends PaymentController<CardReader, CardRead
 		this.amount = amount;
 	}
 	public void enableGiftPayment(GiftCard localGift, BigDecimal amount) {
-		this.card = localGift;
+		this.enableDevice();
+		this.giftCard = localGift;
 		this.amount = amount;
 		giftPayment = true;
 		

@@ -606,6 +606,7 @@ public class CheckoutController {
 			}
 		}
 		// Needs to return to GUI if fail.
+		return;
 	}
 	
 	public void payByGiftCard(BigDecimal amount, GiftCard card) {
@@ -625,6 +626,7 @@ public class CheckoutController {
 			}
 		}
 		// Needs to return to GUI if fail.
+		return;
 	}
 
 	/*

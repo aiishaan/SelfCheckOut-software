@@ -20,6 +20,7 @@ package com.autovend.software.test;
 import com.autovend.BlockedCardException;
 import com.autovend.Card;
 import com.autovend.CreditCard;
+import com.autovend.GiftCard;
 import com.autovend.TapFailureException;
 import com.autovend.devices.CardReader;
 import com.autovend.devices.SimulationException;
@@ -33,6 +34,7 @@ import org.junit.Test;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.Currency;
 
 import static org.junit.Assert.*;
 
@@ -40,6 +42,8 @@ public class CardPaymentTest {
     TestBank bankStub;
     CheckoutController controllerStub;
     CreditCard cardStub;
+    GiftCard giftStub;
+    Currency localC;
     CardReader cardReaderStub;
     CardReaderController readerControllerStub;
     private class TestBank extends CardIssuer {
@@ -88,6 +92,8 @@ public class CardPaymentTest {
         cardStub= new CreditCard(
                 "Credit Card", "12345","Steve", "987","1337",true, true
         );
+        Currency localC = Currency.getInstance("CAD");
+        giftStub = new GiftCard("Gift Card", "12345", "1313", localC, BigDecimal.valueOf(10));
         controllerStub = new CheckoutController();
         cardReaderStub = new CardReader();
         readerControllerStub = new CardReaderController(cardReaderStub);
@@ -297,6 +303,23 @@ public class CardPaymentTest {
          assertTrue(cardReaderStub.isDisabled());
          readerControllerStub.card = null;
     }
+    
+    
+    @Test
+    public void payWithGift() {
+    	 assertTrue(cardReaderStub.isDisabled());
+         readerControllerStub.enableGiftPayment(giftStub, BigDecimal.ONE);
+         assertFalse(cardReaderStub.isDisabled());
+         readerControllerStub.giftCard = giftStub;
+         try {
+             cardReaderStub.insert(giftStub, "1313");
+         } catch (Exception ex){
+             fail("Exception incorrectly thrown");
+         }
+         assertEquals(controllerStub.getRemainingAmount(), BigDecimal.valueOf(0));
+         readerControllerStub.giftCard = null;
+    }
+    
     @After
     public void teardown(){
         bankStub=null;
@@ -305,8 +328,4 @@ public class CardPaymentTest {
         cardStub=null;
         readerControllerStub =null;
     }
-
-
-
-
 }
