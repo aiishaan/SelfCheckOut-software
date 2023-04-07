@@ -21,6 +21,7 @@ import com.autovend.BlockedCardException;
 import com.autovend.Card;
 import com.autovend.Card.CardData;
 import com.autovend.ChipFailureException;
+import com.autovend.GiftCard;
 import com.autovend.TapFailureException;
 import com.autovend.devices.CardReader;
 import com.autovend.devices.observers.CardReaderObserver;
@@ -43,7 +44,7 @@ public class CardReaderController extends PaymentController<CardReader, CardRead
 	public CardIssuer bank;
 	private BigDecimal amount;
 	public boolean paymentFailure;
-	
+	public boolean giftPayment = false;
 	public CardReaderController(CardReader newDevice) {
 		super(newDevice);
 	}
@@ -56,9 +57,7 @@ public class CardReaderController extends PaymentController<CardReader, CardRead
 	 * @throws BlockedCardException 
 	 */
 	public void bankPayment(CardData localdata, CardIssuer localbank) throws BlockedCardException {
-		System.out.println("Hold number");
 		int holdNum = localbank.authorizeHold(localdata.getNumber(), this.amount);
-		System.out.println(holdNum);
 		if (holdNum !=-1 && (localbank.postTransaction(localdata.getNumber(), holdNum, this.amount))) {
 			getMainController().addToAmountPaid(this.amount);
 		}
@@ -142,12 +141,13 @@ public class CardReaderController extends PaymentController<CardReader, CardRead
 		}
 		//One of these three flags should have been set before this event happens.
 		//Tap payment, set during cardTappedEvent.
-		if(this.tapPayment) {
+		
+		if(this.tapPayment && !this.giftPayment) {
 			try {
 				tapPayment(this.card, this.data);
 			} catch (TapFailureException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				// This will likely jump back to another method once GUI is set up, possible second payment attempt?
+				paymentFailure = true;
 			} catch (BlockedCardException e) {
 				// This will likely jump back to another method once GUI is set up, possible second payment attempt?
 				paymentFailure = true;
@@ -155,7 +155,7 @@ public class CardReaderController extends PaymentController<CardReader, CardRead
 			}	
 		}
 		//Insert payment, set during cardInsertedEvent.
-		if(this.insertPayment) {
+		if(this.insertPayment && !this.giftPayment) {
 			try {
 				insertPayment(this.card, this.data);
 			} catch (ChipFailureException | BlockedCardException e) {
@@ -166,13 +166,16 @@ public class CardReaderController extends PaymentController<CardReader, CardRead
 			}
 		}
 		//Swipe payment, set during cardSwipedEvent
-		if(this.swipePayment) {
+		if(this.swipePayment && !this.giftPayment) {
 			try {
 				swipePayment(this.card, this.data);
 			} catch (BlockedCardException e) {
 				// This will likely jump back to another method once GUI is set up, possible second payment attempt?
 				paymentFailure = true;
 			}
+		}
+		if(this.swipePayment && this.giftPayment) {
+			
 		}
 		this.isPaying = false;
 		this.insertPayment = false;
@@ -181,6 +184,7 @@ public class CardReaderController extends PaymentController<CardReader, CardRead
 		this.disableDevice();
 		this.amount = BigDecimal.ZERO;
 		this.bank = null;
+		this.giftPayment = false;
 		// Clear bank and such if it fails to hold or not (might change this, I am tired
 		// rn so might be dumb here) (This is Arie's comment)
 		//Another great method from Arie, only had to rewrite all of it.
@@ -196,5 +200,11 @@ public class CardReaderController extends PaymentController<CardReader, CardRead
 		this.card = localCard;
 		this.bank = issuer;
 		this.amount = amount;
+	}
+	public void enableGiftPayment(GiftCard localGift, BigDecimal amount) {
+		this.card = localGift;
+		this.amount = amount;
+		giftPayment = true;
+		
 	}
 }

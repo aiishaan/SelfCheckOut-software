@@ -29,6 +29,7 @@ import java.util.Scanner;
 import java.util.TreeMap;
 
 import com.autovend.Card;
+import com.autovend.GiftCard;
 import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.external.CardIssuer;
 import com.autovend.products.Product;
@@ -602,10 +603,28 @@ public class CheckoutController {
 			if (controller instanceof CardReaderController) {
 				((CardReaderController) controller).card = card;
 				((CardReaderController) controller).enablePayment(source, card, amount);
-				
 			}
 		}
-		// TODO: If this fails then do stuff idk
+		// Needs to return to GUI if fail.
+	}
+	
+	public void payByGiftCard(BigDecimal amount, GiftCard card) {
+		if (baggingItemLock || systemProtectionLock || payingChangeLock) {
+			return;
+		}
+		if (amount.compareTo(getRemainingAmount()) > 0) {
+			return;
+			// only reason to pay more than the order with card is to mess with the amount
+			// of change the system has for some reason
+			// so preventing stuff like this would be a good idea.
+		}
+		for (PaymentController controller : validPaymentControllers) {
+			if (controller instanceof CardReaderController) {
+				((CardReaderController) controller).card = card;
+				((CardReaderController) controller).enableGiftPayment(card, amount);	
+			}
+		}
+		// Needs to return to GUI if fail.
 	}
 
 	/*

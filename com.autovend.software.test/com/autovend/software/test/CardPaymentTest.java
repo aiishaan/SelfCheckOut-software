@@ -131,6 +131,7 @@ public class CardPaymentTest {
         try {
             cardReaderStub.insert(cardStub, "1337");
         } catch (Exception ex){
+        	ex.printStackTrace();
             fail("Exception incorrectly thrown");
         }
         assertTrue(readerControllerStub.isPaying);
@@ -169,7 +170,7 @@ public class CardPaymentTest {
         try {
             readerControllerStub.data = cardReaderStub.insert(cardStub, "1337");
         } catch (Exception ex){
-
+        	ex.printStackTrace();
             fail("Exception incorrectly thrown");
         }
         assertTrue(bankStub.noHoldCall);
