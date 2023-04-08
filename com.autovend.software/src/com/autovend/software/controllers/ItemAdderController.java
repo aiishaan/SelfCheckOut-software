@@ -44,28 +44,5 @@ abstract class ItemAdderController<D extends AbstractDevice<O>, O extends Abstra
 		}
 	}
 	
-	public final void doNotAddItemToBaggingArea(ElectronicScale scale, double weight) {
-		//lock from adding more items
-		mainController.baggingItemLock = true;
-		
-		//TODO: System: Signals to the Attendant I/O that a no-bagging request is in progress.
-		//TODO: Approve request (function created below)
-		
-		//if attendant approved, reduce expected weight
-		if (mainController.AttendantApproved) {
-			for (BaggingAreaController baggingController : mainController.getValidBaggingControllers()) {
-				ElectronicScaleController scaleController = new ElectronicScaleController(scale);
-				scaleController.removeAddedWeight(weight);
-			}
-		}
-		//unlock system when done so they can continue adding items
-		mainController.baggingItemLock = false;
-		
-	}
-	
-	public final void approveRequest() {
-		mainController.AttendantApproved = true;
-	}
-	
 	
 }
