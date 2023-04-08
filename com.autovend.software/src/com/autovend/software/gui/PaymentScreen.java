@@ -109,7 +109,7 @@ public class PaymentScreen {
 		
 		touchScreenFrame1.getContentPane().add(paymentPanel);
 		touchScreenFrame1.setVisible(true);
-		touchScreenFrame1.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
 		touchScreenFrame1.setResizable(false);
 
 		

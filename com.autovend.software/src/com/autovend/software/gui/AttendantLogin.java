@@ -2,6 +2,7 @@ package com.autovend.software.gui;
 
 //Necessary imports
 import javax.swing.JFrame;
+
 import javax.swing.JPanel;
 import java.awt.BorderLayout;
 import javax.swing.JTextField;
@@ -20,9 +21,13 @@ import java.awt.FlowLayout;
 
 import com.autovend.software.controllers.AttendantController;
 
+import com.autovend.devices.AbstractDevice;
+import com.autovend.devices.observers.AbstractDeviceObserver;
+import com.autovend.devices.observers.TouchScreenObserver;
+import com.autovend.devices.TouchScreen;
 
 
-public class AttendantLogin{
+public class AttendantLogin implements TouchScreenObserver{
 	//AttendantLogin class handles the login screen for the attendant station.
 	
 	//all the components that are added to the screen
@@ -43,11 +48,12 @@ public class AttendantLogin{
 	
 	
 	//constructor
-	public AttendantLogin() {
+	public AttendantLogin(TouchScreen cScreen) {
 		//creating a new JFrame
-		touchScreenFrame = new JFrame();
-		//setting the size of the Frame
-		touchScreenFrame.setSize(new Dimension(1000, 900));
+		touchScreenFrame = cScreen.getFrame();
+		touchScreenFrame.setExtendedState(JFrame.NORMAL);
+		touchScreenFrame.setResizable(true);
+		touchScreenFrame.resize(new Dimension(1000,900));
 		//creating a new layered pane
 		logInPane = new JLayeredPane();
 		//setting the size of the pane
@@ -70,6 +76,14 @@ public class AttendantLogin{
 		userName.setBounds(534, 235, 201, 51);
 		userName.setFont(new Font("Times New Roman", Font.PLAIN, 16));
 		userName.setHorizontalAlignment(SwingConstants.CENTER);
+		
+		userName.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                
+                System.out.println("clicked username field");
+            }
+        });
+		
 		//adding the text field to the logInScreen panel
 		logInScreen.add(userName);
 		userName.setColumns(10);
@@ -79,6 +93,15 @@ public class AttendantLogin{
 		password.setBounds(534, 337, 201, 51);
 		password.setHorizontalAlignment(SwingConstants.CENTER);
 		password.setFont(new Font("Times New Roman", Font.PLAIN, 16));
+		
+		password.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                
+            	 System.out.println("clicked password field");
+               
+            }
+        });
+		
 		//adding the password field to the logInScreen panel
 		logInScreen.add(password);
 		
@@ -128,6 +151,8 @@ public class AttendantLogin{
 		//adding the button the logInScreen panel
 		logInScreen.add(loginButton);
 		
+		
+		
 		//creating a new panel(attendant main screen)
 		logInSuccess = new JPanel();
 		logInSuccess.setSize(new Dimension(985, 785));
@@ -147,18 +172,31 @@ public class AttendantLogin{
 		//adding the layered pane to the frame
 		touchScreenFrame.getContentPane().add(logInPane);
 		//adding the panels to the layered pane
-		logInPane.add(logInScreen, Integer.valueOf(1));
+		logInPane.add(logInScreen, Integer.valueOf(1));		
 		logInPane.add(logInSuccess, Integer.valueOf(0));
 		//setting the layered pane to be visible
 		logInPane.setVisible(true);
 
-		touchScreenFrame.setResizable(false);
+		//
 		touchScreenFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 
 	}
 	
 	public static void main(String[]args) {
-		new AttendantLogin();
+		TouchScreen cScreen = new TouchScreen();
+		 new AttendantLogin(cScreen);
+	}
+
+	@Override
+	public void reactToEnabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void reactToDisabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {
+		// TODO Auto-generated method stub
+		
 	}
 }
