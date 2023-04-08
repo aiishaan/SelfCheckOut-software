@@ -672,8 +672,6 @@ public class CheckoutController {
 	}
 	
 	public void stationStartup() {
-		// need to create method in attendant class that calls this method
-		
 		this.station.baggingArea.enable();
 		this.station.billInput.enable();
 		this.station.billOutput.enable();
@@ -697,8 +695,6 @@ public class CheckoutController {
 	}
 	
 	public void stationShutdown() {
-		// need to create method in attendant class that calls this method
-		
 		this.station.baggingArea.disable();
 		this.station.billInput.disable();
 		this.station.billOutput.disable();
