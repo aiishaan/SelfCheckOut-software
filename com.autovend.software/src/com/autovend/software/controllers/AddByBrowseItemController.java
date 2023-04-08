@@ -13,8 +13,8 @@ import java.util.*;
 
 public class AddByBrowseItemController extends ItemAdderController<TouchScreen, TouchScreenObserver> implements TouchScreenObserver{
 	
-	public AddByBrowseItemController(TouchScreen newDevice) {
-		super(newDevice);
+	public AddByBrowseItemController(TouchScreen screen) {
+		super(screen);
 		// TODO Auto-generated constructor stub
 	}
 
@@ -46,7 +46,6 @@ public class AddByBrowseItemController extends ItemAdderController<TouchScreen, 
 	 */
 	public void AddByBrowsingEvent(String selectedItem) {
 		String item = selectedItem; 
-		
 		SelecetedProduct(item);
 		
 		//if inputed item is not null
@@ -58,9 +57,7 @@ public class AddByBrowseItemController extends ItemAdderController<TouchScreen, 
 		//if item added does not exit through exception
 		else {
 			throw new SimulationException("Product does not exist");
-		}
-		this.getMainController().baggedItemsValid(null);
-			
+		}	
 		
 	}
 	
