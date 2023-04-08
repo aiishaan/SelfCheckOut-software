@@ -143,5 +143,9 @@ public class ElectronicScaleController extends BaggingAreaController<ElectronicS
 	public boolean getAddingBags() {
 		return this.addingBags;
 	}
+	
+	public void removeAddedWeight(double weight) {
+		this.expectedWeight -= weight;
+	}
 
 }
