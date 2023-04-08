@@ -21,6 +21,12 @@ import javax.swing.border.BevelBorder;
 import javax.swing.table.DefaultTableModel;
 
 import java.awt.Component;
+import java.awt.Insets;
+import java.awt.CardLayout;
+import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.layout.ColumnSpec;
+import com.jgoodies.forms.layout.RowSpec;
+import com.jgoodies.forms.layout.FormSpecs;
 public class JSwingClass2 {
 	JFrame touchScreenFrame;
 	JComboBox<String> languageBox;
@@ -29,7 +35,10 @@ public class JSwingClass2 {
 	JPanel tapScreenPanel;
 	JPanel mainPanel;
 	JPanel secondaryPanel;
+	JPanel keyboardPanel;
 	JLayeredPane layeredPane;
+	JButton PLUTextButton;
+	JButton memberTextButton;
 	JButton purchaseBagsButton;
 	JButton removeItemButton;
 	JButton screensaver;
@@ -41,11 +50,24 @@ public class JSwingClass2 {
 	GridBagConstraints c = new GridBagConstraints();
 	final static boolean shouldFill = true;
     final static boolean shouldWeightX = true;
-    private JTextField PLUTextField;
-    private JTextField memberTextField;
+  
     private JButton paymentButton;
     private JScrollPane scrollPane;
     private JTable table;
+    private JButton keyZero;
+    private JButton keyOne;
+    private JButton keyTwo;
+    private JButton keyThree;
+    private JButton keyFour;
+    private JButton keyFive;
+    private JButton keySix;
+    private JButton keySeven;
+    private JButton keyEight;
+    private JButton keyNine;
+    private JButton keyEnter;
+    private JButton keyExit;
+    private JTextField keyboardTextField;
+    private String keyboardText;
 	
 	public JSwingClass2(){
 		
@@ -60,8 +82,7 @@ public class JSwingClass2 {
 		
 		setUpMainPanel();
 		setUpSecondaryPanel();
-		setUpPaymentTable();
-		setUpPayment();
+		setUpNumericKeyboard();
 		tapScreen();
 		ownBag();
 		
@@ -75,21 +96,31 @@ public class JSwingClass2 {
 		layeredPane.add(mainPanel);
 		mainPanel.setLayout(null);
 		
-		PLUTextField = new JTextField();
-		PLUTextField.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		PLUTextField.setText("Scan a barcode or tap here to search with PLU");
-		PLUTextField.setHorizontalAlignment(JTextField.CENTER);
-		PLUTextField.setBounds(42, 31, 468, 40);
-		mainPanel.add(PLUTextField);
-		PLUTextField.setColumns(10);
+		PLUTextButton = new JButton("Scan a barcode or tap here to search with PLU");
+		PLUTextButton.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
+		PLUTextButton.setOpaque(true);
+		PLUTextButton.setBackground(Color.WHITE);
+		PLUTextButton.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		PLUTextButton.setBounds(42, 31, 468, 40);
+		PLUTextButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				openKeyboard();
+			}
+		});
+		mainPanel.add(PLUTextButton);
 		
-		memberTextField = new JTextField();
-		memberTextField.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		memberTextField.setText("Sign in with membership for rewards");
-		memberTextField.setHorizontalAlignment(JTextField.CENTER);
-		memberTextField.setColumns(10);
-		memberTextField.setBounds(42, 106, 468, 40);
-		mainPanel.add(memberTextField);
+		memberTextButton = new JButton("Sign in with membership for rewards");
+		memberTextButton.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
+		memberTextButton.setOpaque(true);
+		memberTextButton.setBackground(Color.WHITE);
+		memberTextButton.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		memberTextButton.setBounds(42, 106, 468, 40);
+		memberTextButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				openKeyboard();
+			}
+		});
+		mainPanel.add(memberTextButton);
 		
 		purchaseBagsButton = new JButton("Purchase Bags");
 		purchaseBagsButton.setFont(new Font("Tahoma", Font.PLAIN, 15));
@@ -123,6 +154,8 @@ public class JSwingClass2 {
 		});
 		removeItemButton.setBounds(42, 256, 468, 40);
 		mainPanel.add(removeItemButton);
+		setUpPaymentTable();
+		setUpPayment();
 	}
 	
 	private void setUpSecondaryPanel() {
@@ -316,33 +349,207 @@ public class JSwingClass2 {
 		paymentTableModel = (DefaultTableModel) table.getModel();
 		scrollPane.setViewportView(table);
 	}
+	
+	private void setUpNumericKeyboard() {
+		keyboardPanel = new JPanel();
+		keyboardPanel.setOpaque(true);
+		layeredPane.setLayer(keyboardPanel, 1);
+		keyboardPanel.setBounds(350, 144, 290, 465);
+		layeredPane.add(keyboardPanel);
+		keyboardPanel.setLayout(null);
+		
+		keyboardText = "";
+		keyboardTextField = new JTextField(keyboardText);
+		keyboardTextField.setEditable(false);
+		keyboardTextField.setFocusable(false);
+		keyboardTextField.setBounds(65, 10, 215, 44);
+		keyboardTextField.setBackground(Color.WHITE);
+		keyboardTextField.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		keyboardPanel.add(keyboardTextField);
+		keyboardTextField.setColumns(10);
+		
+		//Add the buttons
+		keyZero = new JButton("0");
+		keyZero.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
+		keyZero.setFont(new Font("Tahoma", Font.PLAIN, 25));
+		keyZero.setBounds(0, 65, 90, 90);
+		keyZero.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				keyboardText += "0";
+				keyboardTextField.setText(keyboardText); 
+			}
+		});
+		keyboardPanel.add(keyZero);
+		
+		keyOne = new JButton("1");
+		keyOne.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
+		keyOne.setFont(new Font("Tahoma", Font.PLAIN, 25));
+		keyOne.setBounds(100, 65, 90, 90);
+		keyOne.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				keyboardText += "1";
+				keyboardTextField.setText(keyboardText); 
+			}
+		});
+		keyboardPanel.add(keyOne);
+		
+		keyTwo = new JButton("2");
+		keyTwo.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
+		keyTwo.setFont(new Font("Tahoma", Font.PLAIN, 25));
+		keyTwo.setBounds(200, 65, 90, 90);
+		keyTwo.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				keyboardText += "2";
+				keyboardTextField.setText(keyboardText); 
+			}
+		});
+		keyboardPanel.add(keyTwo);
+		
+		keyThree = new JButton("3");
+		keyThree.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
+		keyThree.setFont(new Font("Tahoma", Font.PLAIN, 25));
+		keyThree.setBounds(0, 165, 90, 90);
+		keyThree.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				keyboardText += "3";
+				keyboardTextField.setText(keyboardText); 
+			}
+		});
+		keyboardPanel.add(keyThree);
+		
+		keyFour = new JButton("4");
+		keyFour.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
+		keyFour.setFont(new Font("Tahoma", Font.PLAIN, 25));
+		keyFour.setBounds(100, 165, 90, 90);
+		keyFour.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				keyboardText += "4";
+				keyboardTextField.setText(keyboardText); 
+			}
+		});
+		keyboardPanel.add(keyFour);
+		
+		keyFive = new JButton("5");
+		keyFive.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
+		keyFive.setFont(new Font("Tahoma", Font.PLAIN, 25));
+		keyFive.setBounds(200, 165, 90, 90);
+		keyFive.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				keyboardText += "5";
+				keyboardTextField.setText(keyboardText); 
+			}
+		});
+		keyboardPanel.add(keyFive);
+		
+		keySix = new JButton("6");
+		keySix.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
+		keySix.setFont(new Font("Tahoma", Font.PLAIN, 25));
+		keySix.setBounds(0, 265, 90, 90);
+		keySix.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				keyboardText += "6";
+				keyboardTextField.setText(keyboardText); 
+			}
+		});
+		keyboardPanel.add(keySix);
+		
+		keySeven = new JButton("7");
+		keySeven.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
+		keySeven.setFont(new Font("Tahoma", Font.PLAIN, 25));
+		keySeven.setBounds(100, 265, 90, 90);
+		keySeven.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				keyboardText += "7";
+				keyboardTextField.setText(keyboardText); 
+			}
+		});
+		keyboardPanel.add(keySeven);
+		
+		keyEight = new JButton("8");
+		keyEight.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
+		keyEight.setFont(new Font("Tahoma", Font.PLAIN, 25));
+		keyEight.setBounds(200, 265, 90, 90);
+		keyEight.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				keyboardText += "8";
+				keyboardTextField.setText(keyboardText); 
+			}
+		});
+		keyboardPanel.add(keyEight);
+		
+		keyNine = new JButton("9");
+		keyNine.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
+		keyNine.setFont(new Font("Tahoma", Font.PLAIN, 25));
+		keyNine.setBounds(0, 365, 90, 90);
+		keyNine.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				keyboardText += "9";
+				keyboardTextField.setText(keyboardText); 
+			}
+		});
+		keyboardPanel.add(keyNine);
+		
+		// Would probably call Membership and PLU searching here
+		keyEnter = new JButton("Enter");
+		keyEnter.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
+		keyEnter.setFont(new Font("Tahoma", Font.PLAIN, 25));
+		keyEnter.setBounds(100, 365, 190, 90);
+		keyEnter.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				System.out.println(keyboardTextField.getText());
+				keyboardText = "";
+				keyboardTextField.setText(keyboardText); 
+			}
+		});
+		keyboardPanel.add(keyEnter);
+		
+		keyExit = new JButton("X");
+		keyExit.setOpaque(true);
+		keyExit.setBackground(new Color(255, 0, 0));
+		keyExit.setForeground(new Color(255, 255, 255));
+		keyExit.setFont(new Font("Tahoma", Font.BOLD, 16));
+		keyExit.setBounds(10, 10, 45, 45);
+		keyExit.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				keyboardText = "";
+				keyboardTextField.setText(keyboardText); 
+				closeKeyboard();
+			}
+		});
+		keyboardPanel.add(keyExit);
+		
+		keyboardPanel.setVisible(false);
+	}
+	
+	/**
+	 * Helper method to lock buttons while the keyboard is up
+	 */
+	private void openKeyboard() {
+		keyboardPanel.setVisible(true);
+		PLUTextButton.setEnabled(false);
+		memberTextButton.setEnabled(false);
+		purchaseBagsButton.setEnabled(false);
+		removeItemButton.setEnabled(false);
+		paymentButton.setEnabled(false);
+	}
+	
+	/**
+	 * Helper method to unlock buttons when the user is done with the keyboard
+	 */
+	private void closeKeyboard() {
+		keyboardPanel.setVisible(false);
+		PLUTextButton.setEnabled(true);
+		memberTextButton.setEnabled(true);
+		purchaseBagsButton.setEnabled(true);
+		removeItemButton.setEnabled(true);
+		paymentButton.setEnabled(true);
+	}
 	public static void main(String[] args) {
 		new JSwingClass2();
 	}
 	
 	public void updateTable(String itemPrice, String itemWeight) {
 		paymentTableModel.addRow(new Object[] {"placeholder", itemPrice, itemWeight});
+		System.out.println("Hello");
 	}
-	
-	/*class MyBarcodeScanner implements BarcodeScannerObserver {
-
-		@Override
-		public void reactToEnabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {
-		}
-
-		@Override
-		public void reactToDisabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {
-		}
-
-		@Override
-		public void reactToBarcodeScannedEvent(BarcodeScanner barcodeScanner, Barcode barcode) {
-			BarcodedProduct scannedItem = ProductDatabases.BARCODED_PRODUCT_DATABASE.get(barcode);
-			if (scannedItem != null) {
-				String item = scannedItem.getBarcode().toString();
-				String itemPrice = scannedItem.getPrice().toString();
-				String itemWeight = String.valueOf(scannedItem.getExpectedWeight());
-				paymentTableModel.addRow(new Object[] {item, itemPrice, itemWeight});
-			}
-		}
-	}*/
 }
