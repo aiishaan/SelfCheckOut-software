@@ -8,6 +8,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 import javax.swing.Box;
 import javax.swing.DefaultComboBoxModel;
@@ -24,35 +25,30 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.border.BevelBorder;
 import javax.swing.table.DefaultTableModel;
 
-import com.autovend.devices.AbstractDevice;
-import com.autovend.devices.observers.AbstractDeviceObserver;
-import com.autovend.devices.observers.TouchScreenObserver;
+import com.autovend.Numeral;
 import com.autovend.devices.TouchScreen;
-public class CustomerGui implements TouchScreenObserver{
-	JFrame touchScreenFrame;
-	JComboBox<String> languageBox;
-	DefaultTableModel paymentTableModel;
-	JPanel touchScreenPanel;
-	JPanel tapScreenPanel;
-	JPanel mainPanel;
-	JPanel secondaryPanel;
-	JPanel keyboardPanel;
-	JLayeredPane layeredPane;
-	JButton PLUTextButton;
-	JButton memberTextButton;
-	JButton purchaseBagsButton;
-	JButton removeItemButton;
-	JButton screensaver;
-	JButton helpButton;
-	JButton audioButton;
+import com.autovend.software.controllers.CheckoutController;
+public class CustomerGui{
+	private JFrame touchScreenFrame;
+	private CheckoutController checkoutController;
+	private JComboBox<String> languageBox;
+	private DefaultTableModel paymentTableModel;
+	private JPanel tapScreenPanel;
+	private JPanel mainPanel;
+	private JPanel secondaryPanel;
+	private JPanel keyboardPanel;
+	private JLayeredPane layeredPane;
+	private JButton PLUTextButton;
+	private JButton memberTextButton;
+	private JButton purchaseBagsButton;
+	private JButton removeItemButton;
+	private JButton screensaver;
+	private JButton helpButton;
+	private JButton audioButton;
 	boolean audioButtonOn = false;
-	
-	// create a constraints object
-	GridBagConstraints c = new GridBagConstraints();
-	final static boolean shouldFill = true;
-    final static boolean shouldWeightX = true;
-  
-    private JButton paymentButton;
+	boolean selectedPLU = false;
+	boolean selectedMembership = false;
+	private JButton paymentButton;
     private JScrollPane scrollPane;
     private JTable table;
     private JButton keyZero;
@@ -69,14 +65,22 @@ public class CustomerGui implements TouchScreenObserver{
     private JButton keyExit;
     private JTextField keyboardTextField;
     private String keyboardText;
+    
+	// create a constraints object
+	GridBagConstraints c = new GridBagConstraints();
+	final static boolean shouldFill = true;
+    final static boolean shouldWeightX = true;
+  
+    
 	
-	public CustomerGui(TouchScreen customerScreen){
-		
+	public CustomerGui(TouchScreen customerScreen, CheckoutController checkoutController){
+
 		this.touchScreenFrame = customerScreen.getFrame();
 		this.touchScreenFrame.setExtendedState(JFrame.NORMAL);
 		this.touchScreenFrame.setSize(1000,900);
 		layeredPane = new JLayeredPane();
 		this.touchScreenFrame.getContentPane().add(layeredPane, BorderLayout.CENTER);
+		this.checkoutController = checkoutController;
 		
 		setUpMainPanel();
 		setUpSecondaryPanel();
@@ -102,6 +106,7 @@ public class CustomerGui implements TouchScreenObserver{
 		PLUTextButton.setBounds(42, 31, 468, 40);
 		PLUTextButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				selectedPLU = true;
 				openKeyboard();
 			}
 		});
@@ -115,6 +120,7 @@ public class CustomerGui implements TouchScreenObserver{
 		memberTextButton.setBounds(42, 106, 468, 40);
 		memberTextButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				selectedMembership = true;
 				openKeyboard();
 			}
 		});
@@ -177,17 +183,10 @@ public class CustomerGui implements TouchScreenObserver{
 			ownBag.setLayout(new GridBagLayout());
 			
 			JTextField haveBag = new JTextField("Do you bring your own bag(s) today?");
-	//		screensaver.setDisplayedMnemonicIndex(1);
-	//		screensaver.addActionListener(new ActionListener() {
-	//			public void actionPerformed(ActionEvent e) {
-	//				tapScreenPanel.setVisible(false);
-	//			}
-	//		});
 			haveBag.setFont(new Font("Arial", Font.PLAIN, 40));
 			haveBag.setEditable(false);
 			haveBag.setBorder(javax.swing.BorderFactory.createEmptyBorder());
 			haveBag.setBackground(Color.LIGHT_GRAY);
-			//haveBag.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
 			haveBag.setBounds(0, 0, 984, 785);
 			GridBagConstraints c = new GridBagConstraints();
 			c.gridx = 0;
@@ -237,8 +236,8 @@ public class CustomerGui implements TouchScreenObserver{
 		boolean check = false;
 		
 		// wait for attendant to confirm and then set visible to false, rn i'm changing it right away
-		check = true;	// this will change after get acceptance from attendant
-		if (check == true) {
+		checkoutController.AttendantApproved = false;	// this will change after get acceptance from attendant
+		if (checkoutController.AttendantApproved) {
 			ownBagAdded.setVisible(false);
 		}
 	}
@@ -272,7 +271,6 @@ public class CustomerGui implements TouchScreenObserver{
 		secondaryPanel.add(languageBox);
 		languageBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				//System.out.println(languageBox.getSelectedIndex());
 				if(languageBox.getSelectedIndex() == 0) {
 					helpButton.setText("Need help?");
 					audioButton.setText("Text-to-speech");
@@ -494,7 +492,22 @@ public class CustomerGui implements TouchScreenObserver{
 		keyEnter.setBounds(100, 365, 190, 90);
 		keyEnter.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				System.out.println(keyboardTextField.getText());
+				System.out.println(keyboardText);
+				ArrayList<Numeral> numerals = new ArrayList<Numeral>();
+				
+				if(selectedPLU) {
+					for (char c: keyboardText.toCharArray()) {
+						numerals.add(Numeral.valueOf((byte) Character.getNumericValue(c)));
+					}
+					Numeral[] code = numerals.toArray(new Numeral[numerals.size()]);
+					// Insert PLU method here:
+					// PLUmethod(code)
+				} else if(selectedMembership) {
+					// insert Membership method here
+					// Enter membership(keyboardText)
+				}
+				System.out.println("PLU: " + selectedPLU);
+				System.out.println("Membership: " + selectedMembership);
 				keyboardText = "";
 				keyboardTextField.setText(keyboardText); 
 			}
@@ -509,7 +522,8 @@ public class CustomerGui implements TouchScreenObserver{
 		keyExit.setBounds(10, 10, 45, 45);
 		keyExit.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				keyboardText = "";
+				selectedPLU = false;
+				selectedMembership = false;
 				keyboardTextField.setText(keyboardText); 
 				closeKeyboard();
 			}
@@ -549,18 +563,7 @@ public class CustomerGui implements TouchScreenObserver{
 	}
 	public static void main(String[] args) {
 		TouchScreen CustomerScreen = new TouchScreen();
-		CustomerGui newGui = new CustomerGui(CustomerScreen); 
-	}
-	
-	@Override
-	public void reactToEnabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void reactToDisabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {
-		// TODO Auto-generated method stub
-		
+		CheckoutController checkoutController = new CheckoutController();
+		CustomerGui newGui = new CustomerGui(CustomerScreen, checkoutController); 
 	}
 }
