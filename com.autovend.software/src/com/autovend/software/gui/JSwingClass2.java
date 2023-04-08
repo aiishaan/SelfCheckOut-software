@@ -320,7 +320,11 @@ public class JSwingClass2 {
 		new JSwingClass2();
 	}
 	
-	class MyBarcodeScanner implements BarcodeScannerObserver {
+	public void updateTable(String itemPrice, String itemWeight) {
+		paymentTableModel.addRow(new Object[] {"placeholder", itemPrice, itemWeight});
+	}
+	
+	/*class MyBarcodeScanner implements BarcodeScannerObserver {
 
 		@Override
 		public void reactToEnabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {
@@ -340,7 +344,5 @@ public class JSwingClass2 {
 				paymentTableModel.addRow(new Object[] {item, itemPrice, itemWeight});
 			}
 		}
-
-		
-	}
+	}*/
 }
