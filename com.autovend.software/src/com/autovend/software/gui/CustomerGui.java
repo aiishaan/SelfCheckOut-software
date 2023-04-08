@@ -8,7 +8,9 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Currency;
 
 import javax.swing.Box;
 import javax.swing.DefaultComboBoxModel;
@@ -27,10 +29,14 @@ import javax.swing.table.DefaultTableModel;
 
 import com.autovend.Numeral;
 import com.autovend.devices.TouchScreen;
+import com.autovend.software.controllers.BillPaymentController;
 import com.autovend.software.controllers.CheckoutController;
+import com.autovend.software.controllers.MembershipCardController;
+import com.autovend.devices.SelfCheckoutStation;
 public class CustomerGui{
 	private JFrame touchScreenFrame;
 	private CheckoutController checkoutController;
+	private MembershipCardController membershipCardController;
 	private JComboBox<String> languageBox;
 	private DefaultTableModel paymentTableModel;
 	private JPanel tapScreenPanel;
@@ -73,8 +79,9 @@ public class CustomerGui{
   
     
 	
-	public CustomerGui(TouchScreen customerScreen, CheckoutController checkoutController){
+	public CustomerGui(TouchScreen customerScreen, CheckoutController checkoutController, MembershipCardController membershipCardController){
 
+		this.membershipCardController = membershipCardController;
 		this.touchScreenFrame = customerScreen.getFrame();
 		this.touchScreenFrame.setExtendedState(JFrame.NORMAL);
 		this.touchScreenFrame.setSize(1000,900);
@@ -233,8 +240,8 @@ public class CustomerGui{
 		hadBag.setBounds(145, 350, 984, 785);
 		
 		ownBagAdded.add(hadBag);
-		boolean check = false;
 		
+		checkoutController.addOwnBags();
 		// wait for attendant to confirm and then set visible to false, rn i'm changing it right away
 		checkoutController.AttendantApproved = false;	// this will change after get acceptance from attendant
 		if (checkoutController.AttendantApproved) {
@@ -505,6 +512,8 @@ public class CustomerGui{
 				} else if(selectedMembership) {
 					// insert Membership method here
 					// Enter membership(keyboardText)
+					//checkoutController.inputMembershipNumber();
+					//membershipCardController.updateMembershipStatus();
 				}
 				System.out.println("PLU: " + selectedPLU);
 				System.out.println("Membership: " + selectedMembership);
@@ -524,6 +533,7 @@ public class CustomerGui{
 			public void actionPerformed(ActionEvent e) {
 				selectedPLU = false;
 				selectedMembership = false;
+				keyboardText = "";
 				keyboardTextField.setText(keyboardText); 
 				closeKeyboard();
 			}
@@ -543,6 +553,7 @@ public class CustomerGui{
 		purchaseBagsButton.setEnabled(false);
 		removeItemButton.setEnabled(false);
 		paymentButton.setEnabled(false);
+		
 	}
 	
 	/**
@@ -562,8 +573,16 @@ public class CustomerGui{
 		System.out.println("Hello");
 	}
 	public static void main(String[] args) {
+		int[] billDenominations = new int[] {5, 10, 20, 50, 100};
+		BigDecimal[] coinDenominations = new BigDecimal[] {new BigDecimal(0.05), new BigDecimal(0.1), new BigDecimal(0.25), new BigDecimal(100), new BigDecimal(200)};
+
+		SelfCheckoutStation selfCheckoutStation = new SelfCheckoutStation(Currency.getInstance("CAD"), billDenominations, coinDenominations,200, 1);
+		CheckoutController checkoutController = new CheckoutController(selfCheckoutStation);
+		BillPaymentController billPaymentControllerStub = new BillPaymentController(selfCheckoutStation.billValidator);
+        billPaymentControllerStub.setMainController(checkoutController);
+        checkoutController.registerPaymentController(billPaymentControllerStub);
 		TouchScreen CustomerScreen = new TouchScreen();
-		CheckoutController checkoutController = new CheckoutController();
-		CustomerGui newGui = new CustomerGui(CustomerScreen, checkoutController); 
+		MembershipCardController membershipController = new MembershipCardController();
+		CustomerGui newGui = new CustomerGui(CustomerScreen, checkoutController, membershipController); 
 	}
 }
