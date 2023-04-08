@@ -1,6 +1,7 @@
 package com.autovend.software.gui;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
@@ -8,26 +9,26 @@ import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import com.autovend.Barcode;
-import com.autovend.devices.AbstractDevice;
-import com.autovend.devices.BarcodeScanner;
-import com.autovend.devices.observers.AbstractDeviceObserver;
-import com.autovend.devices.observers.BarcodeScannerObserver;
-import com.autovend.external.ProductDatabases;
-import com.autovend.products.BarcodedProduct;
-
-import javax.swing.*;
+import javax.swing.Box;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import javax.swing.JLayeredPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.border.BevelBorder;
 import javax.swing.table.DefaultTableModel;
 
-import java.awt.Component;
-import java.awt.Insets;
-import java.awt.CardLayout;
-import com.jgoodies.forms.layout.FormLayout;
-import com.jgoodies.forms.layout.ColumnSpec;
-import com.jgoodies.forms.layout.RowSpec;
-import com.jgoodies.forms.layout.FormSpecs;
-public class JSwingClass2 {
+import com.autovend.devices.AbstractDevice;
+import com.autovend.devices.observers.AbstractDeviceObserver;
+import com.autovend.devices.observers.TouchScreenObserver;
+import com.autovend.devices.TouchScreen;
+public class CustomerGui implements TouchScreenObserver{
 	JFrame touchScreenFrame;
 	JComboBox<String> languageBox;
 	DefaultTableModel paymentTableModel;
@@ -69,16 +70,14 @@ public class JSwingClass2 {
     private JTextField keyboardTextField;
     private String keyboardText;
 	
-	public JSwingClass2(){
+	public CustomerGui(TouchScreen customerScreen){
 		
-		touchScreenFrame = new JFrame("");
-		touchScreenFrame.setSize(1000, 900);
-		touchScreenFrame.setResizable(false);
-		
-		touchScreenFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		
+		this.touchScreenFrame = customerScreen.getFrame();
+		this.touchScreenFrame.setExtendedState(JFrame.NORMAL);
+		this.touchScreenFrame.setSize(1000,900);
+		this.touchScreenFrame.setResizable(true);
 		layeredPane = new JLayeredPane();
-		touchScreenFrame.getContentPane().add(layeredPane, BorderLayout.CENTER);
+		this.touchScreenFrame.getContentPane().add(layeredPane, BorderLayout.CENTER);
 		
 		setUpMainPanel();
 		setUpSecondaryPanel();
@@ -86,7 +85,7 @@ public class JSwingClass2 {
 		tapScreen();
 		ownBag();
 		
-		touchScreenFrame.setVisible(true);
+		this.touchScreenFrame.setVisible(true);
 	}
 	
 	private void setUpMainPanel() {
@@ -544,12 +543,25 @@ public class JSwingClass2 {
 		removeItemButton.setEnabled(true);
 		paymentButton.setEnabled(true);
 	}
-	public static void main(String[] args) {
-		new JSwingClass2();
-	}
 	
 	public void updateTable(String itemPrice, String itemWeight) {
 		paymentTableModel.addRow(new Object[] {"placeholder", itemPrice, itemWeight});
 		System.out.println("Hello");
+	}
+	public static void main(String[] args) {
+		TouchScreen CustomerScreen = new TouchScreen();
+		CustomerGui newGui = new CustomerGui(CustomerScreen); 
+	}
+	
+	@Override
+	public void reactToEnabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void reactToDisabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {
+		// TODO Auto-generated method stub
+		
 	}
 }
