@@ -30,7 +30,10 @@ public class AttendantMain {
         this.touchScreenFrame.getContentPane().add(mainPanel, BorderLayout.CENTER);
 
         titleText = new JLabel("Attendant Terminal");
+        titleText.setFont(new Font("Tahoma", Font.BOLD, 20));
         logoutButton = new JButton("Logout");
+
+        logoutButton.addActionListener(actionEvent -> logoutButtonPressed());
 
         stationListPane = new JPanel();
         stationListPane.setLayout(new GridLayout(0, 1, 0, 30));
@@ -50,6 +53,10 @@ public class AttendantMain {
         this.touchScreenFrame.setVisible(true);
     }
 
+    public void logoutButtonPressed() {
+        //logout action
+    }
+
     static class StationStatusBar extends JPanel {
 
         CheckoutController checkoutController;
@@ -61,13 +68,14 @@ public class AttendantMain {
 
         public StationStatusBar(CheckoutController checkoutControllerIn) {
             this.checkoutController = checkoutControllerIn;
+            this.setBackground(Color.LIGHT_GRAY);
             this.setSize(980,100);
 
             this.setBorder(new LineBorder(Color.BLACK));
             this.setLayout(null);
 
 
-            stationTitle = new JLabel(String.format("Station %d", checkoutController.getID()));
+            stationTitle = new JLabel(String.format(" Station %d", checkoutController.getID()));
             disableButton = new JButton("Disable Station");
             warningField = new JLabel("Station running normally"); //might replace with a JList?
             weightDiscrepancyButton = new JButton("Weight discrepancy detected.\n Approve?");
@@ -77,11 +85,14 @@ public class AttendantMain {
             weightDiscrepancyButton.addActionListener(actionEvent -> weightDiscrepancyButtonPressed());
             removeApproveButton.addActionListener(actionEvent -> removeButtonPressed());
 
-            stationTitle.setBounds(0, 0, 200, 100);
-            disableButton.setBounds(200, 0, 200, 100);
-            warningField.setBounds(400, 0, 200, 100);
+            stationTitle.setBounds(0, 0, 100, 100);
+            disableButton.setBounds(100, 0, 200, 100);
+            warningField.setBounds(300, 0, 300, 100);
             weightDiscrepancyButton.setBounds(600, 0, 200, 100);
             removeApproveButton.setBounds(800, 0, 200, 100);
+
+            warningField.setHorizontalTextPosition(SwingConstants.CENTER);
+            stationTitle.setFont(new Font("Tahoma", Font.BOLD, 13));
 
             this.add(stationTitle);
             this.add(disableButton);
