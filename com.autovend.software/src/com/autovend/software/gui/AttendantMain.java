@@ -6,8 +6,6 @@ import com.autovend.software.controllers.CheckoutController;
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -35,23 +33,24 @@ public class AttendantMain {
         logoutButton = new JButton("Logout");
 
         stationListPane = new JPanel();
-        stationListPane.setLayout(new BoxLayout(stationListPane, BoxLayout.PAGE_AXIS));
-        for(CheckoutController checkoutController : stationList) {
+        stationListPane.setLayout(new GridLayout(0, 1, 0, 30));
+        for (CheckoutController checkoutController : stationList) {
             StationStatusBar tempBar = new StationStatusBar(checkoutController);
+            tempBar.setPreferredSize(new Dimension(980, 100));
             stationListPane.add(tempBar);
-            stationListPane.add(Box.createVerticalGlue());
         }
 
-        stationScrollPane = new JScrollPane(stationListPane);
-        stationScrollPane.setPreferredSize(new Dimension(900,800));
+        stationScrollPane = new JScrollPane(stationListPane, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
+        mainPanel.add(titleText);
         mainPanel.add(stationScrollPane);
         mainPanel.add(logoutButton);
+        stationScrollPane.revalidate();
 
         this.touchScreenFrame.setVisible(true);
     }
 
-    class StationStatusBar extends JPanel {
+    static class StationStatusBar extends JPanel {
 
         CheckoutController checkoutController;
         JLabel stationTitle;
@@ -62,17 +61,27 @@ public class AttendantMain {
 
         public StationStatusBar(CheckoutController checkoutControllerIn) {
             this.checkoutController = checkoutControllerIn;
-//            this.setSize(950,100);
+            this.setSize(980,100);
+
             this.setBorder(new LineBorder(Color.BLACK));
-            this.setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
+            this.setLayout(null);
+
+
             stationTitle = new JLabel(String.format("Station %d", checkoutController.getID()));
             disableButton = new JButton("Disable Station");
-            warningField = new JLabel();
+            warningField = new JLabel("Station running normally"); //might replace with a JList?
             weightDiscrepancyButton = new JButton("Weight discrepancy detected.\n Approve?");
             removeApproveButton = new JButton("Approve requested removal");
 
             disableButton.addActionListener(actionEvent -> disableButtonPressed());
+            weightDiscrepancyButton.addActionListener(actionEvent -> weightDiscrepancyButtonPressed());
+            removeApproveButton.addActionListener(actionEvent -> removeButtonPressed());
 
+            stationTitle.setBounds(0, 0, 200, 100);
+            disableButton.setBounds(200, 0, 200, 100);
+            warningField.setBounds(400, 0, 200, 100);
+            weightDiscrepancyButton.setBounds(600, 0, 200, 100);
+            removeApproveButton.setBounds(800, 0, 200, 100);
 
             this.add(stationTitle);
             this.add(disableButton);
@@ -83,8 +92,8 @@ public class AttendantMain {
             stationTitle.setVisible(true);
             disableButton.setVisible(true);
             warningField.setVisible(true);
-            weightDiscrepancyButton.setVisible(true);
-            removeApproveButton.setVisible(true);
+            weightDiscrepancyButton.setVisible(false);
+            removeApproveButton.setVisible(false);
 
             this.setVisible(true);
         }
@@ -99,11 +108,50 @@ public class AttendantMain {
                 disableButton.setText("Disable Station");
             }
         }
+
+        //has no trigger atm
+        public void weightDiscrepancyEventTriggered() {
+            weightDiscrepancyButton.setVisible(true);
+        }
+
+        public void weightDiscrepancyButtonPressed() {
+            //code to end weight discrepancy event at station
+            weightDiscrepancyButton.setVisible(false);
+        }
+
+        //has no trigger atm
+        public void removalEventTriggered() {
+            weightDiscrepancyButton.setVisible(true);
+        }
+
+        public void removeButtonPressed() {
+            //code to approve removal at station
+            weightDiscrepancyButton.setVisible(false);
+        }
+
+        //these methods have no triggers atm
+        public void lowInkEventTriggered() {
+            warningField.setText("Low ink at station");
+        }
+
+        public void lowInkEventEnded() {
+            warningField.setText("Station running normally");
+        }
+
+        public void lowPaperEventTriggered() {
+            warningField.setText("Low paper at station");
+        }
+
+        public void lowPaperEventEnded() {
+            warningField.setText("Station running normally");
+        }
+
     }
 
     public static void main(String[] args) {
         TouchScreen attendantScreen = new TouchScreen();
-        ArrayList<CheckoutController> stationList = new ArrayList<>(Arrays.asList(new CheckoutController(), new CheckoutController()));
+        //add a bunch of checkout controllers to test scrolling
+        ArrayList<CheckoutController> stationList = new ArrayList<>(Arrays.asList(new CheckoutController(), new CheckoutController(), new CheckoutController(), new CheckoutController(), new CheckoutController(), new CheckoutController(), new CheckoutController(), new CheckoutController(), new CheckoutController(), new CheckoutController()));
         AttendantMain attendantGUI = new AttendantMain(attendantScreen, stationList);
     }
 
