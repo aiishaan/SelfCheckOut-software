@@ -1,13 +1,14 @@
 package com.autovend.software.gui;
 
-import com.autovend.devices.TouchScreen;
-import com.autovend.software.controllers.CheckoutController;
+import com.autovend.devices.SelfCheckoutStation;
+import com.autovend.devices.SupervisionStation;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.math.BigDecimal;
+import java.util.Currency;
+import java.util.List;
 
 public class AttendantMain {
 
@@ -18,9 +19,9 @@ public class AttendantMain {
     JButton logoutButton;
     JPanel stationListPane;
 
-    public AttendantMain(TouchScreen attendantScreen, ArrayList<CheckoutController> stationList){
+    public AttendantMain(SupervisionStation attendantStation){
 
-        this.touchScreenFrame = attendantScreen.getFrame();
+        this.touchScreenFrame = attendantStation.screen.getFrame();
         this.touchScreenFrame.setExtendedState(JFrame.NORMAL);
         this.touchScreenFrame.setSize(1000,900);
         this.touchScreenFrame.setResizable(true);
@@ -37,8 +38,10 @@ public class AttendantMain {
 
         stationListPane = new JPanel();
         stationListPane.setLayout(new GridLayout(0, 1, 0, 30));
-        for (CheckoutController checkoutController : stationList) {
-            StationStatusBar tempBar = new StationStatusBar(checkoutController);
+        List<SelfCheckoutStation> supervisedStations = attendantStation.supervisedStations();
+        for (int i = 0; i < supervisedStations.size(); i++) {
+            SelfCheckoutStation checkoutStation = supervisedStations.get(i);
+            StationStatusBar tempBar = new StationStatusBar(checkoutStation, i+1);
             tempBar.setPreferredSize(new Dimension(980, 100));
             stationListPane.add(tempBar);
         }
@@ -59,15 +62,15 @@ public class AttendantMain {
 
     static class StationStatusBar extends JPanel {
 
-        CheckoutController checkoutController;
+        SelfCheckoutStation selfCheckoutStation;
         JLabel stationTitle;
         JButton disableButton;
         JLabel warningField;
         JButton weightDiscrepancyButton;
         JButton removeApproveButton;
 
-        public StationStatusBar(CheckoutController checkoutControllerIn) {
-            this.checkoutController = checkoutControllerIn;
+        public StationStatusBar(SelfCheckoutStation checkoutStationIn, int ID) {
+            this.selfCheckoutStation = checkoutStationIn;
             this.setBackground(Color.LIGHT_GRAY);
             this.setSize(980,100);
 
@@ -75,7 +78,7 @@ public class AttendantMain {
             this.setLayout(null);
 
 
-            stationTitle = new JLabel(String.format(" Station %d", checkoutController.getID()));
+            stationTitle = new JLabel(String.format(" Station %d", ID));
             disableButton = new JButton("Disable Station");
             warningField = new JLabel("Station running normally"); //might replace with a JList?
             weightDiscrepancyButton = new JButton("Weight discrepancy detected.\n Approve?");
@@ -160,10 +163,16 @@ public class AttendantMain {
     }
 
     public static void main(String[] args) {
-        TouchScreen attendantScreen = new TouchScreen();
-        //add a bunch of checkout controllers to test scrolling
-        ArrayList<CheckoutController> stationList = new ArrayList<>(Arrays.asList(new CheckoutController(), new CheckoutController(), new CheckoutController(), new CheckoutController(), new CheckoutController(), new CheckoutController(), new CheckoutController(), new CheckoutController(), new CheckoutController(), new CheckoutController()));
-        AttendantMain attendantGUI = new AttendantMain(attendantScreen, stationList);
+        SupervisionStation attendantStation = new SupervisionStation();
+        //add a bunch of checkout stations to test scrolling
+        attendantStation.add(new SelfCheckoutStation(Currency.getInstance("CAD"), new int[]{1,24}, new BigDecimal[]{BigDecimal.ONE}, 1, 1));
+        attendantStation.add(new SelfCheckoutStation(Currency.getInstance("CAD"), new int[]{1,24}, new BigDecimal[]{BigDecimal.ONE}, 1, 1));
+        attendantStation.add(new SelfCheckoutStation(Currency.getInstance("CAD"), new int[]{1,24}, new BigDecimal[]{BigDecimal.ONE}, 1, 1));
+        attendantStation.add(new SelfCheckoutStation(Currency.getInstance("CAD"), new int[]{1,24}, new BigDecimal[]{BigDecimal.ONE}, 1, 1));
+        attendantStation.add(new SelfCheckoutStation(Currency.getInstance("CAD"), new int[]{1,24}, new BigDecimal[]{BigDecimal.ONE}, 1, 1));
+        attendantStation.add(new SelfCheckoutStation(Currency.getInstance("CAD"), new int[]{1,24}, new BigDecimal[]{BigDecimal.ONE}, 1, 1));
+        attendantStation.add(new SelfCheckoutStation(Currency.getInstance("CAD"), new int[]{1,24}, new BigDecimal[]{BigDecimal.ONE}, 1, 1));
+        AttendantMain attendantGUI = new AttendantMain(attendantStation);
     }
 
 }
