@@ -16,19 +16,18 @@ public class AttendantController {
 	
 	/** Constructs an Attendant with user ID and Password 
 	 * 
-	 * 
-	 * 
 	 * @param username
 	 * @param key
 	 */
 	
-	public AttendantController(String username, String key) {
+	public AttendantController(String username, String pass) {
 		this.user_id= username;
-		this.password=key;
-		// Adding Some Preset Attendants
+		this.password=pass;
+		// Adding Some Current Attendants to the List
 		AttendantList.put("James", "4628");
 		AttendantList.put("Wayne", "331");
 		AttendantList.put("Shaw", "unux89");
+		AttendantList.put("Pablo", "12345678");
 		
 	}
 	
@@ -36,11 +35,21 @@ public class AttendantController {
 	 * 
 	 * 
 	 * **/
-	public void add_attendant(String username, String Key) {
+	public void add_attendant(String username, String password) {
 		
-		AttendantList.put(username, Key);
+		AttendantList.put(username, password);
 		
 	}
+	
+	/**Method to remove attendant
+	 * 
+	 * **/
+	
+	public void remove_attendant(String username, String pass) {
+		
+		AttendantList.remove(username, pass);
+	}
+	
 	
 	// Getter method for Attendant ID
 	public String getUser_id() {
