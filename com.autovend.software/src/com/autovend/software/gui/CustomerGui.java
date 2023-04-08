@@ -75,7 +75,6 @@ public class CustomerGui implements TouchScreenObserver{
 		this.touchScreenFrame = customerScreen.getFrame();
 		this.touchScreenFrame.setExtendedState(JFrame.NORMAL);
 		this.touchScreenFrame.setSize(1000,900);
-		this.touchScreenFrame.setResizable(true);
 		layeredPane = new JLayeredPane();
 		this.touchScreenFrame.getContentPane().add(layeredPane, BorderLayout.CENTER);
 		
