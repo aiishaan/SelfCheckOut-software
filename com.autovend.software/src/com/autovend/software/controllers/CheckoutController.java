@@ -621,7 +621,7 @@ public class CheckoutController {
 		}
 		for (PaymentController controller : validPaymentControllers) {
 			if (controller instanceof CardReaderController) {
-				((CardReaderController) controller).card = card;
+				((CardReaderController) controller).giftCard = card;
 				((CardReaderController) controller).enableGiftPayment(card, amount);	
 			}
 		}

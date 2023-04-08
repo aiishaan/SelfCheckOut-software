@@ -113,14 +113,12 @@ public class CardPaymentTest {
         try {
             cardReaderStub.insert(cardStub, "1337");
         } catch (Exception ex){
-        	ex.printStackTrace();
             fail("Exception incorrectly thrown");
         }
         assertTrue(bankStub.held);
         assertTrue(bankStub.posted);
         cardReaderStub.remove();
         assertFalse(readerControllerStub.isPaying);
-
         assertEquals(controllerStub.getRemainingAmount(), BigDecimal.valueOf(-1));
         assertTrue(cardReaderStub.isDisabled());
         readerControllerStub.card = null;
@@ -137,7 +135,6 @@ public class CardPaymentTest {
         try {
             cardReaderStub.insert(cardStub, "1337");
         } catch (Exception ex){
-        	ex.printStackTrace();
             fail("Exception incorrectly thrown");
         }
         assertTrue(readerControllerStub.isPaying);
@@ -157,8 +154,7 @@ public class CardPaymentTest {
         bankStub.canPostTransaction = false;
         bankStub.holdAuthorized = false;
         try {
-            cardReaderStub.insert(cardStub, "1337");
-            	
+            cardReaderStub.insert(cardStub, "1337"); 	
         } catch (Exception ex){
             fail("Exception incorrectly thrown");
         }
@@ -176,7 +172,6 @@ public class CardPaymentTest {
         try {
             readerControllerStub.data = cardReaderStub.insert(cardStub, "1337");
         } catch (Exception ex){
-        	ex.printStackTrace();
             fail("Exception incorrectly thrown");
         }
         assertTrue(bankStub.noHoldCall);
@@ -196,7 +191,6 @@ public class CardPaymentTest {
         try {
             cardReaderStub.tap(cardStub);
         } catch (Exception ex){
-
             fail("Exception incorrectly thrown");
         }
         assertTrue(bankStub.noHoldCall);
@@ -218,7 +212,6 @@ public class CardPaymentTest {
         controllerStub.payByCard(bankStub,BigDecimal.ONE, cardStub);
         assertFalse(cardReaderStub.isDisabled());
         assertEquals(readerControllerStub.bank, bankStub);
-
     }
 
 
@@ -250,6 +243,7 @@ public class CardPaymentTest {
         controllerStub.payByCard(null,BigDecimal.ONE, cardStub);
         assertTrue(cardReaderStub.isDisabled());
     }
+    
     //This test is likely broken due to changes with payByCard
     @Test
     public void payByCardTestPayMoreThanOrderCost(){
@@ -257,7 +251,6 @@ public class CardPaymentTest {
         controllerStub.cost = BigDecimal.ZERO;
         controllerStub.payByCard(null,BigDecimal.ONE, cardStub);
         assertTrue(cardReaderStub.isDisabled());
-
     }
 
     @Test
@@ -276,7 +269,6 @@ public class CardPaymentTest {
          assertTrue(bankStub.held);
          assertTrue(bankStub.posted);
          assertFalse(readerControllerStub.isPaying);
-
          assertEquals(controllerStub.getRemainingAmount(), BigDecimal.valueOf(-1));
          assertTrue(cardReaderStub.isDisabled());
          readerControllerStub.card = null;
@@ -298,7 +290,6 @@ public class CardPaymentTest {
          assertTrue(bankStub.held);
          assertTrue(bankStub.posted);
          assertFalse(readerControllerStub.isPaying);
-
          assertEquals(controllerStub.getRemainingAmount(), BigDecimal.valueOf(-1));
          assertTrue(cardReaderStub.isDisabled());
          readerControllerStub.card = null;

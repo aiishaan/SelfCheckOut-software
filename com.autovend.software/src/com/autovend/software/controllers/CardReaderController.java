@@ -31,8 +31,6 @@ import com.autovend.external.CardIssuer;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
-//A note for anyone reading this for code review, Arie has left this class a sad, desolate wasteland. 
-//I tried my best to rework everything into something usable, but there is doubtless something I have missed.
 
 public class CardReaderController extends PaymentController<CardReader, CardReaderObserver>
 		implements CardReaderObserver {
@@ -58,7 +56,7 @@ public class CardReaderController extends PaymentController<CardReader, CardRead
 	 * This is a method that takes care of the bank side of the payment use case. Originally a part of reactToCardDataReadEvent, moved here to support other parts of the use case (tap/swipe).
 	 * @param localdata Local card data, given from other payment methods.
 	 * @param localbank Bank data, should also have been given from detected credit card.
-	 * @throws BlockedCardException 
+	 * @throws BlockedCardException If something goes wrong with the transaction.
 	 */
 	public void bankPayment(CardData localdata, CardIssuer localbank) throws BlockedCardException {
 		int holdNum = localbank.authorizeHold(localdata.getNumber(), this.amount);
@@ -70,12 +68,20 @@ public class CardReaderController extends PaymentController<CardReader, CardRead
 		}
 	}
 	
+	/**
+	 * This method handles the main system side of the payment for gift cards.
+	 * @param localdata Local card data, given from other payment methods.
+	 * @throws ChipFailureException In case the gift card data can't be read, thrown.
+	 */
 	public void giftPayment (GiftCardInsertData localdata) throws ChipFailureException {
 		BigDecimal balance = localdata.getRemainingBalance();
 		if(balance.compareTo(amount) == 1 || balance.compareTo(amount) == 0){
 			System.out.println("Made it to payment");
 			localdata.deduct(amount);
 			getMainController().addToAmountPaid(this.amount);
+		}
+		else {
+			throw new ChipFailureException();
 		}
 	}
 	
@@ -111,17 +117,26 @@ public class CardReaderController extends PaymentController<CardReader, CardRead
 		}
 	}
 	
+	/**
+	 * This method handles when a gift card is inserted into the card reader.
+	 * @param localCard The gift card involved in the transaction.
+	 * @param localData The data of the gift card.
+	 * @throws ChipFailureException If the data on the gift card can't be read, thrown.
+	 */
 	public void insertGiftPayment(GiftCard localCard, GiftCardInsertData localData) throws ChipFailureException {
-		System.out.println("Made it to insertGift");
 		giftPayment(localData);
 	}
 	
-	// TODO: Add Messages And Stuff
+	/**
+	 * This method handles when a credit card is swiped against the card reader.
+	 * @param localCard The card inserted into the card reader.
+	 * @param localData Data from the inserted card.
+	 * @throws BlockedCardException If the card is rejected by the bank, thrown.
+	 */
 	public void swipePayment(Card localCard, CardData localData) throws BlockedCardException {
 		bankPayment(localData, this.bank);
 	}
 	
-	// Arie didn't fill these in, I am going to grab him and shake him later.
 	@Override
 	public void reactToCardInsertedEvent(CardReader reader) {
 		//Sets internal flag for insert payment.
@@ -207,17 +222,13 @@ public class CardReaderController extends PaymentController<CardReader, CardRead
 		this.swipePayment = false;
 		this.tapPayment = false;
 		this.disableDevice();
-		this.amount = BigDecimal.ZERO;
 		this.bank = null;
 		this.giftPayment = false;
-		// Clear bank and such if it fails to hold or not (might change this, I am tired
-		// rn so might be dumb here) (This is Arie's comment)
-		//Another great method from Arie, only had to rewrite all of it.
 	}
 
 	/**
 	 * This activates the card reader for payment.
-	 * @param issuer Bank that issued the card (why did he set it up like this?)
+	 * @param issuer Bank that issued the card 
 	 * @param amount Amount to be paid.
 	 */
 	public void enablePayment(CardIssuer issuer, Card localCard, BigDecimal amount) {
@@ -226,6 +237,12 @@ public class CardReaderController extends PaymentController<CardReader, CardRead
 		this.bank = issuer;
 		this.amount = amount;
 	}
+	
+	/**
+	 * This activates the card reader for a gift cardpayment.
+	 * @param localGift Gift card to be used for the transaction.
+	 * @param amount Amount to be paid.
+	 */
 	public void enableGiftPayment(GiftCard localGift, BigDecimal amount) {
 		this.enableDevice();
 		this.giftCard = localGift;
