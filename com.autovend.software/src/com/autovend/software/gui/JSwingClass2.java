@@ -7,6 +7,14 @@ import java.awt.GridBagConstraints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import com.autovend.Barcode;
+import com.autovend.devices.AbstractDevice;
+import com.autovend.devices.BarcodeScanner;
+import com.autovend.devices.observers.AbstractDeviceObserver;
+import com.autovend.devices.observers.BarcodeScannerObserver;
+import com.autovend.external.ProductDatabases;
+import com.autovend.products.BarcodedProduct;
+
 import javax.swing.*;
 import javax.swing.border.BevelBorder;
 import javax.swing.table.DefaultTableModel;
@@ -36,7 +44,7 @@ public class JSwingClass2 {
     private JScrollPane scrollPane;
     private JTable table;
 	
-	public JSwingClass2() {
+	public JSwingClass2(){
 		
 		touchScreenFrame = new JFrame("");
 		touchScreenFrame.setSize(1000, 900);
@@ -83,13 +91,13 @@ public class JSwingClass2 {
 		rigidArea.setBounds(42, 70, 468, 39);
 		mainPanel.add(rigidArea);
 		
-		Component rigidArea_2 = Box.createRigidArea(new Dimension(20, 20));
-		rigidArea_2.setBounds(42, 144, 468, 39);
-		mainPanel.add(rigidArea_2);
+		Component rigidArea2 = Box.createRigidArea(new Dimension(20, 20));
+		rigidArea2.setBounds(42, 144, 468, 39);
+		mainPanel.add(rigidArea2);
 		
-		Component rigidArea_2_1 = Box.createRigidArea(new Dimension(20, 20));
-		rigidArea_2_1.setBounds(42, 219, 468, 39);
-		mainPanel.add(rigidArea_2_1);
+		Component rigidArea3 = Box.createRigidArea(new Dimension(20, 20));
+		rigidArea3.setBounds(42, 219, 468, 39);
+		mainPanel.add(rigidArea3);
 		
 		JButton btnNewButton_1_1 = new JButton("Remove an Item");
 		btnNewButton_1_1.setFont(new Font("Tahoma", Font.PLAIN, 15));
@@ -120,7 +128,7 @@ public class JSwingClass2 {
 		
 		tapScreenPanel = new JPanel();
 		layeredPane.setLayer(tapScreenPanel, 1);
-		tapScreenPanel.setBounds(0, 0, 984, 785);
+		tapScreenPanel.setBounds(0, 0, 985, 785);
 		layeredPane.add(tapScreenPanel);
 		tapScreenPanel.setLayout(null);
 		
@@ -139,7 +147,7 @@ public class JSwingClass2 {
 	
 	private void setUpLanguage() {
 		String[] selectedlanguage = {"English", "French", "Spanish"};
-		languageBox = new JComboBox(selectedlanguage);
+		languageBox = new JComboBox<String>(selectedlanguage);
 		languageBox.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		languageBox.setBounds(10, 24, 115, 42);
 		secondaryPanel.add(languageBox);
@@ -214,7 +222,7 @@ public class JSwingClass2 {
 	    String[][] data = {{"Wagyu beef @$250.00", "0.50", "$125.00"},{"Pork chop @$4.67", "5.00", "$23.35"}};
 	    
 	    // column name
-		String[] cName = {"Item @cost per unit", "Count", "Total cost"};
+		String[] cName = {"Item ", "@cost per unit", "Total cost"};
 		
 		table = new JTable(new DefaultTableModel(data, cName));
 		paymentTableModel = (DefaultTableModel) table.getModel();
@@ -222,5 +230,33 @@ public class JSwingClass2 {
 	}
 	public static void main(String[] args) {
 		new JSwingClass2();
+	}
+	
+	class MyBarcodeScanner implements BarcodeScannerObserver {
+
+		@Override
+		public void reactToEnabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void reactToDisabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void reactToBarcodeScannedEvent(BarcodeScanner barcodeScanner, Barcode barcode) {
+			BarcodedProduct scannedItem = ProductDatabases.BARCODED_PRODUCT_DATABASE.get(barcode);
+			if (scannedItem != null) {
+				String item = scannedItem.getBarcode().toString();
+				String itemPrice = scannedItem.getPrice().toString();
+				String itemWeight = String.valueOf(scannedItem.getExpectedWeight());
+				paymentTableModel.addRow(new Object[] {item, itemPrice, itemWeight});
+			}
+		}
+
+		
 	}
 }
