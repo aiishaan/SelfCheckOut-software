@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -121,9 +122,86 @@ public class JSwingClass2 {
 		setUpPaymentTable();
 		setUpPayment();
 		tapScreen();
+		ownBag();
 		
 		touchScreenFrame.setVisible(true);
 	}
+	private void ownBag() {
+			
+			JPanel ownBag = new JPanel();
+			layeredPane.setLayer(ownBag, 1);
+			ownBag.setBounds(0, 0, 984, 785);
+			ownBag.setBackground(Color.LIGHT_GRAY);
+			layeredPane.add(ownBag);
+			ownBag.setLayout(new GridBagLayout());
+			
+			JTextField haveBag = new JTextField("Do you bring your own bag(s) today?");
+	//		screensaver.setDisplayedMnemonicIndex(1);
+	//		screensaver.addActionListener(new ActionListener() {
+	//			public void actionPerformed(ActionEvent e) {
+	//				tapScreenPanel.setVisible(false);
+	//			}
+	//		});
+			haveBag.setFont(new Font("Arial", Font.PLAIN, 40));
+			haveBag.setEditable(false);
+			haveBag.setBorder(javax.swing.BorderFactory.createEmptyBorder());
+			haveBag.setBackground(Color.LIGHT_GRAY);
+			//haveBag.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
+			haveBag.setBounds(0, 0, 984, 785);
+			GridBagConstraints c = new GridBagConstraints();
+			c.gridx = 0;
+			c.gridy = 0;
+			c.ipady = 20;
+			ownBag.add(haveBag, c);
+			
+			JButton yb = new JButton("Yes");
+			JButton nb = new JButton("No");
+			yb.setFont(new Font("Arial", Font.PLAIN, 40));
+			nb.setFont(new Font("Arial", Font.PLAIN, 40));
+			yb.setPreferredSize(new Dimension(200, 75));
+			nb.setPreferredSize(new Dimension(200, 75));
+			c.gridy = 1;
+			ownBag.add(yb, c);
+			c.gridy = 2;
+			ownBag.add(nb, c);
+			nb.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					ownBag.setVisible(false);
+				}
+			});
+			yb.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					ownBag.setVisible(false);
+					ownBagAdded();
+				}
+			});
+	}
+	
+	private void ownBagAdded() {
+		JPanel ownBagAdded = new JPanel();
+		layeredPane.setLayer(ownBagAdded, 1);
+		ownBagAdded.setBounds(0, 0, 984, 785);
+		ownBagAdded.setBackground(Color.LIGHT_GRAY);
+		layeredPane.add(ownBagAdded);
+		ownBagAdded.setLayout(null);
+		
+		JTextArea hadBag = new JTextArea("Please put your bag(s) into bagging area \n   and wait for our attendant to confirm");
+		hadBag.setFont(new Font("Arial", Font.PLAIN, 40));
+		hadBag.setEditable(false);
+		hadBag.setBorder(javax.swing.BorderFactory.createEmptyBorder());
+		hadBag.setBackground(Color.LIGHT_GRAY);
+		hadBag.setBounds(145, 350, 984, 785);
+		
+		ownBagAdded.add(hadBag);
+		boolean check = false;
+		
+		// wait for attendant to confirm and then set visible to false, rn i'm changing it right away
+		check = true;	// this will change after get acceptance from attendant
+		if (check == true) {
+			ownBagAdded.setVisible(false);
+		}
+	}
+	
 	private void tapScreen() {
 		
 		tapScreenPanel = new JPanel();
@@ -146,8 +224,8 @@ public class JSwingClass2 {
 		tapScreenPanel.add(screensaver);}
 	
 	private void setUpLanguage() {
-		String[] selectedlanguage = {"English", "French", "Spanish"};
-		languageBox = new JComboBox<String>(selectedlanguage);
+		languageBox = new JComboBox<String>();
+		languageBox.setModel(new DefaultComboBoxModel<String>(new String[] {"English", "French", "Spanish"}));
 		languageBox.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		languageBox.setBounds(10, 24, 115, 42);
 		secondaryPanel.add(languageBox);
