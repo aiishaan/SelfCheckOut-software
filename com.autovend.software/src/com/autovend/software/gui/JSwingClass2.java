@@ -30,6 +30,8 @@ public class JSwingClass2 {
 	JPanel mainPanel;
 	JPanel secondaryPanel;
 	JLayeredPane layeredPane;
+	JButton purchaseBagsButton;
+	JButton removeItemButton;
 	JButton screensaver;
 	JButton helpButton;
 	JButton audioButton;
@@ -56,6 +58,17 @@ public class JSwingClass2 {
 		layeredPane = new JLayeredPane();
 		touchScreenFrame.getContentPane().add(layeredPane, BorderLayout.CENTER);
 		
+		setUpMainPanel();
+		setUpSecondaryPanel();
+		setUpPaymentTable();
+		setUpPayment();
+		tapScreen();
+		ownBag();
+		
+		touchScreenFrame.setVisible(true);
+	}
+	
+	private void setUpMainPanel() {
 		mainPanel = new JPanel();
 		mainPanel.setBackground(Color.LIGHT_GRAY);
 		mainPanel.setBounds(0, 0, 984, 785);
@@ -78,7 +91,7 @@ public class JSwingClass2 {
 		memberTextField.setBounds(42, 106, 468, 40);
 		mainPanel.add(memberTextField);
 		
-		JButton purchaseBagsButton = new JButton("Purchase Bags");
+		purchaseBagsButton = new JButton("Purchase Bags");
 		purchaseBagsButton.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		purchaseBagsButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -88,6 +101,8 @@ public class JSwingClass2 {
 		purchaseBagsButton.setBounds(42, 183, 468, 40);
 		mainPanel.add(purchaseBagsButton);
 		
+		/* Adding RigidAreas. RigidAreas simply ensure that no component 
+		 * enters a specific part of the screen. */
 		Component rigidArea = Box.createRigidArea(new Dimension(20, 20));
 		rigidArea.setBounds(42, 70, 468, 39);
 		mainPanel.add(rigidArea);
@@ -100,34 +115,29 @@ public class JSwingClass2 {
 		rigidArea3.setBounds(42, 219, 468, 39);
 		mainPanel.add(rigidArea3);
 		
-		JButton btnNewButton_1_1 = new JButton("Remove an Item");
-		btnNewButton_1_1.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		btnNewButton_1_1.addActionListener(new ActionListener() {
+		removeItemButton = new JButton("Remove an Item");
+		removeItemButton.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		removeItemButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 			}
 		});
-		btnNewButton_1_1.setBounds(42, 256, 468, 40);
-		mainPanel.add(btnNewButton_1_1);
-		
+		removeItemButton.setBounds(42, 256, 468, 40);
+		mainPanel.add(removeItemButton);
+	}
+	
+	private void setUpSecondaryPanel() {
 		secondaryPanel = new JPanel();
 		secondaryPanel.setBackground(Color.LIGHT_GRAY);
 		layeredPane.setLayer(secondaryPanel, 2);
 		secondaryPanel.setBounds(0, 784, 984, 77);
 		layeredPane.add(secondaryPanel);
 		secondaryPanel.setLayout(null);
-		
 		setUpLanguage();
 		setUpAudio();
 		setUpHelp();
-		setUpPaymentTable();
-		setUpPayment();
-		tapScreen();
-		ownBag();
-		
-		touchScreenFrame.setVisible(true);
 	}
+	
 	private void ownBag() {
-			
 			JPanel ownBag = new JPanel();
 			layeredPane.setLayer(ownBag, 1);
 			ownBag.setBounds(0, 0, 984, 785);
@@ -314,14 +324,10 @@ public class JSwingClass2 {
 
 		@Override
 		public void reactToEnabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {
-			// TODO Auto-generated method stub
-			
 		}
 
 		@Override
 		public void reactToDisabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {
-			// TODO Auto-generated method stub
-			
 		}
 
 		@Override
