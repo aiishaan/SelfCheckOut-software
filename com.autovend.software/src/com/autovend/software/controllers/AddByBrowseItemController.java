@@ -44,24 +44,24 @@ public class AddByBrowseItemController extends ItemAdderController<TouchScreen, 
 	/*
 	 * Event When item is added by browsing 
 	 */
-	public void AddByBrowsingEvent(String selectedItem, String SelectedQuantity) {
+	public void AddByBrowsingEvent(String selectedItem) {
 		String item = selectedItem; 
-		disableDevice();  // Blocks the self-checkout system from further customer interaction.
 		
 		SelecetedProduct(item);
 		
 		//if inputed item is not null
 		if (barcodedItem != null) {
-			//add item to bagging area and update expected weight 
+			//add item to order
 			this.getMainController().addItem(this, barcodedItem, itemWeight);
-	
+
 		}
 		//if item added does not exit through exception
 		else {
 			throw new SimulationException("Product does not exist");
 		}
+		this.getMainController().baggedItemsValid(null);
+			
 		
-		enableDevice();	//Unblocks the self-checkout system
 	}
 	
 
