@@ -59,7 +59,6 @@ public class ElectronicScaleController extends BaggingAreaController<ElectronicS
 	
 	public void attendantInput(boolean approval) {
 		AttendantApproval = approval;
-		return;
 	}
 
 	@Override
@@ -119,24 +118,20 @@ public class ElectronicScaleController extends BaggingAreaController<ElectronicS
 
 	public final void doNotAddItemToBaggingArea(ElectronicScale scale, double weight) {
 		//lock from adding more items
-		mainController.baggingItemLock = true;
+		this.getMainController().baggingItemLock = true;
 
 		//TODO: System: Signals to the Attendant I/O that a no-bagging request is in progress.
 		//TODO: Approve request (function created below)
 
 		//if attendant approved, reduce expected weight
-		if (mainController.AttendantApproved) {
-			for (BaggingAreaController baggingController : mainController.getValidBaggingControllers()) {
+		if (this.getMainController().AttendantApproved) {
+			for (BaggingAreaController baggingController : this.getMainController().getValidBaggingControllers()) {
 				removeAddedWeight(weight);
 			}
 		}
 		//unlock system when done so they can continue adding items
-		mainController.baggingItemLock = false;
+		this.getMainController().baggingItemLock = false;
 
-	}
-
-	public final void approveRequest() {
-		mainController.AttendantApproved = true;
 	}
 
 	@Override
