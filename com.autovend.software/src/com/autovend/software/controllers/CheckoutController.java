@@ -421,8 +421,8 @@ public class CheckoutController {
 		baggingItemLock = true;
 	}
 	
-	public void addItemByPLU(ItemAdderController adder, String PriceLookUpCode , String quantity) {
-        PLUCodedProduct pluProduct = PLU_PRODUCT_DATABASE.get(PriceLookUpCode);
+	public void addItemByPLU(ItemAdderController adder, PriceLookUpCode plucode  , String quantity) {
+        PLUCodedProduct pluProduct = PLU_PRODUCT_DATABASE.get(plucode);
         //each PluProduct is per kilogram, quatity is the number of kilograms
         if (pluProduct != null) {
             BigDecimal itemQuantity = new BigDecimal(quantity);
@@ -443,10 +443,11 @@ public class CheckoutController {
 	public void addItemByTextSearch(ItemAdderController adder, String text) {
 		String[] keywords = text.split(" ");
 		boolean found = false;
+		
 
 		for (BarcodedProduct barprod : BARCODED_PRODUCT_DATABASE.values()) {
 			String desc = barprod.getDescription();
-
+			System.out.println(desc);
 			for (String word : desc.split(" ")) {
 				int matches = 0;
 
@@ -467,6 +468,7 @@ public class CheckoutController {
 		if (!found) {
 			for (PLUCodedProduct pluprod : PLU_PRODUCT_DATABASE.values()) {
 				String desc = pluprod.getDescription();
+				System.out.println(desc);
 
 				for (String word : desc.split(" ")) {
 					int matches = 0;
@@ -479,7 +481,7 @@ public class CheckoutController {
 					// If all keywords are present in this product's description, then it is matched
 					if (matches == keywords.length) {
 						found = true;
-						this.addItemByPLU(adder, pluprod.getPLUCode().toString(), "1");//WIll call when Aman implements add by plu code.
+						this.addItemByPLU(adder, pluprod.getPLUCode(), "1");//WIll call when Aman implements add by plu code.
 						break;
 					}
 				}

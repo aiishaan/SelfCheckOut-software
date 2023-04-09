@@ -120,7 +120,7 @@ public class AddItemByTextSearchTest {
 		checkoutController.addItemByTextSearch(scannerController, "rice");
 
 		// Adds the cost of the first item to the total
-		BigDecimal total = databaseItem1.getPrice();
+		BigDecimal total = databaseItem2.getPrice();
 
 		// Checks that the item was added and the order was updated to 1
 		assertEquals(1, checkoutController.getOrder().size());
