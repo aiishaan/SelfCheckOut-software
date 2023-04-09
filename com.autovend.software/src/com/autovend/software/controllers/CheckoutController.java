@@ -37,7 +37,6 @@ import com.autovend.products.Product;
 @SuppressWarnings("rawtypes")
 
 public class CheckoutController {
-	private SelfCheckoutStation station;
 	private static int IDcounter = 1;
 	private int stationID = IDcounter++;
 
@@ -671,48 +670,48 @@ public class CheckoutController {
 		return this.validBaggingControllers;
 	}
 	
-	public void stationStartup() {
-		this.station.baggingArea.enable();
-		this.station.billInput.enable();
-		this.station.billOutput.enable();
-		this.station.billStorage.enable();
-		this.station.billValidator.enable();
-		this.station.cardReader.enable();
-		this.station.coinStorage.enable();
-		this.station.coinTray.enable();
-		this.station.coinValidator.enable();
-		this.station.handheldScanner.enable();
-		this.station.mainScanner.enable();
-		this.station.printer.enable();
-		this.station.scale.enable();
-		this.station.screen.enable();
-		for(CoinDispenser coinDispenser: this.station.coinDispensers.values()) {
+	public void stationStartup(SelfCheckoutStation station) {
+		station.baggingArea.enable();
+		station.billInput.enable();
+		station.billOutput.enable();
+		station.billStorage.enable();
+		station.billValidator.enable();
+		station.cardReader.enable();
+		station.coinStorage.enable();
+		station.coinTray.enable();
+		station.coinValidator.enable();
+		station.handheldScanner.enable();
+		station.mainScanner.enable();
+		station.printer.enable();
+		station.scale.enable();
+		station.screen.enable();
+		for(CoinDispenser coinDispenser: station.coinDispensers.values()) {
 			coinDispenser.enable();
 		}
-		for(BillDispenser billDispenser: this.station.billDispensers.values()) {
+		for(BillDispenser billDispenser: station.billDispensers.values()) {
 			billDispenser.enable();
 		}
 	}
 	
-	public void stationShutdown() {
-		this.station.baggingArea.disable();
-		this.station.billInput.disable();
-		this.station.billOutput.disable();
-		this.station.billStorage.disable();
-		this.station.billValidator.disable();
-		this.station.cardReader.disable();
-		this.station.coinStorage.disable();
-		this.station.coinTray.disable();
-		this.station.coinValidator.disable();
-		this.station.handheldScanner.disable();
-		this.station.mainScanner.disable();
-		this.station.printer.disable();
-		this.station.scale.disable();
-		this.station.screen.disable();
-		for(CoinDispenser coinDispenser: this.station.coinDispensers.values()) {
+	public void stationShutdown(SelfCheckoutStation station) {
+		station.baggingArea.disable();
+		station.billInput.disable();
+		station.billOutput.disable();
+		station.billStorage.disable();
+		station.billValidator.disable();
+		station.cardReader.disable();
+		station.coinStorage.disable();
+		station.coinTray.disable();
+		station.coinValidator.disable();
+		station.handheldScanner.disable();
+		station.mainScanner.disable();
+		station.printer.disable();
+		station.scale.disable();
+		station.screen.disable();
+		for(CoinDispenser coinDispenser: station.coinDispensers.values()) {
 			coinDispenser.disable();
 		}
-		for(BillDispenser billDispenser: this.station.billDispensers.values()) {
+		for(BillDispenser billDispenser: station.billDispensers.values()) {
 			billDispenser.disable();
 		}
 	}
