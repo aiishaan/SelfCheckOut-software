@@ -1,6 +1,9 @@
 # Fuck MacOS
 **/.DS_Store
 
+# Fuck IntelliJ
+**/.idea/
+
 # Compiled class file
 *.class
 
