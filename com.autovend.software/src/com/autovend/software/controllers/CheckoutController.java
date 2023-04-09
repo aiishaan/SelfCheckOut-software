@@ -423,12 +423,12 @@ public class CheckoutController {
 	
 	public void addItemByPLU(ItemAdderController adder, String PriceLookUpCode , String quantity) {
         PLUCodedProduct pluProduct = PLU_PRODUCT_DATABASE.get(PriceLookUpCode);
-        
+        //each PluProduct is per kilogram, quatity is the number of kilograms
         if (pluProduct != null) {
             BigDecimal itemQuantity = new BigDecimal(quantity);
             BigDecimal itemPrice = pluProduct.getPrice();
             BigDecimal itemTotalPrice = itemPrice.multiply(itemQuantity);
-            double itemWeight = 1 * Double.parseDouble(quantity);//Since there is no expected weight all Plu Products will be given an abritrary weight of 1
+            double itemWeight = 1 * Double.parseDouble(quantity);//quantity(number of kilograms) * 1 kilogram
             PLUCodedProduct UpdatedProduct = new PLUCodedProduct(pluProduct.getPLUCode(), pluProduct.getDescription(), itemTotalPrice);
             //Needed because addItem calls .getPrice() and the updated price is required
             // Here you can add any additional logic related to the calculated total price
@@ -440,7 +440,7 @@ public class CheckoutController {
     }
 	
 	//redesigned to make it so that the user can pass in their own database that will be searched
-	public void addItemViaTextSearch(ItemAdderController adder, String text) {
+	public void addItemByTextSearch(ItemAdderController adder, String text) {
 		String[] keywords = text.split(" ");
 		boolean found = false;
 
