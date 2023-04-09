@@ -27,7 +27,7 @@ import com.autovend.software.controllers.AddByBrowseItemController;
 import com.autovend.software.controllers.BarcodeScannerController;
 import com.autovend.software.controllers.CheckoutController;
 import com.autovend.software.controllers.ElectronicScaleController;
-
+import com.autovend.devices.SimulationException;
 /**
  * @author hossa
  *
@@ -46,6 +46,8 @@ public class AddByBrowseItemControllerTest {
 	Barcode testBarcode;
 	BarcodedUnit testProductUnit;
 	SellableUnit testSellableProduct;
+	
+	
 	int inventory = 5;
 
 	/**
@@ -60,7 +62,9 @@ public class AddByBrowseItemControllerTest {
 		
 		// add barcoded product
 		testBarcode = new Barcode(Numeral.zero, Numeral.one, Numeral.two);
+		
 		testProduct = new BarcodedProduct(testBarcode, "Test Product", testprice, 10.0);
+		
 		testSellableProduct = new BarcodedUnit(testBarcode, 10.0);
 		ProductDatabases.BARCODED_PRODUCT_DATABASE.put(testBarcode, testProduct);	
 
@@ -85,13 +89,14 @@ public class AddByBrowseItemControllerTest {
 	
 		testBarcode = null;
 		testProduct = null;
+		//testProduct2 = null;
 		testSellableProduct = null;
 		ProductDatabases.BARCODED_PRODUCT_DATABASE.clear();
 		
 	}
 
 	@Test
-	public void test() {
+	public void AddByBrowsingEventTest() {
 		System.out.println("test");
 		String Item = "Test Product";
 		BigDecimal total = testProduct.getPrice();
@@ -105,8 +110,18 @@ public class AddByBrowseItemControllerTest {
 		assertEquals(total, checkoutController.getCost());
 		
 		
-
+	}
+	@Test (expected = SimulationException.class)
+	public void AddByBrowsingEventTestNullProduct() {
+		System.out.println("test2");
+		String Item = "Test Product2";
+		BigDecimal total = testProduct.getPrice();
+		
+		//add item by browse 
+		browseItemController.AddByBrowsingEvent(Item);
+		
+		
+		
 		
 	}
-
 }
