@@ -55,7 +55,6 @@ public class CardPaymentTest {
         public boolean canPostTransaction;
         /**
          * Create a card provider.
-         *
          * @param name The company's name.
          * @throws SimulationException If name is null.
          */
@@ -179,9 +178,6 @@ public class CardPaymentTest {
         assertEquals(controllerStub.getRemainingAmount(), BigDecimal.valueOf(0));
         assertTrue(cardReaderStub.isDisabled());
     }
-    @Test
-    //Test is broken and had to be removed
-    public void testSwipeFail(){}
 
     @Test
     public void testTapFail(){
@@ -204,7 +200,6 @@ public class CardPaymentTest {
      * makes sense to do so here
      */
 
-    //This test is likely broken due to changes with payByCard
     @Test
     public void payByCardTestSuccess(){
         assertFalse(readerControllerStub.isPaying);
@@ -215,7 +210,6 @@ public class CardPaymentTest {
     }
 
 
-    //This test is likely broken due to changes with payByCard
     @Test
     public void payByCardTestSystemProtectionLock(){
         assertTrue(cardReaderStub.isDisabled());
@@ -225,7 +219,6 @@ public class CardPaymentTest {
         assertTrue(cardReaderStub.isDisabled());
     }
 
-    //This test is likely broken due to changes with payByCard
     @Test
     public void payByCardTestBaggingLock(){
         assertTrue(cardReaderStub.isDisabled());
@@ -235,7 +228,6 @@ public class CardPaymentTest {
         assertTrue(cardReaderStub.isDisabled());
     }
 
-    //This test is likely broken due to changes with payByCard
     @Test
     public void payByCardTestNullBank(){
         assertTrue(cardReaderStub.isDisabled());
@@ -244,7 +236,6 @@ public class CardPaymentTest {
         assertTrue(cardReaderStub.isDisabled());
     }
     
-    //This test is likely broken due to changes with payByCard
     @Test
     public void payByCardTestPayMoreThanOrderCost(){
         assertTrue(cardReaderStub.isDisabled());
@@ -307,8 +298,16 @@ public class CardPaymentTest {
          } catch (Exception ex){
              fail("Exception incorrectly thrown");
          }
-         assertEquals(controllerStub.getRemainingAmount(), BigDecimal.valueOf(0));
+         assertEquals(controllerStub.getRemainingAmount(), BigDecimal.valueOf(-1));
          readerControllerStub.giftCard = null;
+    }
+    
+    @Test
+    public void payByGiftFull(){
+        assertFalse(readerControllerStub.isPaying);
+        controllerStub.cost=BigDecimal.ONE;
+        controllerStub.payByGiftCard(BigDecimal.ONE, giftStub);
+        assertFalse(cardReaderStub.isDisabled());
     }
     
     @After

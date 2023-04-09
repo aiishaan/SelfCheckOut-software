@@ -76,7 +76,6 @@ public class CardReaderController extends PaymentController<CardReader, CardRead
 	public void giftPayment (GiftCardInsertData localdata) throws ChipFailureException {
 		BigDecimal balance = localdata.getRemainingBalance();
 		if(balance.compareTo(amount) == 1 || balance.compareTo(amount) == 0){
-			System.out.println("Made it to payment");
 			localdata.deduct(amount);
 			getMainController().addToAmountPaid(this.amount);
 		}
@@ -168,10 +167,15 @@ public class CardReaderController extends PaymentController<CardReader, CardRead
 		this.isPaying = true;
 		//Data is harvested from the card and saved to the reader.
 		this.data = data;
-		if(giftPayment) {
+		if(giftPayment && this.insertPayment) {
 			giftData = (GiftCardInsertData) data;
+			try {
+				insertGiftPayment(this.giftCard, giftData);
+			} catch (ChipFailureException e) {
+				// This will likely jump back to another method once GUI is set up, possible second payment attempt?
+				paymentFailure = true;
+			}
 		}
-		
 		if (reader != this.getDevice() || !this.isPaying || this.bank==null) {
 			return;
 		}
@@ -209,14 +213,6 @@ public class CardReaderController extends PaymentController<CardReader, CardRead
 				paymentFailure = true;
 			}
 		}
-		if(this.giftPayment) {
-			try {
-				insertGiftPayment(this.giftCard, giftData);
-			} catch (ChipFailureException e) {
-				// This will likely jump back to another method once GUI is set up, possible second payment attempt?
-				paymentFailure = true;
-			}
-		}
 		this.isPaying = false;
 		this.insertPayment = false;
 		this.swipePayment = false;
@@ -247,7 +243,6 @@ public class CardReaderController extends PaymentController<CardReader, CardRead
 		this.enableDevice();
 		this.giftCard = localGift;
 		this.amount = amount;
-		giftPayment = true;
-		
+		this.giftPayment = true;
 	}
 }
