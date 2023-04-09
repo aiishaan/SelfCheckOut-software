@@ -284,9 +284,11 @@ public class TestMembershipCardController {
 
 	@Test
 	public void testSwipeMembershipCard() throws IOException {
-		cr.tap(membershipCard);
+		cr.swipe(membershipCard,null);
 		System.out.println(crc.cardData.getType());
-
+		String actual = crc.cardData.getType();
+		String expected = "Membership";
+		assertEquals(expected, actual);
 	}
 
 }
