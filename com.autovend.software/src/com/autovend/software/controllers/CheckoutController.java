@@ -671,7 +671,7 @@ public class CheckoutController {
 		return this.validBaggingControllers;
 	}
 
-	public String inputMembershipNumber(){
+	public String inputMembershipNumberBySwipe(){
 //		//System IO, Custom IO
 		for (PaymentController crc: validPaymentControllers){
 
