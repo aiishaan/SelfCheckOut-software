@@ -17,6 +17,8 @@ import com.autovend.PriceLookUpCodedUnit;
 import com.autovend.devices.BarcodeScanner;
 import com.autovend.devices.ElectronicScale;
 import com.autovend.external.ProductDatabases;
+import static com.autovend.external.ProductDatabases.BARCODED_PRODUCT_DATABASE;
+import static com.autovend.external.ProductDatabases.PLU_PRODUCT_DATABASE;
 import com.autovend.products.BarcodedProduct;
 import com.autovend.products.PLUCodedProduct;
 import com.autovend.software.controllers.BarcodeScannerController;
@@ -50,18 +52,18 @@ public class AddItemByTextSearchTest {
 		scaleController = new ElectronicScaleController(new ElectronicScale(1000, 1));
 
 		// First item to be scanned
-		databaseItem1 = new BarcodedProduct(new Barcode(Numeral.three, Numeral.three), "milk",
+		databaseItem1 = new BarcodedProduct(new Barcode(Numeral.three, Numeral.three, Numeral.five, Numeral.five), "milk",
 				BigDecimal.valueOf(83.29), 359.0);
 
 		// Second item to be scanned
-		databaseItem2 = new PLUCodedProduct(new PriceLookUpCode(Numeral.four, Numeral.five), "bread",
+		databaseItem2 = new PLUCodedProduct(new PriceLookUpCode(Numeral.four, Numeral.five, Numeral.five, Numeral.five), "rice",
 				BigDecimal.valueOf(42));
 
-		validUnit1 = new BarcodedUnit(new Barcode(Numeral.three, Numeral.three), 359.0);
-		validUnit2 = new PriceLookUpCodedUnit(new PriceLookUpCode(Numeral.four, Numeral.five), 42.0);
+		validUnit1 = new BarcodedUnit(new Barcode(Numeral.three, Numeral.three, Numeral.five, Numeral.five), 359.0);
+		validUnit2 = new PriceLookUpCodedUnit(new PriceLookUpCode(Numeral.four, Numeral.five, Numeral.five, Numeral.five), 42.0);
 
-		ProductDatabases.BARCODED_PRODUCT_DATABASE.put(databaseItem1.getBarcode(), databaseItem1);
-		ProductDatabases.PLU_PRODUCT_DATABASE.put(databaseItem2.getPLUCode(), databaseItem2);
+		BARCODED_PRODUCT_DATABASE.put(databaseItem1.getBarcode(), databaseItem1);
+		PLU_PRODUCT_DATABASE.put(databaseItem2.getPLUCode(), databaseItem2);
 
 		stubScanner = new BarcodeScanner();
 		stubScale = new ElectronicScale(1000, 1);
@@ -115,7 +117,7 @@ public class AddItemByTextSearchTest {
 	public void testAddItemInPluDatabase() {
 
 		// Adds item
-		checkoutController.addItemByTextSearch(scannerController, "bread");
+		checkoutController.addItemByTextSearch(scannerController, "rice");
 
 		// Adds the cost of the first item to the total
 		BigDecimal total = databaseItem1.getPrice();
