@@ -1,6 +1,8 @@
 package com.autovend.software.controllers;
 import java.util.HashMap;
 
+import com.autovend.devices.SelfCheckoutStation;
+
 public class AttendantController {
 	// Handles the Operations of the attendant
 	
@@ -57,12 +59,12 @@ public class AttendantController {
 	}
 	
 	
-	public void attendantStationStartup(CheckoutController checkoutController) {
-		checkoutController.stationStartup();
+	public void attendantStationStartup(CheckoutController checkoutController, SelfCheckoutStation scs) {
+		checkoutController.stationStartup(scs);
 	}
 	
-	public void attendantStationShutdown(CheckoutController checkoutController) {
-		checkoutController.stationShutdown();
+	public void attendantStationShutdown(CheckoutController checkoutController, SelfCheckoutStation scs) {
+		checkoutController.stationShutdown(scs);
 	}
 
 }
