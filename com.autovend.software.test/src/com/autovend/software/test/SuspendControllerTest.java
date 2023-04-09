@@ -3,7 +3,7 @@ import com.autovend.software.controllers.SuspendController;
 
 import org.junit.Test;
 
-import sevenWonder.SuspendController.Station;
+import com.autovend.software.controllers.SuspendController.Station;
 
 import static org.junit.Assert.*;
 
