@@ -283,7 +283,7 @@ public class CardPaymentTest {
     public void testSwipeTapMembershipCard() throws IOException {
         controllerStub.payByCard(bankStub, BigDecimal.ONE);
         cardReaderStub.tap(mCardStub);
-        String mNum = controllerStub.inputMembershipNumber();
+        String mNum = controllerStub.inputMembershipNumberBySwiping();
         System.out.println(mNum);
         assertEquals("123123123123", mNum);
     }

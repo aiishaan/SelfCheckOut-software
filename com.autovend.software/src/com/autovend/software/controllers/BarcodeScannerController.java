@@ -34,6 +34,7 @@ public class BarcodeScannerController extends ItemAdderController<BarcodeScanner
 	}
 
 	public void reactToBarcodeScannedEvent(BarcodeScanner barcodeScanner, Barcode barcode) {
+
 		// if barcode is for a valid object, then add the product found to the order on
 		// the main controller.
 		// otherwise ignore the item.

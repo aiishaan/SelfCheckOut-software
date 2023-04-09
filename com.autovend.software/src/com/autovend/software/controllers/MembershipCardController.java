@@ -44,7 +44,7 @@ public class MembershipCardController{
 	 * that it should be a digit between 0-9.
 	 */
 
-	public static boolean isValid(String memberNum) throws IllegalDigitException {
+	public boolean isValid(String memberNum) throws IllegalDigitException {
 		if (memberNum == null || memberNum.length() != 12) {
 			throw new IllegalDigitException("The Membership number should be exactly 12 digits long.");
 		}
@@ -67,12 +67,12 @@ public class MembershipCardController{
 	 * entering a valid Membership number, the method returns null.
 	 */
 
-	public static String getValidMembershipNumber(Scanner scan) throws IllegalDigitException {
+	public String getValidMembershipNumber(String MNum) throws IllegalDigitException {
 		int numTries = 0;
 		String memberNum = null;
 		while (numTries < MAX_TRIES) {
 			System.out.println("Enter your Membership number: ");
-			memberNum = scan.nextLine();
+			memberNum = MNum;
 			try {
 				if (isValid(memberNum)) {
 					return memberNum;
@@ -109,41 +109,41 @@ public class MembershipCardController{
 	 * process.
 	 */
 
-	@SuppressWarnings("resource")
-	public void updateMembershipStatus() {
-		Scanner scan = new Scanner(System.in);
-		MembershipCard mc = new MembershipCard("Membership Card", "0000", "XYZ", false);
-		System.out.println("Do you have a Membership number? (yes or no or cancel)");
-		String response1 = scan.nextLine();
-		if (response1.equalsIgnoreCase("yes")) {
-			membershipNumber = getValidMembershipNumber(scan);
-			if (membershipNumber != null) {
-				mc = new MembershipCard("Membership Card", membershipNumber, "Regular Shopper", false);
-				isActive = true;
-			} else {
-				System.out.println("You will be enrolled without a membership number.");
-			}
-		} else if (response1.equalsIgnoreCase("no")) {
-			System.out.println("Do you want to continue without a Membership number? (yes or no)");
-			String response2 = scan.nextLine();
-			if (!response2.equalsIgnoreCase("no") && !response2.equalsIgnoreCase("yes")) {
-				System.out.println("Invalid input. Please enter 'yes' or 'no'.");
-				return;
-			} else if (response2.equalsIgnoreCase("no")) {
-				membershipNumber = getValidMembershipNumber(scan);
-				if (membershipNumber != null) {
-					mc = new MembershipCard("Membership Card", membershipNumber, "Regular Shopper", false);
-					isActive = true;
-				} else {
-					System.out.println("You will be enrolled without a membership number.");
-				}
-			}
-		} else if (response1.equalsIgnoreCase("cancel")) {
-			System.out.println("Membership enrollment has been cancelled.");
-			return;
-		}
-		System.out.println("Membership status: " + isActive);
-		System.out.println("Membership card information: " + mc.toString());
-	}
+//	@SuppressWarnings("resource")
+//	public void updateMembershipStatus() {
+//		Scanner scan = new Scanner(System.in);
+//		MembershipCard mc = new MembershipCard("Membership Card", "0000", "XYZ", false);
+//		System.out.println("Do you have a Membership number? (yes or no or cancel)");
+//		String response1 = scan.nextLine();
+//		if (response1.equalsIgnoreCase("yes")) {
+//			membershipNumber = getValidMembershipNumber(scan);
+//			if (membershipNumber != null) {
+//				mc = new MembershipCard("Membership Card", membershipNumber, "Regular Shopper", false);
+//				isActive = true;
+//			} else {
+//				System.out.println("You will be enrolled without a membership number.");
+//			}
+//		} else if (response1.equalsIgnoreCase("no")) {
+//			System.out.println("Do you want to continue without a Membership number? (yes or no)");
+//			String response2 = scan.nextLine();
+//			if (!response2.equalsIgnoreCase("no") && !response2.equalsIgnoreCase("yes")) {
+//				System.out.println("Invalid input. Please enter 'yes' or 'no'.");
+//				return;
+//			} else if (response2.equalsIgnoreCase("no")) {
+//				membershipNumber = getValidMembershipNumber(scan);
+//				if (membershipNumber != null) {
+//					mc = new MembershipCard("Membership Card", membershipNumber, "Regular Shopper", false);
+//					isActive = true;
+//				} else {
+//					System.out.println("You will be enrolled without a membership number.");
+//				}
+//			}
+//		} else if (response1.equalsIgnoreCase("cancel")) {
+//			System.out.println("Membership enrollment has been cancelled.");
+//			return;
+//		}
+//		System.out.println("Membership status: " + isActive);
+//		System.out.println("Membership card information: " + mc.toString());
+//	}
 
 }
