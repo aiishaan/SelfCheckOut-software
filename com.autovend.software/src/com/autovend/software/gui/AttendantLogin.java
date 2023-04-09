@@ -22,6 +22,7 @@ import java.awt.FlowLayout;
 import com.autovend.software.controllers.AttendantController;
 
 import com.autovend.devices.AbstractDevice;
+import com.autovend.devices.SupervisionStation;
 import com.autovend.devices.observers.AbstractDeviceObserver;
 import com.autovend.devices.observers.TouchScreenObserver;
 import com.autovend.devices.TouchScreen;
@@ -48,12 +49,12 @@ public class AttendantLogin implements TouchScreenObserver{
 	
 	
 	//constructor
-	public AttendantLogin(TouchScreen cScreen) {
+	public AttendantLogin(SupervisionStation aStation) {
 		//creating a new JFrame
-		touchScreenFrame = cScreen.getFrame();
-		touchScreenFrame.setExtendedState(JFrame.NORMAL);
-		touchScreenFrame.setResizable(true);
-		touchScreenFrame.resize(new Dimension(1000,900));
+		this.touchScreenFrame = aStation.screen.getFrame();
+        this.touchScreenFrame.setExtendedState(JFrame.NORMAL);
+        this.touchScreenFrame.setSize(1000,900);
+        this.touchScreenFrame.setResizable(true);
 		//creating a new layered pane
 		logInPane = new JLayeredPane();
 		//setting the size of the pane
@@ -184,8 +185,8 @@ public class AttendantLogin implements TouchScreenObserver{
 	}
 	
 	public static void main(String[]args) {
-		TouchScreen cScreen = new TouchScreen();
-		 new AttendantLogin(cScreen);
+		SupervisionStation aStation = new SupervisionStation();
+		 new AttendantLogin(aStation);
 	}
 
 	@Override
