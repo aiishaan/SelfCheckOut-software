@@ -524,4 +524,10 @@ public class AddItemTest {
 
 	}
 
+	@Test
+	public void TestMembershipCardByScan(){
+		BarcodedUnit notUnit = new BarcodedUnit(new Barcode(Numeral.three, Numeral.four,Numeral.three, Numeral.four,Numeral.three, Numeral.four,Numeral.three, Numeral.four,Numeral.three, Numeral.four,Numeral.three, Numeral.four), 359.0);
+		stubScanner.scan(notUnit);
+		assertEquals("343434343434", checkoutController.membershipNum);
+	}
 }

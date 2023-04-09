@@ -29,6 +29,7 @@ import com.autovend.products.BarcodedProduct;
  */
 public class BarcodeScannerController extends ItemAdderController<BarcodeScanner, BarcodeScannerObserver>
 		implements BarcodeScannerObserver {
+
 	public BarcodeScannerController(BarcodeScanner scanner) {
 		super(scanner);
 	}
@@ -40,6 +41,11 @@ public class BarcodeScannerController extends ItemAdderController<BarcodeScanner
 		// otherwise ignore the item.
 		if (barcodeScanner != this.getDevice()) {
 			return;
+		}
+		if (!this.getMainController().existedMembership && this.getMainController().membershipCardController.isValid(barcode.toString())){
+			this.getMainController().membershipNum = barcode.toString();
+//			System.out.println(this.getMainController().membershipNum);
+			this.getMainController().existedMembership = true;
 		}
 
 		BarcodedProduct scannedItem = ProductDatabases.BARCODED_PRODUCT_DATABASE.get(barcode);

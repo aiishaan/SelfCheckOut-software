@@ -72,8 +72,9 @@ public class CheckoutController {
 	private Map<BaggingAreaController, Double> weightWithBags = new HashMap<>();
 
 	private CardReaderController cardReaderController;
-	private MembershipCardController membershipCardController = new MembershipCardController();
-
+	public MembershipCardController membershipCardController = new MembershipCardController();
+	public String membershipNum = new String();
+	public boolean existedMembership = false;
 	/**
 	 * Constructors for CheckoutController
 	 */
@@ -671,28 +672,8 @@ public class CheckoutController {
 		return this.validBaggingControllers;
 	}
 
-	public String inputMembershipNumberBySwiping(){
-//		//System IO, Custom IO
-		CardReaderController cc = null;
-		for (PaymentController crc: validPaymentControllers){
-
-			try{
-				cc  = (CardReaderController) crc;
-			} catch (Exception e){
-			}
-		}
-		String cardNum = cc.cardData.getNumber();
-		if (membershipCardController.isValid(cardNum)){
-			return cardNum;
-		}else {
-			return null;
-		}
+	public String getMembershipNum(){
+		return membershipNum;
 	}
 
-	public String inputMembershipNumByScanning(){
-		for (ItemAdderController iac : validItemAdderControllers){
-
-		}
-		return "";
-	}
 }
