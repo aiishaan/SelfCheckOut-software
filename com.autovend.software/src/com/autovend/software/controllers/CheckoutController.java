@@ -29,12 +29,17 @@ import java.util.NoSuchElementException;
 import java.util.Scanner;
 import java.util.TreeMap;
 
+import com.autovend.PriceLookUpCode;
 import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.external.CardIssuer;
 import com.autovend.external.ProductDatabases;
 import com.autovend.products.BarcodedProduct;
 import com.autovend.products.PLUCodedProduct;
 import com.autovend.products.Product;
+
+import static com.autovend.external.ProductDatabases.BARCODED_PRODUCT_DATABASE;
+import static com.autovend.external.ProductDatabases.PLU_PRODUCT_DATABASE;
+import static com.autovend.external.ProductDatabases.INVENTORY;
 
 @SuppressWarnings("rawtypes")
 
@@ -418,12 +423,29 @@ public class CheckoutController {
 		baggingItemLock = true;
 	}
 	
+	public void addItemByPLU(ItemAdderController adder, PriceLookUpCode PLUCode, String quantity) {
+        PLUCodedProduct pluProduct = PLU_PRODUCT_DATABASE.get(PLUCode);
+        
+        if (pluProduct != null) {
+            BigDecimal itemQuantity = new BigDecimal(quantity);
+            BigDecimal itemPrice = pluProduct.getPrice();
+            BigDecimal itemTotalPrice = itemPrice.multiply(itemQuantity);
+            double itemWeight = pluProduct.getExpectedWeight();//PLU DOES NOT HAVE A GET EXPECTED WEIGHT ******* HEADS UP.
+
+            // Here you can add any additional logic related to the calculated total price
+
+            addItem(adder, pluProduct, itemWeight);
+        } else {
+            throw new NoSuchElementException("No item could be found with the specified PLU code.");
+        }
+    }
+	
 	//redesigned to make it so that the user can pass in their own database that will be searched
 	public void addItemViaTextSearch(ItemAdderController adder, String text,  ProductDatabases database) {
 		String[] keywords = text.split(" ");
 		boolean found = false;
 
-		for (BarcodedProduct barprod : database.BARCODED_PRODUCT_DATABASE.values()) {
+		for (BarcodedProduct barprod : ProductDatabases.BARCODED_PRODUCT_DATABASE.values()) {
 			String desc = barprod.getDescription();
 
 			for (String word : desc.split(" ")) {
@@ -444,7 +466,7 @@ public class CheckoutController {
 
 		}
 		if (!found) {
-			for (PLUCodedProduct pluprod : database.PLU_PRODUCT_DATABASE.values()) {
+			for (PLUCodedProduct pluprod : ProductDatabases.PLU_PRODUCT_DATABASE.values()) {
 				String desc = pluprod.getDescription();
 
 				for (String word : desc.split(" ")) {
