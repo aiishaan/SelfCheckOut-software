@@ -2,7 +2,7 @@
 **/.DS_Store
 
 # Fuck IntelliJ
-**/.idea/
+**/.idea
 
 # Compiled class file
 *.class
