@@ -281,6 +281,7 @@ public class CardPaymentTest {
 
     @Test
     public void testSwipeMembershipCard() throws IOException {
+        // For QA team please move this test to the MembershipTest, I write here just because it has fully init CardReader env
         cardReaderStub.tap(mCardStub);
         String mNum = controllerStub.getMembershipNum();
 //        System.out.println(mNum);

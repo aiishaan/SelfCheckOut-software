@@ -526,6 +526,7 @@ public class AddItemTest {
 
 	@Test
 	public void TestMembershipCardByScan(){
+		// For QA team please move this test to the MembershipTest, I write here just because it has fully init scanning env
 		BarcodedUnit notUnit = new BarcodedUnit(new Barcode(Numeral.three, Numeral.four,Numeral.three, Numeral.four,Numeral.three, Numeral.four,Numeral.three, Numeral.four,Numeral.three, Numeral.four,Numeral.three, Numeral.four), 359.0);
 		stubScanner.scan(notUnit);
 		assertEquals("343434343434", checkoutController.membershipNum);
