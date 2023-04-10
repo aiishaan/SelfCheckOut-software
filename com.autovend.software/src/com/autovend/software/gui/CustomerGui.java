@@ -44,7 +44,14 @@ import com.autovend.software.controllers.CheckoutController;
 import com.autovend.software.controllers.MembershipCardController;
 import com.autovend.devices.SelfCheckoutStation;
 public class CustomerGui{
-	private JFrame touchScreenFrame;
+	// these are using to call from attendantmain
+	JFrame touchScreenFrame;
+	boolean oB = false;			// own bag
+	JPanel ownBagAdded;
+	
+	
+	
+	
 	private CheckoutController checkoutController;
 	private MembershipCardController membershipCardController;
 	private JComboBox<String> languageBox;
@@ -103,12 +110,15 @@ public class CustomerGui{
   
     
 	
-	public CustomerGui(SelfCheckoutStation cStation, CheckoutController checkoutController, MembershipCardController membershipCardController){
+	public CustomerGui(SelfCheckoutStation cStation, CheckoutController checkoutController, MembershipCardController membershipCardController, int ID){
 
 		this.membershipCardController = membershipCardController;
 		this.touchScreenFrame = cStation.screen.getFrame();
 		this.touchScreenFrame.setExtendedState(JFrame.NORMAL);
 		this.touchScreenFrame.setSize(1000,900);
+		this.touchScreenFrame.setLocationRelativeTo(null);
+		this.touchScreenFrame.setUndecorated(false);
+		this.touchScreenFrame.setTitle(String.format(" Station %d", ID));
 		layeredPane = new JLayeredPane();
 		this.touchScreenFrame.getContentPane().add(layeredPane, BorderLayout.CENTER);
 		this.checkoutController = checkoutController;
@@ -119,7 +129,7 @@ public class CustomerGui{
 		tapScreen();
 		ownBag();
 		
-		this.touchScreenFrame.setVisible(true);
+		this.touchScreenFrame.setVisible(false);
 	}
 	
 	private void setUpMainPanel(SelfCheckoutStation cStation) {
@@ -295,36 +305,22 @@ public class CustomerGui{
 		if (bagsCount <= 0 ) {
 			minus.setEnabled(false);
 		}
-		purBagPane.add(minus, c);
-		
-		JButton add = new JButton("+");
-		add.setFont(new Font("Tahome", Font.BOLD, 50));
-		add.setPreferredSize(new Dimension(200, 200));
-		add.setBounds(584, 317, 100, 100);
-		tempC.gridx = 2;
-		tempC.gridy = 1;
-		tempC.anchor = GridBagConstraints.CENTER;
-		add.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				//purBagPane.setVisible(false);
-				bagsCount = bagsCount + 1;;
-				tempBagsCount.setText(String.valueOf(bagsCount));
-				minus.setEnabled(true);
-			}
-		});
-		purBagPane.add(add, c);
-		
+		purBagPane.add(minus, c);		
 		
 		JButton purchase = new JButton("Purchase Bag(s)");
 		purchase.setFont(new Font("Tahome", Font.PLAIN, 15));
 		purchase.setPreferredSize(new Dimension(200, 50));
 		purchase.setBounds(392, 500, 200, 50);
+		if (bagsCount <= 0) {
+			purchase.setEnabled(false);
+		}
 		tempC.gridx = 1;
 		tempC.gridy = 2;
 		tempC.anchor = GridBagConstraints.CENTER;
 		purchase.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				// Add i bags to payment summary
+				// Add bagsCount bags to payment summary
+				
 				purBagPane.setVisible(false);
 				bagsValue = bagsCount * 0.1;
 				System.out.println(bagsCount);
@@ -341,6 +337,24 @@ public class CustomerGui{
 			}
 		});
 		purBagPane.add(purchase, c);
+		
+		JButton add = new JButton("+");
+		add.setFont(new Font("Tahome", Font.BOLD, 50));
+		add.setPreferredSize(new Dimension(200, 200));
+		add.setBounds(584, 317, 100, 100);
+		tempC.gridx = 2;
+		tempC.gridy = 1;
+		tempC.anchor = GridBagConstraints.CENTER;
+		add.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				//purBagPane.setVisible(false);
+				bagsCount = bagsCount + 1;;
+				tempBagsCount.setText(String.valueOf(bagsCount));
+				minus.setEnabled(true);
+				purchase.setEnabled(true);
+			}
+		});
+		purBagPane.add(add, c);
 	}
 	
 	// Catalogue popup *Alvin
@@ -581,8 +595,8 @@ public class CustomerGui{
 			});
 	}
 	
-	private void ownBagAdded() {
-		JPanel ownBagAdded = new JPanel();
+	public void ownBagAdded() {
+		ownBagAdded = new JPanel();
 		layeredPane.setLayer(ownBagAdded, 1);
 		ownBagAdded.setBounds(0, 0, 984, 785);
 		ownBagAdded.setBackground(Color.LIGHT_GRAY);
@@ -598,12 +612,20 @@ public class CustomerGui{
 		
 		ownBagAdded.add(hadBag);
 		
-		checkoutController.addOwnBags();
-		// wait for attendant to confirm and then set visible to false, rn i'm changing it right away
-		checkoutController.AttendantApproved = false;	// this will change after get acceptance from attendant
-		if (checkoutController.AttendantApproved) {
+		// Set the oB to be true and wait for attendant to accept
+		oB = true;
+		
+		if (oB == false) {
 			ownBagAdded.setVisible(false);
 		}
+		
+		// Temporary disable these codes
+//		checkoutController.addOwnBags();
+//		// wait for attendant to confirm and then set visible to false, rn i'm changing it right away
+//		checkoutController.AttendantApproved = false;	// this will change after get acceptance from attendant
+//		if (checkoutController.AttendantApproved) {
+//			ownBagAdded.setVisible(false);
+//		}
 	}
 	
 	private void tapScreen() {
@@ -1017,6 +1039,6 @@ public class CustomerGui{
         checkoutController.registerPaymentController(billPaymentControllerStub);
 		SelfCheckoutStation cStation = new SelfCheckoutStation(Currency.getInstance("CAD"), billDenominations, coinDenominations, 1, 1);
 		MembershipCardController membershipController = new MembershipCardController();
-		CustomerGui newGui = new CustomerGui(cStation, checkoutController, membershipController); 
+		CustomerGui newGui = new CustomerGui(cStation, checkoutController, membershipController, 1); 
 	}
 }

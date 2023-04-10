@@ -2,6 +2,8 @@ package com.autovend.software.gui;
 
 import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.devices.SupervisionStation;
+import com.autovend.software.controllers.CheckoutController;
+import com.autovend.software.controllers.MembershipCardController;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
@@ -18,6 +20,9 @@ public class AttendantMain {
     JScrollPane stationScrollPane;
     JButton logoutButton;
     JPanel stationListPane;
+    
+    CheckoutController checkoutController;
+	MembershipCardController membershipController;
 
     public AttendantMain(SupervisionStation attendantStation){
 
@@ -41,7 +46,11 @@ public class AttendantMain {
         List<SelfCheckoutStation> supervisedStations = attendantStation.supervisedStations();
         for (int i = 0; i < supervisedStations.size(); i++) {
             SelfCheckoutStation checkoutStation = supervisedStations.get(i);
-            StationStatusBar tempBar = new StationStatusBar(checkoutStation, i+1);
+            
+            CustomerGui tempCGui = new CustomerGui(checkoutStation, checkoutController, membershipController, i+1);
+            tempCGui.touchScreenFrame.setVisible(false);
+            
+            StationStatusBar tempBar = new StationStatusBar(checkoutStation, i+1, tempCGui);
             tempBar.setPreferredSize(new Dimension(980, 100));
             stationListPane.add(tempBar);
         }
@@ -70,8 +79,9 @@ public class AttendantMain {
         JLabel warningField;
         JButton weightDiscrepancyButton;
         JButton removeApproveButton;
+        JButton ownBag;
 
-        public StationStatusBar(SelfCheckoutStation checkoutStationIn, int ID) {
+        public StationStatusBar(SelfCheckoutStation checkoutStationIn, int ID, CustomerGui tempC) {
             this.selfCheckoutStation = checkoutStationIn;
             this.setBackground(Color.LIGHT_GRAY);
             this.setSize(980,100);
@@ -81,20 +91,26 @@ public class AttendantMain {
 
 
             stationTitle = new JLabel(String.format(" Station %d", ID));
-            disableButton = new JButton("Disable Station");
-            warningField = new JLabel("Station running normally"); //might replace with a JList?
-            weightDiscrepancyButton = new JButton("Weight discrepancy detected.\n Approve?");
-            removeApproveButton = new JButton("Approve requested removal");
+            disableButton = new JButton("Enable Station");
+            warningField = new JLabel("This station can run normally"); //might replace with a JList?
+            weightDiscrepancyButton = new JButton("Weight discrepancy");
+            removeApproveButton = new JButton("Removal request");
+            ownBag = new JButton("Own bag");
 
-            disableButton.addActionListener(actionEvent -> disableButtonPressed());
+            disableButton.addActionListener(actionEvent -> disableButtonPressed(tempC));
             weightDiscrepancyButton.addActionListener(actionEvent -> weightDiscrepancyButtonPressed());
             removeApproveButton.addActionListener(actionEvent -> removeButtonPressed());
+//            if (tempC.oB == true) {
+//            	ownBagTriggered(tempC.oB);
+//            }
+            ownBag.addActionListener(actionEvent -> ownBagPressed(tempC));
 
             stationTitle.setBounds(0, 0, 100, 100);
             disableButton.setBounds(100, 0, 200, 100);
             warningField.setBounds(300, 0, 300, 100);
-            weightDiscrepancyButton.setBounds(600, 0, 200, 100);
-            removeApproveButton.setBounds(800, 0, 200, 100);
+            weightDiscrepancyButton.setBounds(800, 0, 100, 100);
+            removeApproveButton.setBounds(900, 0, 100, 100);
+            ownBag.setBounds(700, 0, 100, 100);
 
             warningField.setHorizontalTextPosition(SwingConstants.CENTER);
             stationTitle.setFont(new Font("Tahoma", Font.BOLD, 13));
@@ -104,27 +120,43 @@ public class AttendantMain {
             this.add(warningField);
             this.add(weightDiscrepancyButton);
             this.add(removeApproveButton);
+            this.add(ownBag);
 
             stationTitle.setVisible(true);
             disableButton.setVisible(true);
             warningField.setVisible(true);
             weightDiscrepancyButton.setVisible(false);
             removeApproveButton.setVisible(false);
-
+            ownBag.setVisible(false);
             this.setVisible(true);
         }
 
-        public void disableButtonPressed() {
+        public void disableButtonPressed(CustomerGui tempC) {
             String buttonText = disableButton.getText();
             if(buttonText.equals("Disable Station")) {
                 //code to disable station
                 disableButton.setText("Enable Station");
+                warningField.setText("This station can run normally");
+                tempC.touchScreenFrame.setVisible(false);
             } else {
                 //code to enable station
                 disableButton.setText("Disable Station");
+                warningField.setText("Station is running mormally");
+                tempC.touchScreenFrame.setVisible(true);
+                ownBagTriggered(tempC.oB);
             }
         }
 
+        public void ownBagTriggered(boolean c) {
+        	ownBag.setVisible(true);
+        }
+        
+        public void ownBagPressed(CustomerGui tempC) {
+        	tempC.oB = false;
+        	tempC.ownBagAdded.setVisible(false);
+        	ownBag.setVisible(false);
+        }
+        
         //has no trigger atm
         public void weightDiscrepancyEventTriggered() {
             weightDiscrepancyButton.setVisible(true);
@@ -137,12 +169,12 @@ public class AttendantMain {
 
         //has no trigger atm
         public void removalEventTriggered() {
-            weightDiscrepancyButton.setVisible(true);
+            removeApproveButton.setVisible(true);
         }
 
         public void removeButtonPressed() {
             //code to approve removal at station
-            weightDiscrepancyButton.setVisible(false);
+            removeApproveButton.setVisible(false);
         }
 
         //these methods have no triggers atm
