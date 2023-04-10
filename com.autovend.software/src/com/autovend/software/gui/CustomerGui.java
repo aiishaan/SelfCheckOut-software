@@ -10,6 +10,7 @@ import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Currency;
@@ -84,7 +85,7 @@ public class CustomerGui{
     private double bagsValue = bagsCount*0.1;
     
     // Put data here to access the payment table
-    String[][] data = new String[][] {{"Bag(s) @$0.10", String.valueOf(bagsCount), String.valueOf(bagsValue)},{"Wagyu beef @$250.00", "0.50", "$125.00"},{"Pork chop @$4.67", "5.00", "$23.35"}};
+    String[][] data = new String[][] {{"Bag(s) @$0.10", String.valueOf(bagsCount), "$"+String.valueOf(bagsValue)},{"Wagyu beef @$250.00", "0.50", "$125.00"},{"Pork chop @$4.67", "5.00", "$23.35"}};
     
     // dataI is used to update data
     private int dataI = 3;
@@ -323,13 +324,18 @@ public class CustomerGui{
 			public void actionPerformed(ActionEvent e) {
 				// Add i bags to payment summary
 				purBagPane.setVisible(false);
+				bagsValue = bagsCount * 0.1;
 				System.out.println(bagsCount);
+				System.out.println(bagsValue);
 //				List<List<String>> temp = new 
 //				
 //				data[dataI][0] = "Bag(s)";
 //				data[dataI][1] = String.valueOf(bagsCount);
 //				data[dataI][2] = String.valueOf(bagsValue);
-				setUpPaymentTable();
+				//setUpPaymentTable();
+				DecimalFormat tempValue = new DecimalFormat("0.00");
+				
+				paymentTableModel.addRow(new Object[] {"Bag(s) @$0.10", String.valueOf(bagsCount), "$"+String.valueOf(tempValue.format(bagsValue))});
 			}
 		});
 		purBagPane.add(purchase, c);
