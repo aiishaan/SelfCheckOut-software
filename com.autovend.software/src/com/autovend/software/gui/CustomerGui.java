@@ -6,17 +6,23 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Currency;
+import java.util.List;
 
+import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -25,6 +31,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.border.BevelBorder;
+import javax.swing.border.Border;
 import javax.swing.table.DefaultTableModel;
 
 import com.autovend.Numeral;
@@ -45,6 +52,7 @@ public class CustomerGui{
 	private JPanel keyboardPanel;
 	private JLayeredPane layeredPane;
 	private JButton PLUTextButton;
+	private JButton itemCata;
 	private JButton memberTextButton;
 	private JButton purchaseBagsButton;
 	private JButton removeItemButton;
@@ -72,6 +80,19 @@ public class CustomerGui{
     private JTextField keyboardTextField;
     private String keyboardText;
     
+    private int bagsCount = 0;
+    private double bagsValue = bagsCount*0.1;
+    
+    // Put data here to access the payment table
+    String[][] data = new String[][] {{"Bag(s) @$0.10", String.valueOf(bagsCount), String.valueOf(bagsValue)},{"Wagyu beef @$250.00", "0.50", "$125.00"},{"Pork chop @$4.67", "5.00", "$23.35"}};
+    
+    // dataI is used to update data
+    private int dataI = 3;
+    
+    // use to count digits
+    private int tempCount = 0;
+    
+    
 	// create a constraints object
 	GridBagConstraints c = new GridBagConstraints();
 	final static boolean shouldFill = true;
@@ -91,7 +112,7 @@ public class CustomerGui{
 		
 		setUpMainPanel(cStation);
 		setUpSecondaryPanel();
-		setUpNumericKeyboard();
+		setUpNumericKeyboard(0);
 		tapScreen();
 		ownBag();
 		
@@ -114,21 +135,40 @@ public class CustomerGui{
 		PLUTextButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				selectedPLU = true;
-				openKeyboard();
+				// 0 means there is no requirement to check
+				openKeyboard(0);
 			}
 		});
 		mainPanel.add(PLUTextButton);
+		
+		itemCata = new JButton("Tap here to browse our catalogue of favorite items!");
+		itemCata.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		itemCata.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				cataPopup();
+			}
+		});
+		
+		itemCata.setBounds(42, 106, 468, 40);
+		mainPanel.add(itemCata);
 		
 		memberTextButton = new JButton("Sign in with membership for rewards");
 		memberTextButton.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
 		memberTextButton.setOpaque(true);
 		memberTextButton.setBackground(Color.WHITE);
 		memberTextButton.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		memberTextButton.setBounds(42, 106, 468, 40);
+		memberTextButton.setBounds(42, 183, 468, 40);
+		memberTextButton.setEnabled(true);
 		memberTextButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				selectedMembership = true;
-				openKeyboard();
+				selectedMembership = false;
+				// 1 means there is a requirement to meet before enter, in this case: 12 digits
+				openKeyboard(1);
+				// if member logged in, change text and disable, idk why it doesnt work rn
+				if (selectedMembership == true) {
+					memberTextButton.setText("Membership logged in!");
+					memberTextButton.setEnabled(false);
+				}
 			}
 		});
 		mainPanel.add(memberTextButton);
@@ -137,10 +177,11 @@ public class CustomerGui{
 		purchaseBagsButton.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		purchaseBagsButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				purchaseBag();
 			}
 		});
 		
-		purchaseBagsButton.setBounds(42, 183, 468, 40);
+		purchaseBagsButton.setBounds(42, 256, 468, 40);
 		mainPanel.add(purchaseBagsButton);
 		
 		/* Adding RigidAreas. RigidAreas simply ensure that no component 
@@ -165,7 +206,7 @@ public class CustomerGui{
 				Remove remove = new Remove(cStation);
 			}
 		});
-		removeItemButton.setBounds(42, 256, 468, 40);
+		removeItemButton.setBounds(42, 329, 468, 40);
 		mainPanel.add(removeItemButton);
 		setUpPaymentTable();
 		setUpPayment(cStation);
@@ -183,6 +224,312 @@ public class CustomerGui{
 		setUpHelp();
 	}
 	
+	// Purchase bag
+	private void purchaseBag() {		
+		bagsCount = 0;
+		
+		JPanel purBagPane = new JPanel();
+		layeredPane.setLayer(purBagPane, 1);
+		purBagPane.setBounds(0, 0, 1000, 900);
+		purBagPane.setBackground(Color.LIGHT_GRAY);
+		layeredPane.add(purBagPane);
+		purBagPane.setLayout(new GridBagLayout());
+		
+		// Set up gridbagconstraints
+		GridBagConstraints tempC = new GridBagConstraints();
+		
+		// Back to main screen button
+		JButton back = new JButton("Back to main screen");
+		back.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		back.setPreferredSize(new Dimension(200,50));
+		//back.setSize(200, 50);
+		back.setBounds(392, 20, 200, 50);
+		// add to panel
+		tempC.gridx = 1;
+		tempC.gridy = 0;
+		tempC.fill = GridBagConstraints.HORIZONTAL;
+		tempC.anchor = GridBagConstraints.NORTH;
+		back.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				bagsCount = 0;
+				purBagPane.setVisible(false);
+			}
+		});
+		purBagPane.add(back, c);
+		
+		// Control number of bags customer want to purchase
+		
+		JTextField tempBagsCount = new JTextField();
+		tempBagsCount.setEditable(false);
+		tempBagsCount.setFont(new Font("Tahoma", Font.PLAIN, 50));
+		tempBagsCount.setHorizontalAlignment(JTextField.CENTER);
+		Border tempB = BorderFactory.createLineBorder(Color.black);
+		tempBagsCount.setBorder(tempB);
+		tempBagsCount.setText(String.valueOf(bagsCount));
+		tempBagsCount.setPreferredSize(new Dimension(200, 200));
+		tempBagsCount.setBounds(442, 317, 100, 100);
+		tempC.gridx = 1;
+		tempC.gridy = 1;
+		purBagPane.add(tempBagsCount, c);
+		
+		JButton minus = new JButton("-");
+		minus.setFont(new Font("Tahome", Font.BOLD, 50));
+		minus.setPreferredSize(new Dimension(200, 200));
+		minus.setBounds(300, 317, 100, 100);
+		tempC.gridx = 0;
+		tempC.gridy = 1;
+		tempC.anchor = GridBagConstraints.CENTER;
+		minus.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				//purBagPane.setVisible(false);
+				bagsCount = bagsCount - 1;
+				tempBagsCount.setText(String.valueOf(bagsCount));
+				if (bagsCount <= 0 ) {
+					minus.setEnabled(false);
+				}
+			}
+		});
+		if (bagsCount <= 0 ) {
+			minus.setEnabled(false);
+		}
+		purBagPane.add(minus, c);
+		
+		JButton add = new JButton("+");
+		add.setFont(new Font("Tahome", Font.BOLD, 50));
+		add.setPreferredSize(new Dimension(200, 200));
+		add.setBounds(584, 317, 100, 100);
+		tempC.gridx = 2;
+		tempC.gridy = 1;
+		tempC.anchor = GridBagConstraints.CENTER;
+		add.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				//purBagPane.setVisible(false);
+				bagsCount = bagsCount + 1;;
+				tempBagsCount.setText(String.valueOf(bagsCount));
+				minus.setEnabled(true);
+			}
+		});
+		purBagPane.add(add, c);
+		
+		
+		JButton purchase = new JButton("Purchase Bag(s)");
+		purchase.setFont(new Font("Tahome", Font.PLAIN, 15));
+		purchase.setPreferredSize(new Dimension(200, 50));
+		purchase.setBounds(392, 500, 200, 50);
+		tempC.gridx = 1;
+		tempC.gridy = 2;
+		tempC.anchor = GridBagConstraints.CENTER;
+		purchase.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				// Add i bags to payment summary
+				purBagPane.setVisible(false);
+				System.out.println(bagsCount);
+//				List<List<String>> temp = new 
+//				
+//				data[dataI][0] = "Bag(s)";
+//				data[dataI][1] = String.valueOf(bagsCount);
+//				data[dataI][2] = String.valueOf(bagsValue);
+				setUpPaymentTable();
+			}
+		});
+		purBagPane.add(purchase, c);
+	}
+	
+	// Catalogue popup *Alvin
+	private void cataPopup() {
+		// Set up catalogue panel, my idea is to have a navigation bar on top of the panel and the rest will be top selling items
+		// because of limited time, i think the way we should implement is to use this as top 9 most popular items in last week
+		JPanel cataPanel = new JPanel();
+		layeredPane.setLayer(cataPanel, 1);
+		cataPanel.setBounds(0, 0, 1000, 900);
+		cataPanel.setBackground(Color.LIGHT_GRAY);
+		layeredPane.add(cataPanel);
+		cataPanel.setLayout(new GridBagLayout());
+		
+		// Set up gridbagconstraints
+		GridBagConstraints tempC = new GridBagConstraints();
+		
+		// Back to main screen button
+		JButton back = new JButton("Back to main screen");
+		back.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		back.setPreferredSize(new Dimension(200,50));
+		//back.setSize(200, 50);
+		back.setBounds(392, 20, 200, 50);
+		// add to panel
+		tempC.gridx = 1;
+		tempC.gridy = 0;
+		tempC.fill = GridBagConstraints.HORIZONTAL;
+		tempC.anchor = GridBagConstraints.NORTH;
+		back.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				cataPanel.setVisible(false);
+			}
+		});
+		cataPanel.add(back, c);
+		
+		// Set up items, inside each button listerner should do sth to add to the summary
+		
+		// Item 1
+		JButton itemCata1 = new JButton();
+		Image itemCataPic1 = new ImageIcon(this.getClass().getResource("/beer.png")).getImage();
+		itemCata1.setBackground(Color.DARK_GRAY);
+		itemCata1.setIcon(new ImageIcon(itemCataPic1));
+		itemCata1.setPreferredSize(new Dimension(200,200));
+		itemCata1.setBounds(42, 100, 150, 150);
+		// add to panel
+		tempC.gridx = 0;
+		tempC.gridy = 1;
+		//tempC.fill = GridBagConstraints.HORIZONTAL;
+		itemCata1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				cataPanel.setVisible(false);
+			}
+		});
+		cataPanel.add(itemCata1, c);
+		
+		// Item 2
+		JButton itemCata2 = new JButton();
+		Image itemCataPic2 = new ImageIcon(this.getClass().getResource("/bread.png")).getImage();
+		itemCata2.setBackground(Color.DARK_GRAY);
+		itemCata2.setIcon(new ImageIcon(itemCataPic2));
+		itemCata2.setPreferredSize(new Dimension(200,200));
+		itemCata2.setBounds(417, 100, 150, 150);
+		// add to panel
+		tempC.gridx = 1;
+		tempC.gridy = 1;
+		//tempC.fill = GridBagConstraints.HORIZONTAL;
+		itemCata2.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				cataPanel.setVisible(false);
+			}
+		});
+		cataPanel.add(itemCata2, c);
+
+		// Item 3
+		JButton itemCata3 = new JButton();
+		Image itemCataPic3 = new ImageIcon(this.getClass().getResource("/cereals.png")).getImage();
+		itemCata3.setBackground(Color.DARK_GRAY);
+		itemCata3.setIcon(new ImageIcon(itemCataPic3));
+		itemCata3.setPreferredSize(new Dimension(200,200));
+		itemCata3.setBounds(792, 100, 150, 150);
+		// add to panel
+		tempC.gridx = 2;
+		tempC.gridy = 1;
+		//tempC.fill = GridBagConstraints.HORIZONTAL;
+		itemCata3.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				cataPanel.setVisible(false);
+			}
+		});
+		cataPanel.add(itemCata3, c);
+		
+		// Item 4
+		JButton itemCata4 = new JButton();
+		Image itemCataPic4 = new ImageIcon(this.getClass().getResource("/eggs.png")).getImage();
+		itemCata4.setBackground(Color.DARK_GRAY);
+		itemCata4.setIcon(new ImageIcon(itemCataPic4));
+		itemCata4.setPreferredSize(new Dimension(200,200));
+		itemCata4.setBounds(42, 317, 150, 150); //535
+		// add to panel
+		tempC.gridx = 0;
+		tempC.gridy = 2;
+		//tempC.fill = GridBagConstraints.HORIZONTAL;
+		itemCata4.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				cataPanel.setVisible(false);
+			}
+		});
+		cataPanel.add(itemCata4, c);
+		
+		// Item 5
+		JButton itemCata5 = new JButton();
+		Image itemCataPic5 = new ImageIcon(this.getClass().getResource("/milk.png")).getImage();
+		itemCata5.setBackground(Color.DARK_GRAY);
+		itemCata5.setIcon(new ImageIcon(itemCataPic5));
+		itemCata5.setPreferredSize(new Dimension(200,200));
+		itemCata5.setBounds(417, 317, 150, 150);
+		// add to panel
+		tempC.gridx = 1;
+		tempC.gridy = 2;
+		//tempC.fill = GridBagConstraints.HORIZONTAL;
+		itemCata5.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				cataPanel.setVisible(false);
+			}
+		});
+		cataPanel.add(itemCata5, c);
+		// Item 6
+		JButton itemCata6 = new JButton();
+		Image itemCataPic6 = new ImageIcon(this.getClass().getResource("/products.png")).getImage(); // snacks actually
+		itemCata6.setBackground(Color.DARK_GRAY);
+		itemCata6.setIcon(new ImageIcon(itemCataPic6));
+		itemCata6.setPreferredSize(new Dimension(200,200));
+		itemCata6.setBounds(792, 317, 150, 150);
+		// add to panel
+		tempC.gridx = 2;
+		tempC.gridy = 2;
+		//tempC.fill = GridBagConstraints.HORIZONTAL;
+		itemCata6.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				cataPanel.setVisible(false);
+			}
+		});
+		cataPanel.add(itemCata6, c);
+		
+		// Item 7
+		JButton itemCata7 = new JButton();
+		Image itemCataPic7 = new ImageIcon(this.getClass().getResource("/soda.png")).getImage();
+		itemCata7.setBackground(Color.DARK_GRAY);
+		itemCata7.setIcon(new ImageIcon(itemCataPic7));
+		itemCata7.setPreferredSize(new Dimension(200,200));
+		itemCata7.setBounds(42, 535, 150, 150);
+		// add to panel
+		tempC.gridx = 0;
+		tempC.gridy = 2;
+		//tempC.fill = GridBagConstraints.HORIZONTAL;
+		itemCata7.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				cataPanel.setVisible(false);
+			}
+		});
+		cataPanel.add(itemCata7, c);
+		
+		// Item 8
+		JButton itemCata8 = new JButton();
+		Image itemCataPic8 = new ImageIcon(this.getClass().getResource("/sweets.png")).getImage();
+		itemCata8.setBackground(Color.DARK_GRAY);
+		itemCata8.setIcon(new ImageIcon(itemCataPic8));
+		itemCata8.setPreferredSize(new Dimension(200,200));
+		itemCata8.setBounds(417, 535, 150, 150);
+		// add to panel
+		tempC.gridx = 1;
+		tempC.gridy = 2;
+		//tempC.fill = GridBagConstraints.HORIZONTAL;
+		itemCata8.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				cataPanel.setVisible(false);
+			}
+		});
+		cataPanel.add(itemCata8, c);
+		// Item 9
+		JButton itemCata9 = new JButton();
+		Image itemCataPic9 = new ImageIcon(this.getClass().getResource("/cheese.png")).getImage();
+		itemCata9.setBackground(Color.DARK_GRAY);
+		itemCata9.setIcon(new ImageIcon(itemCataPic9));
+		itemCata9.setPreferredSize(new Dimension(200,200));
+		itemCata9.setBounds(792, 535, 150, 150);
+		// add to panel
+		tempC.gridx = 2;
+		tempC.gridy = 2;
+		//tempC.fill = GridBagConstraints.HORIZONTAL;
+		itemCata9.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				cataPanel.setVisible(false);
+			}
+		});
+		cataPanel.add(itemCata9, c);
+	}
+
 	private void ownBag() {
 			JPanel ownBag = new JPanel();
 			layeredPane.setLayer(ownBag, 1);
@@ -347,7 +694,7 @@ public class CustomerGui{
 		mainPanel.add(scrollPane);
 		
 		// Setup jtable, waiting to connect to software
-	    String[][] data = {{"Wagyu beef @$250.00", "0.50", "$125.00"},{"Pork chop @$4.67", "5.00", "$23.35"}};
+	    //String[][] data = {{"Bag(s) @$0.10", String.valueOf(bagsCount), String.valueOf(bagsValue)},{"Wagyu beef @$250.00", "0.50", "$125.00"},{"Pork chop @$4.67", "5.00", "$23.35"}};
 	    
 	    // column name
 		String[] cName = {"Item ", "@cost per unit", "Total cost"};
@@ -357,7 +704,30 @@ public class CustomerGui{
 		scrollPane.setViewportView(table);
 	}
 	
-	private void setUpNumericKeyboard() {
+	private void digitsFailed() {
+		tapScreenPanel = new JPanel();
+		layeredPane.setLayer(tapScreenPanel, 1);
+		tapScreenPanel.setBounds(0, 0, 985, 785);
+		layeredPane.add(tapScreenPanel);
+		tapScreenPanel.setLayout(null);
+		
+		screensaver = new JButton("Your number is not valid. \nTap here to try again");
+		screensaver.setDisplayedMnemonicIndex(1);
+		screensaver.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				tapScreenPanel.setVisible(false);
+			}
+		});
+		screensaver.setFont(new Font("Arial", Font.PLAIN, 40));
+		screensaver.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
+		screensaver.setBounds(0, 0, 984, 785);
+		screensaver.setContentAreaFilled(false);
+		tapScreenPanel.add(screensaver);
+	}
+	
+	private void setUpNumericKeyboard(int checkDigits) {		
+		tempCount = 0;
+		
 		keyboardPanel = new JPanel();
 		keyboardPanel.setOpaque(true);
 		layeredPane.setLayer(keyboardPanel, 1);
@@ -384,6 +754,7 @@ public class CustomerGui{
 			public void actionPerformed(ActionEvent e) {
 				keyboardText += "0";
 				keyboardTextField.setText(keyboardText); 
+				tempCount += 1;
 			}
 		});
 		keyboardPanel.add(keyZero);
@@ -396,6 +767,7 @@ public class CustomerGui{
 			public void actionPerformed(ActionEvent e) {
 				keyboardText += "1";
 				keyboardTextField.setText(keyboardText); 
+				tempCount += 1;
 			}
 		});
 		keyboardPanel.add(keyOne);
@@ -408,6 +780,7 @@ public class CustomerGui{
 			public void actionPerformed(ActionEvent e) {
 				keyboardText += "2";
 				keyboardTextField.setText(keyboardText); 
+				tempCount += 1;
 			}
 		});
 		keyboardPanel.add(keyTwo);
@@ -420,6 +793,7 @@ public class CustomerGui{
 			public void actionPerformed(ActionEvent e) {
 				keyboardText += "3";
 				keyboardTextField.setText(keyboardText); 
+				tempCount += 1;
 			}
 		});
 		keyboardPanel.add(keyThree);
@@ -432,6 +806,7 @@ public class CustomerGui{
 			public void actionPerformed(ActionEvent e) {
 				keyboardText += "4";
 				keyboardTextField.setText(keyboardText); 
+				tempCount += 1;
 			}
 		});
 		keyboardPanel.add(keyFour);
@@ -444,6 +819,7 @@ public class CustomerGui{
 			public void actionPerformed(ActionEvent e) {
 				keyboardText += "5";
 				keyboardTextField.setText(keyboardText); 
+				tempCount += 1;
 			}
 		});
 		keyboardPanel.add(keyFive);
@@ -456,6 +832,7 @@ public class CustomerGui{
 			public void actionPerformed(ActionEvent e) {
 				keyboardText += "6";
 				keyboardTextField.setText(keyboardText); 
+				tempCount += 1;
 			}
 		});
 		keyboardPanel.add(keySix);
@@ -467,7 +844,8 @@ public class CustomerGui{
 		keySeven.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				keyboardText += "7";
-				keyboardTextField.setText(keyboardText); 
+				keyboardTextField.setText(keyboardText);
+				tempCount += 1;
 			}
 		});
 		keyboardPanel.add(keySeven);
@@ -480,6 +858,7 @@ public class CustomerGui{
 			public void actionPerformed(ActionEvent e) {
 				keyboardText += "8";
 				keyboardTextField.setText(keyboardText); 
+				tempCount += 1;
 			}
 		});
 		keyboardPanel.add(keyEight);
@@ -492,6 +871,7 @@ public class CustomerGui{
 			public void actionPerformed(ActionEvent e) {
 				keyboardText += "9";
 				keyboardTextField.setText(keyboardText); 
+				tempCount += 1;
 			}
 		});
 		keyboardPanel.add(keyNine);
@@ -505,6 +885,17 @@ public class CustomerGui{
 			public void actionPerformed(ActionEvent e) {
 				System.out.println(keyboardText);
 				ArrayList<Numeral> numerals = new ArrayList<Numeral>();
+				
+				// If it's failed, pop up a screen, otherwise selectedmembership is true, at this moment
+				if (checkDigits == 1) {
+					if (tempCount != 12) {
+						digitsFailed();
+					} else {
+						selectedMembership = true;
+					}
+				}
+				
+				// Not sure about this part
 				
 				if(selectedPLU) {
 					for (char c: keyboardText.toCharArray()) {
@@ -523,6 +914,7 @@ public class CustomerGui{
 				System.out.println("Membership: " + selectedMembership);
 				keyboardText = "";
 				keyboardTextField.setText(keyboardText); 
+				closeKeyboard();
 			}
 		});
 		keyboardPanel.add(keyEnter);
@@ -549,10 +941,15 @@ public class CustomerGui{
 	
 	/**
 	 * Helper method to lock buttons while the keyboard is up
+	 * @param i 
 	 */
-	private void openKeyboard() {
+	private void openKeyboard(int i) {
+		if (i == 1) {
+			setUpNumericKeyboard(i);
+		}
 		keyboardPanel.setVisible(true);
 		PLUTextButton.setEnabled(false);
+		itemCata.setEnabled(false);
 		memberTextButton.setEnabled(false);
 		purchaseBagsButton.setEnabled(false);
 		removeItemButton.setEnabled(false);
@@ -566,6 +963,7 @@ public class CustomerGui{
 	private void closeKeyboard() {
 		keyboardPanel.setVisible(false);
 		PLUTextButton.setEnabled(true);
+		itemCata.setEnabled(true);
 		memberTextButton.setEnabled(true);
 		purchaseBagsButton.setEnabled(true);
 		removeItemButton.setEnabled(true);
