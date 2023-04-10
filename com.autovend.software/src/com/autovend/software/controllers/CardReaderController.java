@@ -235,7 +235,7 @@ public class CardReaderController extends PaymentController<CardReader, CardRead
 	}
 	
 	/**
-	 * This activates the card reader for a gift cardpayment.
+	 * This activates the card reader for a gift card payment.
 	 * @param localGift Gift card to be used for the transaction.
 	 * @param amount Amount to be paid.
 	 */
