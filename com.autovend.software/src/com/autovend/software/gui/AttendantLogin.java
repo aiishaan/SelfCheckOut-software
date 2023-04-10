@@ -7,28 +7,36 @@ import javax.swing.JPanel;
 import java.awt.BorderLayout;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.border.LineBorder;
+
 import java.awt.Font;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.math.BigDecimal;
+import java.util.Currency;
+import java.util.List;
 import java.awt.Color;
 import java.awt.Dimension;
 
 import javax.swing.JPasswordField;
+import javax.swing.JScrollPane;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 import javax.swing.JButton;
 import java.awt.FlowLayout;
 
 import com.autovend.software.controllers.AttendantController;
-
+import com.autovend.software.gui.AttendantMain.StationStatusBar;
 import com.autovend.devices.AbstractDevice;
+import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.devices.SupervisionStation;
 import com.autovend.devices.observers.AbstractDeviceObserver;
 import com.autovend.devices.observers.TouchScreenObserver;
 import com.autovend.devices.TouchScreen;
 
 
-public class AttendantLogin implements TouchScreenObserver{
+public class AttendantLogin {
 	//AttendantLogin class handles the login screen for the attendant station.
 	
 	//all the components that are added to the screen
@@ -40,16 +48,26 @@ public class AttendantLogin implements TouchScreenObserver{
 	private JLabel userLabel;
 	private JLabel passwordLabel;
 	private JButton loginButton;
-	//logInSuccess panel is used for the main attendant screen.
-	private JPanel logInSuccess;
 	private JLabel failMessage;
 	private JLabel loginText;
 	
 	private AttendantController attendant;
+
 	
 	
 	//constructor
 	public AttendantLogin(SupervisionStation aStation) {
+		
+		aStation.add(new SelfCheckoutStation(Currency.getInstance("CAD"), new int[]{1,24}, new BigDecimal[]{BigDecimal.ONE}, 1, 1));
+		aStation.add(new SelfCheckoutStation(Currency.getInstance("CAD"), new int[]{1,24}, new BigDecimal[]{BigDecimal.ONE}, 1, 1));
+		aStation.add(new SelfCheckoutStation(Currency.getInstance("CAD"), new int[]{1,24}, new BigDecimal[]{BigDecimal.ONE}, 1, 1));
+		aStation.add(new SelfCheckoutStation(Currency.getInstance("CAD"), new int[]{1,24}, new BigDecimal[]{BigDecimal.ONE}, 1, 1));
+		aStation.add(new SelfCheckoutStation(Currency.getInstance("CAD"), new int[]{1,24}, new BigDecimal[]{BigDecimal.ONE}, 1, 1));
+		aStation.add(new SelfCheckoutStation(Currency.getInstance("CAD"), new int[]{1,24}, new BigDecimal[]{BigDecimal.ONE}, 1, 1));
+		aStation.add(new SelfCheckoutStation(Currency.getInstance("CAD"), new int[]{1,24}, new BigDecimal[]{BigDecimal.ONE}, 1, 1));
+		
+		
+		
 		//creating a new JFrame
 		this.touchScreenFrame = aStation.screen.getFrame();
         this.touchScreenFrame.setExtendedState(JFrame.NORMAL);
@@ -133,15 +151,17 @@ public class AttendantLogin implements TouchScreenObserver{
 				attendant = new AttendantController(userName.getText(),password.getText());
 				
 				if(attendant.AttendantList.containsValue(password.getText()) && attendant.AttendantList.containsKey(userName.getText())) {
-					//if the credentials do not match, display the try again message
+					//if the credentials match,go to the next panel(attendant main screen)do not match, display the try again message
 					
 					logInScreen.setVisible(false);
-					logInSuccess.setVisible(true);
+					
+					AttendantMain attendantGui = new AttendantMain(aStation);
+					
 					
 				}
 				else {
-					//go to the next panel(attendant main screen)
-				logInSuccess.setVisible(false);
+					
+				//display the try again message
 				logInScreen.setVisible(true);
 				failMessage.setVisible(true);
 				}
@@ -154,10 +174,6 @@ public class AttendantLogin implements TouchScreenObserver{
 		
 		
 		
-		//creating a new panel(attendant main screen)
-		logInSuccess = new JPanel();
-		logInSuccess.setSize(new Dimension(985, 785));
-		logInSuccess.setVisible(false);
 		
 		//creating a new label for incorrect credentials
 		failMessage = new JLabel("Incorrect credentials, please try again.");
@@ -174,7 +190,6 @@ public class AttendantLogin implements TouchScreenObserver{
 		touchScreenFrame.getContentPane().add(logInPane);
 		//adding the panels to the layered pane
 		logInPane.add(logInScreen, Integer.valueOf(1));		
-		logInPane.add(logInSuccess, Integer.valueOf(0));
 		//setting the layered pane to be visible
 		logInPane.setVisible(true);
 
@@ -183,21 +198,12 @@ public class AttendantLogin implements TouchScreenObserver{
 		
 
 	}
+      
+        
 	
 	public static void main(String[]args) {
 		SupervisionStation aStation = new SupervisionStation();
 		 new AttendantLogin(aStation);
 	}
 
-	@Override
-	public void reactToEnabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void reactToDisabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {
-		// TODO Auto-generated method stub
-		
-	}
 }
