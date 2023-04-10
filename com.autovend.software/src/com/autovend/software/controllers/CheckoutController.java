@@ -690,7 +690,7 @@ public class CheckoutController {
 
 	
 	// Function to Log in
-	public void Log_in_Attendant(String userID, String password) {
+	public boolean Log_in_Attendant(String userID, String password) {
 		// Already Logged in
 		if (Log_in_Status==true) {
 			throw new SimulationException("An Attendant is currently Logged in");
@@ -708,10 +708,12 @@ public class CheckoutController {
 		}else {
 			throw new SimulationException("The login credentials do not match any Attendant.");
 		}
+		// Return the Log in Status as true if successfully logged in
+		return Log_in_Status;
 		
 	}
 	
-	public void Log_Out_Attendant() {
+	public boolean Log_Out_Attendant() {
 		if (Log_in_Status==false) {
 			throw new SimulationException("There is no attendant who is currenlty logged in.");
 			
@@ -724,6 +726,8 @@ public class CheckoutController {
 		
 			System.out.println("The attendant is not allowed to use the station.");
 		}
+		//Returns the login status as false if succsfully logged out
+		return Log_in_Status;
 		
 	}		
 	
