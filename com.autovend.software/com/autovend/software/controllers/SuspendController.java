@@ -57,6 +57,7 @@ public class SuspendController {
             return suspended;
         } else if (suspended) {
             System.out.println("The Station is already suspended.");
+            suspended=false;
             return suspended;
         } else {
             //The system won't be suspended when user is in use.
