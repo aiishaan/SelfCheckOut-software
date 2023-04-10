@@ -34,7 +34,7 @@ public class AttendantMain {
         titleText.setFont(new Font("Tahoma", Font.BOLD, 20));
         logoutButton = new JButton("Logout");
 
-        logoutButton.addActionListener(actionEvent -> logoutButtonPressed());
+        logoutButton.addActionListener(actionEvent -> logoutButtonPressed(attendantStation));
 
         stationListPane = new JPanel();
         stationListPane.setLayout(new GridLayout(0, 1, 0, 30));
@@ -56,8 +56,10 @@ public class AttendantMain {
         this.touchScreenFrame.setVisible(true);
     }
 
-    public void logoutButtonPressed() {
+    public void logoutButtonPressed(SupervisionStation attendantStation) {
         //logout action
+    	mainPanel.setVisible(false);
+    	AttendantLogin logInScreen = new AttendantLogin(attendantStation);
     }
 
     static class StationStatusBar extends JPanel {

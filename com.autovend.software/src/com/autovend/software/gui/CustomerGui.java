@@ -79,17 +79,17 @@ public class CustomerGui{
   
     
 	
-	public CustomerGui(TouchScreen customerScreen, CheckoutController checkoutController, MembershipCardController membershipCardController){
+	public CustomerGui(SelfCheckoutStation cStation, CheckoutController checkoutController, MembershipCardController membershipCardController){
 
 		this.membershipCardController = membershipCardController;
-		this.touchScreenFrame = customerScreen.getFrame();
+		this.touchScreenFrame = cStation.screen.getFrame();
 		this.touchScreenFrame.setExtendedState(JFrame.NORMAL);
 		this.touchScreenFrame.setSize(1000,900);
 		layeredPane = new JLayeredPane();
 		this.touchScreenFrame.getContentPane().add(layeredPane, BorderLayout.CENTER);
 		this.checkoutController = checkoutController;
 		
-		setUpMainPanel();
+		setUpMainPanel(cStation);
 		setUpSecondaryPanel();
 		setUpNumericKeyboard();
 		tapScreen();
@@ -98,7 +98,7 @@ public class CustomerGui{
 		this.touchScreenFrame.setVisible(true);
 	}
 	
-	private void setUpMainPanel() {
+	private void setUpMainPanel(SelfCheckoutStation cStation) {
 		mainPanel = new JPanel();
 		mainPanel.setBackground(Color.LIGHT_GRAY);
 		mainPanel.setBounds(0, 0, 984, 785);
@@ -161,12 +161,14 @@ public class CustomerGui{
 		removeItemButton.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		removeItemButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				mainPanel.setVisible(false);
+				Remove remove = new Remove(cStation);
 			}
 		});
 		removeItemButton.setBounds(42, 256, 468, 40);
 		mainPanel.add(removeItemButton);
 		setUpPaymentTable();
-		setUpPayment();
+		setUpPayment(cStation);
 	}
 	
 	private void setUpSecondaryPanel() {
@@ -324,13 +326,15 @@ public class CustomerGui{
 		secondaryPanel.add(helpButton);
 	}
 		
-	private void setUpPayment() {
+	private void setUpPayment(SelfCheckoutStation cStation) {
 		paymentButton = new JButton("Continue to payment >>>");
 		paymentButton.setFont(new Font("Tahoma", Font.PLAIN, 17));
 		paymentButton.setBounds(564, 703, 393, 40);
 		paymentButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				paymentTableModel.addRow(new Object[] {"Item Cost", "Item Count", "Item Cost"});
+				mainPanel.setVisible(false);
+				PaymentScreen s = new PaymentScreen(cStation);
 			}
 		});
 		mainPanel.add(paymentButton);
@@ -581,8 +585,8 @@ public class CustomerGui{
 		BillPaymentController billPaymentControllerStub = new BillPaymentController(selfCheckoutStation.billValidator);
         billPaymentControllerStub.setMainController(checkoutController);
         checkoutController.registerPaymentController(billPaymentControllerStub);
-		TouchScreen CustomerScreen = new TouchScreen();
+		SelfCheckoutStation cStation = new SelfCheckoutStation(Currency.getInstance("CAD"), billDenominations, coinDenominations, 1, 1);
 		MembershipCardController membershipController = new MembershipCardController();
-		CustomerGui newGui = new CustomerGui(CustomerScreen, checkoutController, membershipController); 
+		CustomerGui newGui = new CustomerGui(cStation, checkoutController, membershipController); 
 	}
 }

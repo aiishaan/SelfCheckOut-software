@@ -7,13 +7,17 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
+import com.autovend.devices.SelfCheckoutStation;
+import com.autovend.devices.SupervisionStation;
 
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.math.BigDecimal;
 import java.awt.Dimension;
 
 import javax.swing.JLabel;
+import javax.swing.JLayeredPane;
 import javax.swing.JButton;
 
 
@@ -22,24 +26,33 @@ public class PaymentScreen {
 	//PaymentScreen handles the GUI for the payment screen of the SelfCheckoutStation.
 	
 	//all the components that are added to the screen
-	private JFrame touchScreenFrame1;
+	private JFrame touchScreenFrame;
 	private JPanel paymentPanel;
 	private JLabel label;
+	private JLabel totalDue;
+	private JLabel totalDueVal;
+	private JLabel msg;
 	private JButton cash;
 	private JButton credit;
 	private JButton debit;
 	private JButton giftCard;
+	private JButton pay;
 	
-	public PaymentScreen() {
+	public PaymentScreen(SelfCheckoutStation cStation) {
 		
-		touchScreenFrame1 = new JFrame();
-		touchScreenFrame1.setSize(new Dimension(1000,900));
+		//creating a new JFrame
+		this.touchScreenFrame = cStation.screen.getFrame();
+        this.touchScreenFrame.setExtendedState(JFrame.NORMAL);
+        this.touchScreenFrame.setSize(1000,900);
+        this.touchScreenFrame.setResizable(true);
 		
+   
 		
 		
 		paymentPanel = new JPanel();
 		paymentPanel.setSize(new Dimension(985,785));
 		paymentPanel.setLayout(null);
+		
 		
 		
 		label = new JLabel("Please select a payment option:");
@@ -55,6 +68,22 @@ public class PaymentScreen {
 			public void actionPerformed(ActionEvent e) {
 				//implement the button press
 				System.out.println("Paying using cash");
+				cash.setVisible(false);
+				credit.setVisible(false);
+				debit.setVisible(false);
+				giftCard.setVisible(false);
+				label.setVisible(false);
+				totalDue = new JLabel("Total Due :");
+				totalDue.setFont(new Font("Times New Roman", Font.BOLD, 18));
+				totalDue.setBounds(368, 200, 349, 54);
+				//get the due from software.
+				BigDecimal d = new BigDecimal(250.67);
+				String due = d.toPlainString();
+				totalDueVal = new JLabel(due);
+				totalDueVal.setFont(new Font("Times New Roman", Font.BOLD, 18));
+				totalDueVal.setBounds(500, 200, 349, 54);
+				paymentPanel.add(totalDue);
+				paymentPanel.add(totalDueVal);
 				
 			}
 			
@@ -107,17 +136,20 @@ public class PaymentScreen {
 		paymentPanel.add(giftCard);
 		
 		
-		touchScreenFrame1.getContentPane().add(paymentPanel);
-		touchScreenFrame1.setVisible(true);
+		this.touchScreenFrame.getContentPane().add(paymentPanel);
+		this.touchScreenFrame.setVisible(true);
 
-		touchScreenFrame1.setResizable(false);
+	
 
 		
 		
 		
 	}
 	
+	
+
 	public static void main(String[]args) {
-		new PaymentScreen();
+		SelfCheckoutStation cStation = new SelfCheckoutStation(null, null, null, 0, 0);
+		new PaymentScreen(cStation);
 	}
 }
