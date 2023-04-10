@@ -22,7 +22,7 @@ public class outoforder {
 
     public outoforder() {
 
-        touchScreenFrame1 = new JFrame("Remove Item");
+        touchScreenFrame1 = new JFrame("Out of Order!");
         touchScreenFrame1.setSize(new Dimension(1000, 900));
         touchScreenFrame1.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         touchScreenFrame1.getContentPane().setBackground(new Color(247, 247, 247));
