@@ -21,6 +21,8 @@ import com.autovend.BlockedCardException;
 import com.autovend.Card;
 import com.autovend.Card.CardData;
 import com.autovend.ChipFailureException;
+import com.autovend.CreditCard;
+import com.autovend.DebitCard;
 import com.autovend.GiftCard;
 import com.autovend.GiftCard.GiftCardInsertData;
 import com.autovend.TapFailureException;
@@ -39,12 +41,16 @@ public class CardReaderController extends PaymentController<CardReader, CardRead
 	public boolean tapPayment;
 	public boolean swipePayment;
 	public Card card;
+	public CreditCard creditCard;
+	public DebitCard debitCard;
 	public GiftCardInsertData giftData;
 	public CardData data;
 	String userPin;
 	public CardIssuer bank;
 	private BigDecimal amount;
 	public boolean paymentFailure;
+	public boolean creditPayment = false;
+	public boolean debitPayment = false;
 	public boolean giftPayment = false;
 	public GiftCard giftCard;
 	public CardReaderController(CardReader newDevice) {
@@ -53,12 +59,28 @@ public class CardReaderController extends PaymentController<CardReader, CardRead
 
 
 	/**
-	 * This is a method that takes care of the bank side of the payment use case. Originally a part of reactToCardDataReadEvent, moved here to support other parts of the use case (tap/swipe).
+	 * This is a method that takes care of the bank side of the payment use case. Originally a part of reactToCardDataReadEvent, moved here to support other parts of the use case (tap/swipe). Credit Version
 	 * @param localdata Local card data, given from other payment methods.
 	 * @param localbank Bank data, should also have been given from detected credit card.
 	 * @throws BlockedCardException If something goes wrong with the transaction.
 	 */
-	public void bankPayment(CardData localdata, CardIssuer localbank) throws BlockedCardException {
+	public void bankCreditPayment(CardData localdata, CardIssuer localbank) throws BlockedCardException {
+		int holdNum = localbank.authorizeHold(localdata.getNumber(), this.amount);
+		if (holdNum !=-1 && (localbank.postTransaction(localdata.getNumber(), holdNum, this.amount))) {
+			getMainController().addToAmountPaid(this.amount);
+		}
+		else {
+			throw new BlockedCardException();
+		}
+	}
+	
+	/**
+	 * This is a method that takes care of the bank side of the payment use case. Originally a part of reactToCardDataReadEvent, moved here to support other parts of the use case (tap/swipe). Debit Version.
+	 * @param localdata Local card data, given from other payment methods.
+	 * @param localbank Bank data, should also have been given from detected credit card.
+	 * @throws BlockedCardException If something goes wrong with the transaction.
+	 */
+	public void bankDebitPayment(CardData localdata, CardIssuer localbank) throws BlockedCardException {
 		int holdNum = localbank.authorizeHold(localdata.getNumber(), this.amount);
 		if (holdNum !=-1 && (localbank.postTransaction(localdata.getNumber(), holdNum, this.amount))) {
 			getMainController().addToAmountPaid(this.amount);
@@ -85,18 +107,33 @@ public class CardReaderController extends PaymentController<CardReader, CardRead
 	}
 	
 	/**
-	 * This method handles a tap credit or debit payment.
+	 * This method handles a tap credit payment.
 	 * @param card The card tapped against the card reader.
 	 * @param data Data from the tapped card.
 	 * @throws TapFailureException If the tap fails, throw exception. Will likely communicate something when GUI is up.
 	 * @throws BlockedCardException If the card is rejected by the bank, thrown.
 	 */
-	public void tapPayment(Card localCard, CardData localData) throws TapFailureException, BlockedCardException {
+	public void tapCreditPayment(CreditCard localCard, CardData localData) throws TapFailureException, BlockedCardException {
 		if(!localCard.hasChip || !localCard.isTapEnabled) {
 			throw new TapFailureException();
 		}
 		else {
-			bankPayment(localData, this.bank);
+			bankCreditPayment(localData, this.bank);
+		}
+	}
+	/**
+	 * This method handles a tap debit payment.
+	 * @param card The card tapped against the card reader.
+	 * @param data Data from the tapped card.
+	 * @throws TapFailureException If the tap fails, throw exception. Will likely communicate something when GUI is up.
+	 * @throws BlockedCardException If the card is rejected by the bank, thrown.
+	 */
+	public void tapDebitPayment(DebitCard localCard, CardData localData) throws TapFailureException, BlockedCardException {
+		if(!localCard.hasChip || !localCard.isTapEnabled) {
+			throw new TapFailureException();
+		}
+		else {
+			bankDebitPayment(localData, this.bank);
 		}
 	}
 	
@@ -107,15 +144,31 @@ public class CardReaderController extends PaymentController<CardReader, CardRead
 	 * @throws ChipFailureException If the chip isn't read properly, throw exception.
 	 * @throws BlockedCardException If the card is rejected by the bank, thrown.
 	 */
-	public void insertPayment(Card localCard, CardData localData) throws ChipFailureException, BlockedCardException {
+	public void insertCreditPayment(CreditCard localCard, CardData localData) throws ChipFailureException, BlockedCardException {
 		if(!localCard.hasChip) {
 			throw new ChipFailureException();
 		}
 		else {
-			bankPayment(localData, this.bank);
+			bankCreditPayment(localData, this.bank);
 		}
 	}
 	
+	
+	/**
+	 * This method handles when a debit card is inserted into the card reader. 
+	 * @param localCard The card inserted into the card reader.
+	 * @param data Data from the inserted card.
+	 * @throws ChipFailureException If the chip isn't read properly, throw exception.
+	 * @throws BlockedCardException If the card is rejected by the bank, thrown.
+	 */
+	public void insertDebitPayment(DebitCard localCard, CardData localData) throws ChipFailureException, BlockedCardException {
+		if(!localCard.hasChip) {
+			throw new ChipFailureException();
+		}
+		else {
+			bankDebitPayment(localData, this.bank);
+		}
+	}
 	/**
 	 * This method handles when a gift card is inserted into the card reader.
 	 * @param localCard The gift card involved in the transaction.
@@ -132,8 +185,18 @@ public class CardReaderController extends PaymentController<CardReader, CardRead
 	 * @param localData Data from the inserted card.
 	 * @throws BlockedCardException If the card is rejected by the bank, thrown.
 	 */
-	public void swipePayment(Card localCard, CardData localData) throws BlockedCardException {
-		bankPayment(localData, this.bank);
+	public void swipeCreditPayment(Card localCard, CardData localData) throws BlockedCardException {
+		bankCreditPayment(localData, this.bank);
+	}
+	
+	/**
+	 * This method handles when a debit card is swiped against the card reader.
+	 * @param localCard The card inserted into the card reader.
+	 * @param localData Data from the inserted card.
+	 * @throws BlockedCardException If the card is rejected by the bank, thrown.
+	 */
+	public void swipeDebitPayment(DebitCard localCard, CardData localData) throws BlockedCardException {
+		bankDebitPayment(localData, this.bank);
 	}
 	
 	@Override
@@ -164,6 +227,14 @@ public class CardReaderController extends PaymentController<CardReader, CardRead
 
 	@Override
 	public void reactToCardDataReadEvent(CardReader reader, Card.CardData data)  {
+		if(data.getType().equals("Credit Card")) {
+			this.creditCard = (CreditCard) this.card;
+			creditPayment = true;
+		}
+		if(data.getType().equals("Debit Card")) {
+			this.debitCard = (DebitCard) this.card;
+			debitPayment = true;
+		}
 		this.isPaying = true;
 		//Data is harvested from the card and saved to the reader.
 		this.data = data;
@@ -181,9 +252,9 @@ public class CardReaderController extends PaymentController<CardReader, CardRead
 		}
 		//One of these three flags should have been set before this event happens.
 		//Tap payment, set during cardTappedEvent.
-		if(this.tapPayment && !this.giftPayment) {
+		if(this.tapPayment && this.creditPayment) {
 			try {
-				tapPayment(this.card, this.data);
+				tapCreditPayment(this.creditCard, this.data);
 			} catch (TapFailureException e) {
 				// This will likely jump back to another method once GUI is set up, possible second payment attempt?
 				paymentFailure = true;
@@ -193,21 +264,49 @@ public class CardReaderController extends PaymentController<CardReader, CardRead
 				return;
 			}	
 		}
-		//Insert payment, set during cardInsertedEvent.
-		if(this.insertPayment && !this.giftPayment) {
+		if(this.tapPayment && this.debitPayment) {
 			try {
-				insertPayment(this.card, this.data);
+				tapDebitPayment(this.debitCard, this.data);
+			} catch (TapFailureException e) {
+				// This will likely jump back to another method once GUI is set up, possible second payment attempt?
+				paymentFailure = true;
+			} catch (BlockedCardException e) {
+				// This will likely jump back to another method once GUI is set up, possible second payment attempt?
+				paymentFailure = true;
+				return;
+			}
+		}
+		//Insert payment, set during cardInsertedEvent.
+		if(this.insertPayment && this.creditPayment) {
+			try {
+				insertCreditPayment(this.creditCard, this.data);
 			} catch (ChipFailureException | BlockedCardException e) {
 				// This will likely jump back to another method once GUI is set up, possible second payment attempt?
 				paymentFailure = true;
-				
+				return;
+			}
+		}
+		if(this.insertPayment && this.debitPayment) {
+			try {
+				insertDebitPayment(this.debitCard, this.data);
+			} catch (ChipFailureException | BlockedCardException e) {
+				// This will likely jump back to another method once GUI is set up, possible second payment attempt?
+				paymentFailure = true;
 				return;
 			}
 		}
 		//Swipe payment, set during cardSwipedEvent
-		if(this.swipePayment && !this.giftPayment) {
+		if(this.swipePayment && this.creditPayment) {
 			try {
-				swipePayment(this.card, this.data);
+				swipeCreditPayment(this.creditCard, this.data);
+			} catch (BlockedCardException e) {
+				// This will likely jump back to another method once GUI is set up, possible second payment attempt?
+				paymentFailure = true;
+			}
+		}
+		if(this.swipePayment && this.debitPayment) {
+			try {
+				swipeDebitPayment(this.debitCard, this.data);
 			} catch (BlockedCardException e) {
 				// This will likely jump back to another method once GUI is set up, possible second payment attempt?
 				paymentFailure = true;
@@ -220,6 +319,8 @@ public class CardReaderController extends PaymentController<CardReader, CardRead
 		this.disableDevice();
 		this.bank = null;
 		this.giftPayment = false;
+		this.creditPayment = false;
+		this.debitPayment = false;
 	}
 
 	/**

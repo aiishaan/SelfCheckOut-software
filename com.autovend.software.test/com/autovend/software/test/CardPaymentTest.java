@@ -20,6 +20,7 @@ package com.autovend.software.test;
 import com.autovend.BlockedCardException;
 import com.autovend.Card;
 import com.autovend.CreditCard;
+import com.autovend.DebitCard;
 import com.autovend.GiftCard;
 import com.autovend.TapFailureException;
 import com.autovend.devices.CardReader;
@@ -42,6 +43,7 @@ public class CardPaymentTest {
     TestBank bankStub;
     CheckoutController controllerStub;
     CreditCard cardStub;
+    DebitCard debitStub;
     GiftCard giftStub;
     Currency localC;
     CardReader cardReaderStub;
@@ -90,6 +92,9 @@ public class CardPaymentTest {
         bankStub = new TestBank("TestBank");
         cardStub= new CreditCard(
                 "Credit Card", "12345","Steve", "987","1337",true, true
+        );
+        debitStub= new DebitCard(
+                "Debit Card", "12345","Steve", "987","1337",true, true
         );
         Currency localC = Currency.getInstance("CAD");
         giftStub = new GiftCard("Gift Card", "12345", "1313", localC, BigDecimal.valueOf(10));
@@ -265,7 +270,50 @@ public class CardPaymentTest {
          assertTrue(cardReaderStub.isDisabled());
          readerControllerStub.card = null;
     }
+    
+    @Test
+    public void payWithTapDebit() {
+    	 assertTrue(cardReaderStub.isDisabled());
+         readerControllerStub.enablePayment(bankStub, debitStub, BigDecimal.ONE);
+         assertFalse(cardReaderStub.isDisabled());
+         readerControllerStub.card = debitStub;
+         bankStub.canPostTransaction = true;
+         bankStub.holdAuthorized = true;
+         try {
+             cardReaderStub.tap(debitStub);
+         } catch (Exception ex){
+             fail("Exception incorrectly thrown");
+         }
+         assertTrue(bankStub.held);
+         assertTrue(bankStub.posted);
+         assertFalse(readerControllerStub.isPaying);
+         assertEquals(controllerStub.getRemainingAmount(), BigDecimal.valueOf(-1));
+         assertTrue(cardReaderStub.isDisabled());
+         readerControllerStub.card = null;
+    }
 
+    @Test
+    public void payWithInsertDebit(){
+        assertTrue(cardReaderStub.isDisabled());
+        readerControllerStub.enablePayment(bankStub, debitStub, BigDecimal.ONE);
+        assertFalse(cardReaderStub.isDisabled());
+        readerControllerStub.card = debitStub;
+        bankStub.canPostTransaction = true;
+        bankStub.holdAuthorized = true;
+        try {
+            cardReaderStub.insert(debitStub, "1337");
+        } catch (Exception ex){
+            fail("Exception incorrectly thrown");
+        }
+        assertTrue(bankStub.held);
+        assertTrue(bankStub.posted);
+        cardReaderStub.remove();
+        assertFalse(readerControllerStub.isPaying);
+        assertEquals(controllerStub.getRemainingAmount(), BigDecimal.valueOf(-1));
+        assertTrue(cardReaderStub.isDisabled());
+        readerControllerStub.card = null;
+    }
+    
     @Test
     public void payWithSwipe() {
     	 assertTrue(cardReaderStub.isDisabled());
@@ -287,6 +335,26 @@ public class CardPaymentTest {
          readerControllerStub.card = null;
     }
     
+    @Test
+    public void payWithDebitSwipe() {
+    	 assertTrue(cardReaderStub.isDisabled());
+         readerControllerStub.enablePayment(bankStub, debitStub, BigDecimal.ONE);
+         assertFalse(cardReaderStub.isDisabled());
+         readerControllerStub.card = debitStub;
+         bankStub.canPostTransaction = true;
+         bankStub.holdAuthorized = true;
+         try {
+             cardReaderStub.swipe(debitStub, new BufferedImage(10, 10, 10));
+         } catch (Exception ex){
+             fail("Exception incorrectly thrown");
+         }
+         assertTrue(bankStub.held);
+         assertTrue(bankStub.posted);
+         assertFalse(readerControllerStub.isPaying);
+         assertEquals(controllerStub.getRemainingAmount(), BigDecimal.valueOf(-1));
+         assertTrue(cardReaderStub.isDisabled());
+         readerControllerStub.card = null;
+    }
     
     @Test
     public void payWithGift() {
