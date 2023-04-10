@@ -28,15 +28,26 @@ public class PaymentScreen {
 	//all the components that are added to the screen
 	private JFrame touchScreenFrame;
 	private JPanel paymentPanel;
+	private JPanel cashPanel;
+	private JPanel creditPanel;
+	private JPanel debitPanel;
+	private JPanel giftPanel;
+	private JPanel paymentSuccessful;
 	private JLabel label;
 	private JLabel totalDue;
 	private JLabel totalDueVal;
 	private JLabel msg;
+	private JLabel thanksMsg;
+	private JLabel paymentMsg;
 	private JButton cash;
 	private JButton credit;
 	private JButton debit;
 	private JButton giftCard;
 	private JButton pay;
+	private JButton pay1;
+	private JButton pay2;
+	private JButton pay3;
+	private JButton printReceipt;
 	
 	public PaymentScreen(SelfCheckoutStation cStation) {
 		
@@ -68,22 +79,86 @@ public class PaymentScreen {
 			public void actionPerformed(ActionEvent e) {
 				//implement the button press
 				System.out.println("Paying using cash");
-				cash.setVisible(false);
-				credit.setVisible(false);
-				debit.setVisible(false);
-				giftCard.setVisible(false);
-				label.setVisible(false);
+				paymentPanel.setVisible(false);
+				
+				cashPanel = new JPanel();
+				cashPanel.setSize(new Dimension(985,785));
+				cashPanel.setLayout(null);
+				
 				totalDue = new JLabel("Total Due :");
-				totalDue.setFont(new Font("Times New Roman", Font.BOLD, 18));
-				totalDue.setBounds(368, 200, 349, 54);
-				//get the due from software.
-				BigDecimal d = new BigDecimal(250.67);
-				String due = d.toPlainString();
+				totalDue.setFont(new Font("Times New Roman", Font.BOLD, 25));
+				totalDue.setBounds(358, 200, 359, 54);
+				//get the amount due from the software.
+				//for testing, i have used d(a BigDecimal) for now. when the software is plugged, d should be replaced with the amount that is due
+				BigDecimal d = new BigDecimal(0);
+				String due = d.toString();
 				totalDueVal = new JLabel(due);
-				totalDueVal.setFont(new Font("Times New Roman", Font.BOLD, 18));
-				totalDueVal.setBounds(500, 200, 349, 54);
-				paymentPanel.add(totalDue);
-				paymentPanel.add(totalDueVal);
+				totalDueVal.setFont(new Font("Times New Roman", Font.BOLD, 22));
+				totalDueVal.setBounds(533, 200, 350, 54);
+				cashPanel.add(totalDue);
+				cashPanel.add(totalDueVal);
+				
+				msg = new JLabel("Please insert cash into the machine and click pay");
+				msg.setFont(new Font("Times New Roman", Font.BOLD, 22));
+				msg.setBounds(356, 250, 550, 54);
+				cashPanel.add(msg);
+				
+				pay = new JButton("PAY");
+				pay.setFont(new Font("Times New Roman", Font.PLAIN, 22));
+				pay.setBounds(405, 350, 171, 45);
+				
+				
+				pay.addActionListener(new ActionListener(){
+					public void actionPerformed(ActionEvent e) {
+					
+						//when the pay button is pressed, the pay method from the software should be called
+						//and the amount due should be updated.
+						//when the amount due becomes zero, it takes you to the next screen(print receipt)
+						//for testing, i have true for now. true should be replaced with BigDecimal.ZERO ig.
+						if(true) {
+							cashPanel.setVisible(false);
+							paymentSuccessful = new JPanel();
+							paymentSuccessful.setSize(new Dimension(985,785));
+							paymentSuccessful.setLayout(null);
+							
+							paymentMsg = new JLabel("Payment Successful");
+							paymentMsg.setFont(new Font("Times New Roman", Font.BOLD, 25));
+							paymentMsg.setBounds(380, 213, 359, 54);
+							paymentSuccessful.add(paymentMsg);
+							
+							thanksMsg = new JLabel("Thank you for shopping with us today");
+							thanksMsg.setFont(new Font("Times New Roman", Font.BOLD, 22));
+							thanksMsg.setBounds(320, 273, 400, 54);
+							paymentSuccessful.add(thanksMsg);
+							
+							printReceipt = new JButton("Print Receipt");
+							printReceipt.setFont(new Font("Times New Roman", Font.PLAIN, 22));
+							printReceipt.setBounds(390, 350, 200, 45);
+							
+							printReceipt.addActionListener(new ActionListener() {
+								public void actionPerformed(ActionEvent e) {
+									//call the printReceipt method here
+									
+								}
+							});
+							
+							paymentSuccessful.add(printReceipt);
+							touchScreenFrame.add(paymentSuccessful);
+						
+							
+						}
+						
+						else {
+						
+						//else update the amount due(d) after partial payment and go back to the main screen
+						paymentPanel.setVisible(true);
+						}
+					
+					}
+				});
+				cashPanel.add(pay);
+				touchScreenFrame.add(cashPanel);
+				
 				
 			}
 			
@@ -101,6 +176,88 @@ public class PaymentScreen {
 				//implement the button press
 				System.out.println("Paying using Credit Card");
 				
+				
+				paymentPanel.setVisible(false);
+				
+				creditPanel = new JPanel();
+				creditPanel.setSize(new Dimension(985,785));
+				creditPanel.setLayout(null);
+				
+				totalDue = new JLabel("Total Due :");
+				totalDue.setFont(new Font("Times New Roman", Font.BOLD, 25));
+				totalDue.setBounds(358, 200, 359, 54);
+				//get the amount due from the software.
+				//for testing, i have used d(a BigDecimal) for now. when the software is plugged, d should be replaced with the amount that is due
+				BigDecimal d = new BigDecimal(0);
+				String due = d.toString();
+				totalDueVal = new JLabel(due);
+				totalDueVal.setFont(new Font("Times New Roman", Font.BOLD, 22));
+				totalDueVal.setBounds(533, 200, 350, 54);
+				creditPanel.add(totalDue);
+				creditPanel.add(totalDueVal);
+				
+				msg = new JLabel("Please insert/tap/swipe your card and click pay");
+				msg.setFont(new Font("Times New Roman", Font.BOLD, 22));
+				msg.setBounds(356, 250, 550, 54);
+				creditPanel.add(msg);
+				
+				pay1 = new JButton("PAY");
+				pay1.setFont(new Font("Times New Roman", Font.PLAIN, 22));
+				pay1.setBounds(405, 350, 171, 45);
+				
+				
+				pay1.addActionListener(new ActionListener(){
+					public void actionPerformed(ActionEvent e) {
+					
+						//when the pay button is pressed, the pay method from the software should be called
+						//and the amount due should be updated.
+						//when the amount due becomes zero, it takes you to the next screen(print receipt)
+						//for testing, i have true for now. true should be replaced with BigDecimal.ZERO ig.
+						if(true) {
+							creditPanel.setVisible(false);
+							paymentSuccessful = new JPanel();
+							paymentSuccessful.setSize(new Dimension(985,785));
+							paymentSuccessful.setLayout(null);
+							
+							paymentMsg = new JLabel("Payment Successful");
+							paymentMsg.setFont(new Font("Times New Roman", Font.BOLD, 25));
+							paymentMsg.setBounds(380, 213, 359, 54);
+							paymentSuccessful.add(paymentMsg);
+							
+							thanksMsg = new JLabel("Thank you for shopping with us today");
+							thanksMsg.setFont(new Font("Times New Roman", Font.BOLD, 22));
+							thanksMsg.setBounds(320, 273, 400, 54);
+							paymentSuccessful.add(thanksMsg);
+							
+							printReceipt = new JButton("Print Receipt");
+							printReceipt.setFont(new Font("Times New Roman", Font.PLAIN, 22));
+							printReceipt.setBounds(390, 350, 200, 45);
+							
+							printReceipt.addActionListener(new ActionListener() {
+								public void actionPerformed(ActionEvent e) {
+									//call the printReceipt method here
+									
+								}
+							});
+							
+							paymentSuccessful.add(printReceipt);
+							touchScreenFrame.add(paymentSuccessful);
+						
+							
+						}
+						
+						else {
+							
+							//else update the amount due(d) after partial payment and go back to the main screen
+							paymentPanel.setVisible(true);
+							}
+					
+					}
+				});
+				creditPanel.add(pay1);
+				
+				touchScreenFrame.add(creditPanel);
+				
 			}
 			
 		});
@@ -115,6 +272,87 @@ public class PaymentScreen {
 			public void actionPerformed(ActionEvent e) {
 				//implement the button press
 				System.out.println("Paying using Debit Card");
+				
+				paymentPanel.setVisible(false);
+				
+				debitPanel = new JPanel();
+				debitPanel.setSize(new Dimension(985,785));
+				debitPanel.setLayout(null);
+				
+				totalDue = new JLabel("Total Due :");
+				totalDue.setFont(new Font("Times New Roman", Font.BOLD, 25));
+				totalDue.setBounds(358, 200, 359, 54);
+				//get the amount due from the software.
+				//for testing, i have used d(a BigDecimal) for now. when the software is plugged, d should be replaced with the amount that is due
+				BigDecimal d = new BigDecimal(0);
+				String due = d.toString();
+				totalDueVal = new JLabel(due);
+				totalDueVal.setFont(new Font("Times New Roman", Font.BOLD, 22));
+				totalDueVal.setBounds(533, 200, 350, 54);
+				debitPanel.add(totalDue);
+				debitPanel.add(totalDueVal);
+				
+				msg = new JLabel("Please insert/tap/swipe your card and click pay");
+				msg.setFont(new Font("Times New Roman", Font.BOLD, 22));
+				msg.setBounds(356, 250, 550, 54);
+				debitPanel.add(msg);
+				
+				pay2 = new JButton("PAY");
+				pay2.setFont(new Font("Times New Roman", Font.PLAIN, 22));
+				pay2.setBounds(405, 350, 171, 45);
+				
+				pay2.addActionListener(new ActionListener(){
+					public void actionPerformed(ActionEvent e) {
+					
+						//when the pay button is pressed, the pay method from the software should be called
+						//and the amount due should be updated.
+						//when the amount due becomes zero, it takes you to the next screen(print receipt)
+						//for testing, i have it as true for now
+						if(true) {
+							debitPanel.setVisible(false);
+							paymentSuccessful = new JPanel();
+							paymentSuccessful.setSize(new Dimension(985,785));
+							paymentSuccessful.setLayout(null);
+							
+							paymentMsg = new JLabel("Payment Successful");
+							paymentMsg.setFont(new Font("Times New Roman", Font.BOLD, 25));
+							paymentMsg.setBounds(380, 213, 359, 54);
+							paymentSuccessful.add(paymentMsg);
+							
+							thanksMsg = new JLabel("Thank you for shopping with us today");
+							thanksMsg.setFont(new Font("Times New Roman", Font.BOLD, 22));
+							thanksMsg.setBounds(320, 273, 400, 54);
+							paymentSuccessful.add(thanksMsg);
+							
+							printReceipt = new JButton("Print Receipt");
+							printReceipt.setFont(new Font("Times New Roman", Font.PLAIN, 22));
+							printReceipt.setBounds(390, 350, 200, 45);
+							
+							printReceipt.addActionListener(new ActionListener() {
+								public void actionPerformed(ActionEvent e) {
+									//call the printReceipt method here
+									
+								}
+							});
+							
+							paymentSuccessful.add(printReceipt);
+							touchScreenFrame.add(paymentSuccessful);
+						
+							
+						}
+						
+						else {
+							
+							//else update the amount due(d) after partial payment and go back to the main screen
+							paymentPanel.setVisible(true);
+							}
+					
+					}
+				});
+				debitPanel.add(pay2);
+				
+				touchScreenFrame.add(debitPanel);
+				
 			}
 			
 		});
@@ -129,6 +367,86 @@ public class PaymentScreen {
 			public void actionPerformed(ActionEvent e) {
 				//implement the button press
 				System.out.println("Paying using Gift Card");
+				
+				paymentPanel.setVisible(false);
+				
+				giftPanel = new JPanel();
+				giftPanel.setSize(new Dimension(985,785));
+				giftPanel.setLayout(null);
+				
+				totalDue = new JLabel("Total Due :");
+				totalDue.setFont(new Font("Times New Roman", Font.BOLD, 25));
+				totalDue.setBounds(358, 200, 359, 54);
+				//get the amount due from the software.
+				//for testing, i have used d(a BigDecimal) for now. when the software is plugged, d should be replaced with the amount that is due
+				BigDecimal d = new BigDecimal(0);
+				String due = d.toString();
+				totalDueVal = new JLabel(due);
+				totalDueVal.setFont(new Font("Times New Roman", Font.BOLD, 22));
+				totalDueVal.setBounds(533, 200, 350, 54);
+				giftPanel.add(totalDue);
+				giftPanel.add(totalDueVal);
+				
+				msg = new JLabel("Please insert/tap/swipe your card and click pay");
+				msg.setFont(new Font("Times New Roman", Font.BOLD, 22));
+				msg.setBounds(356, 250, 550, 54);
+				giftPanel.add(msg);
+				
+				pay3 = new JButton("PAY");
+				pay3.setFont(new Font("Times New Roman", Font.PLAIN, 22));
+				pay3.setBounds(405, 350, 171, 45);
+				
+				pay3.addActionListener(new ActionListener(){
+					public void actionPerformed(ActionEvent e) {
+					
+						//when the pay button is pressed, the pay method from the software should be called
+						//and the amount due should be updated.
+						//when the amount due becomes zero, it takes you to the next screen(print receipt)
+						//for testing, i have false for now. true should be replaced with BigDecimal.ZERO ig.
+						if(false) {
+							giftPanel.setVisible(false);
+							paymentSuccessful = new JPanel();
+							paymentSuccessful.setSize(new Dimension(985,785));
+							paymentSuccessful.setLayout(null);
+							
+							paymentMsg = new JLabel("Payment Successful");
+							paymentMsg.setFont(new Font("Times New Roman", Font.BOLD, 25));
+							paymentMsg.setBounds(380, 213, 359, 54);
+							paymentSuccessful.add(paymentMsg);
+							
+							thanksMsg = new JLabel("Thank you for shopping with us today");
+							thanksMsg.setFont(new Font("Times New Roman", Font.BOLD, 22));
+							thanksMsg.setBounds(320, 273, 400, 54);
+							paymentSuccessful.add(thanksMsg);
+							
+							printReceipt = new JButton("Print Receipt");
+							printReceipt.setFont(new Font("Times New Roman", Font.PLAIN, 22));
+							printReceipt.setBounds(390, 350, 200, 45);
+							
+							printReceipt.addActionListener(new ActionListener() {
+								public void actionPerformed(ActionEvent e) {
+									//call the printReceipt method here
+									
+								}
+							});
+							
+							paymentSuccessful.add(printReceipt);
+							touchScreenFrame.add(paymentSuccessful);
+						
+							
+						}
+						
+						else {
+							
+							//else update the amount due(d) after partial payment and go back to the main screen
+							paymentPanel.setVisible(true);
+							}
+					
+					}
+				});
+				
+				giftPanel.add(pay3);
+				touchScreenFrame.add(giftPanel);
 				
 			}
 			
