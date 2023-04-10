@@ -55,6 +55,8 @@ public class CardReaderController extends PaymentController<CardReader, CardRead
 	public boolean bTap = false;
 	public boolean bSwipe = false;
 	public boolean bInsert = false;
+	public boolean bcredit = false;
+	public boolean bdebit = false;
 	public GiftCard giftCard;
 	public CardReaderController(CardReader newDevice) {
 		super(newDevice);
@@ -236,10 +238,12 @@ public class CardReaderController extends PaymentController<CardReader, CardRead
 		if(data.getType().equals("Credit Card")) {
 			this.creditCard = (CreditCard) this.card;
 			creditPayment = true;
+			bcredit = true;
 		}
 		if(data.getType().equals("Debit Card")) {
 			this.debitCard = (DebitCard) this.card;
 			debitPayment = true;
+			bdebit = true;
 		}
 		this.isPaying = true;
 		//Data is harvested from the card and saved to the reader.
@@ -359,6 +363,16 @@ public class CardReaderController extends PaymentController<CardReader, CardRead
 	
 	public BigDecimal getAmountPaid() {
 		return getMainController().amountPaid;
+	}
+	
+	public String getPaymentType() {
+		if(bcredit) {
+			return "Credit Card";
+		}
+		if(bdebit) {
+			return "Debit Card";
+		}
+		return null;
 	}
 	
 	public String tapInput() {
