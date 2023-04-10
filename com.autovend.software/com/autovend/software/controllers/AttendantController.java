@@ -2,6 +2,8 @@
 package com.autovend.software.controllers;
 import java.util.HashMap;
 
+import com.autovend.devices.SelfCheckoutStation;
+
 public class AttendantController {
 	// Handles the Operations of the attendant
 	
