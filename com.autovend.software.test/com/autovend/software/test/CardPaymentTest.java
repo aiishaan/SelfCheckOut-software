@@ -101,6 +101,15 @@ public class CardPaymentTest {
         readerControllerStub.setMainController(controllerStub);
     }
 
+    //To check if the gift payment is successful
+    @Test
+    public void testGiftPayment(){
+        readerControllerStub.giftCard = giftStub;
+        readerControllerStub.enableGiftPayment(giftStub, BigDecimal.valueOf(20));
+        readerControllerStub.insertGiftPayment(giftStub, readerControllerStub.giftData.setRemainingBalance(BigDecimal.valueOf(10)));
+        assertEquals(BigDecimal.valueOf(10), readerControllerStub.giftData.getRemainingBalance());
+    }
+
     @Test
     public void testSuccessfulTransaction(){
         assertTrue(cardReaderStub.isDisabled());
