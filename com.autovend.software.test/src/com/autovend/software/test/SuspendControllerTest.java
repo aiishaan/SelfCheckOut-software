@@ -20,6 +20,7 @@ public class SuspendControllerTest {
         assertTrue(suspendController.isSuspended());
     }
 
+    // Testing when station is not in used by any customer and is not currently suspended
     @Test
     public void testSuspend() {
             SuspendController suspendController = new SuspendController(null);
@@ -40,6 +41,7 @@ public class SuspendControllerTest {
         assertFalse(suspendController.isSuspended());
     }
 
+    //Testing when the station is not suspened and is in used by customer.
     @Test
     public void testSuspendCustomerInUse() {
         SuspendController suspendController = new SuspendController(null);
