@@ -6,6 +6,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -31,6 +32,7 @@ import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingConstants;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.Border;
 import javax.swing.table.DefaultTableModel;
@@ -693,10 +695,32 @@ public class CustomerGui{
 		mainPanel.add(paymentButton);
 	}
 	
+	// Total cart value is $50 rn, will update it after fixing the setuppaymenttable
+	private void setUpPaymentTotal(String cartValue) {
+		JPanel totalPane = new JPanel();
+		totalPane.setLayout(new GridLayout(1,2));
+		totalPane.setBounds(564, 641, 393, 50);
+		Border blackline = BorderFactory.createLineBorder(Color.black);
+		totalPane.setBorder(blackline);
+		mainPanel.add(totalPane);
+		
+		JTextField tt = new JTextField("  Total:");
+		tt.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		tt.setBorder(null);
+		totalPane.add(tt);
+		
+		JTextField costs = new JTextField(cartValue);
+		costs.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		costs.setBorder(null);
+		costs.setHorizontalAlignment(SwingConstants.RIGHT);
+		totalPane.add(costs);
+	}
+	
+	// Still fixing
 	private void setUpPaymentTable() {
 		scrollPane = new JScrollPane();
 		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-		scrollPane.setBounds(564, 45, 393, 646);
+		scrollPane.setBounds(564, 45, 393, 596);
 		mainPanel.add(scrollPane);
 		
 		// Setup jtable, waiting to connect to software
@@ -708,6 +732,8 @@ public class CustomerGui{
 		table = new JTable(new DefaultTableModel(data, cName));
 		paymentTableModel = (DefaultTableModel) table.getModel();
 		scrollPane.setViewportView(table);
+		// count total cart value and pass to the setuppaymenttotal
+		setUpPaymentTotal("$50.00  ");
 	}
 	
 	private void digitsFailed() {
