@@ -27,6 +27,7 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Set;
 
+import com.autovend.IBarcoded;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -47,7 +48,7 @@ import com.autovend.software.controllers.ElectronicScaleController;
 
 @SuppressWarnings("deprecation")
 /**
- * Test class for the add item and add item after partial payment use case
+ * Test class for the add item, do not add item to bagging area and add item after partial payment use case
  */
 public class AddItemTest {
 
@@ -269,9 +270,9 @@ public class AddItemTest {
 
 		while (!stubScanner.scan(validUnit2)) {
 		} // loop until successful scan
-			// add item to bagging area then verify that the error lock to avoid damage to
-			// the scale
-			// is true, and that taking it off would end that
+		// add item to bagging area then verify that the error lock to avoid damage to
+		// the scale
+		// is true, and that taking it off would end that
 		stubScale.add(validUnit2);
 		assertTrue(checkoutController.systemProtectionLock);
 		stubScale.remove(validUnit2);
@@ -522,6 +523,22 @@ public class AddItemTest {
 		assertEquals(2, order.get(databaseItem1)[0]);
 		assertEquals(total, checkoutController.getCost());
 
+	}
+
+
+	/**
+	 * Test that you can scan after you don't add to the bagging area
+	 */
+	@Test
+	public void dontAddItemToBaggingArea() {
+		double unitWeight = 3.0;
+		BarcodedUnit validUnit2 = new BarcodedUnit(new Barcode(Numeral.three, Numeral.three), unitWeight);
+		stubScanner.scan(validUnit2);
+		scaleController.doNotAddItemToBaggingArea(stubScale, unitWeight);
+		scaleController.attendantInput(true);
+		stubScanner.scan(validUnit1);
+		stubScale.add(validUnit1);
+		assertEquals(scaleController.getExpectedWeight(), scaleController.getCurrentWeight(),  0);
 	}
 
 }
