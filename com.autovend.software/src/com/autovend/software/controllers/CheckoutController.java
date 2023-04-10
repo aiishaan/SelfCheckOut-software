@@ -35,6 +35,7 @@ import com.autovend.BlockedCardException;
 import com.autovend.Card;
 import com.autovend.InvalidPINException;
 import com.autovend.devices.CardReader;
+
 import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.external.CardIssuer;
 import com.autovend.products.BarcodedProduct;
@@ -84,6 +85,13 @@ public class CheckoutController {
 	// create map to store weight after bags added in bagging area
 	private Map<BaggingAreaController, Double> weightWithBags = new HashMap<>();
 	private Map<String, Integer> payCardAttempts = new HashMap<>();
+
+	private CardReaderController cardReaderController;
+
+	public MembershipCardController membershipCardController = new MembershipCardController();
+	public String membershipNum = new String();
+	public boolean existedMembership = false;
+	public boolean inputMembership = false;
 	/**
 	 * Constructors for CheckoutController
 	 */
@@ -110,7 +118,7 @@ public class CheckoutController {
 
 		BillPaymentController billPayController = new BillPaymentController(checkout.billValidator);
 		CoinPaymentController coinPaymentController = new CoinPaymentController(checkout.coinValidator);
-		CardReaderController cardReaderController = new CardReaderController(checkout.cardReader);
+		this.cardReaderController = new CardReaderController(checkout.cardReader);
 
 		this.validPaymentControllers = new HashSet<>(
 				List.of(billPayController, coinPaymentController, cardReaderController));
@@ -133,7 +141,6 @@ public class CheckoutController {
 					new CoinDispenserController(checkout.coinDispensers.get(denom), denom) {
 					});
 		}
-
 		// Add additional device peripherals for Customer I/O and Attendant I/O here
 		registerAll();
 		clearOrder();
@@ -795,4 +802,8 @@ public class CheckoutController {
 			throw new RuntimeException(e);
 		}
 	}
+	public String getMembershipNum(){
+		return membershipNum;
+	}
+
 }

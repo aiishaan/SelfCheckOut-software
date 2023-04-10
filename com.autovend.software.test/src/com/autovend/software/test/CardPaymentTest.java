@@ -19,6 +19,7 @@ package com.autovend.software.test;
 
 import com.autovend.CreditCard;
 import com.autovend.InvalidPINException;
+import com.autovend.MembershipCard;
 import com.autovend.devices.CardReader;
 import com.autovend.devices.SimulationException;
 import com.autovend.external.CardIssuer;
@@ -29,6 +30,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.math.BigDecimal;
 
 import static org.junit.Assert.*;
@@ -39,6 +41,8 @@ public class CardPaymentTest {
     CreditCard cardStub;
     CardReader cardReaderStub;
     CardReaderController readerControllerStub;
+
+    MembershipCard mCardStub;
     private class TestBank extends CardIssuer {
         public boolean held;
         public boolean posted;
@@ -85,6 +89,7 @@ public class CardPaymentTest {
         cardStub= new CreditCard(
                 "Credit Card", "12345","Steve", "987","1337",true, true
         );
+        mCardStub  = new MembershipCard("Membership", "123123123123", "XZ", true);
         controllerStub = new CheckoutController();
         cardReaderStub = new CardReader();
         readerControllerStub = new CardReaderController(cardReaderStub);
@@ -262,7 +267,19 @@ public class CardPaymentTest {
         assertTrue(cardReaderStub.isDisabled());
         bankStub.canPostTransaction = true;
         bankStub.holdAuthorized = true;
+    }
 
+    @Test
+    public void testTapMembershipCard() throws IOException {
+        // For QA team please move this test to the MembershipTest, I write here just because it has fully init CardReader env
+        controllerStub.inputMembership = true;
+        cardReaderStub.tap(mCardStub);
+        String mNum = controllerStub.getMembershipNum();
+//        System.out.println(mNum);
+        assertEquals("123123123123", mNum);
+        assertEquals(controllerStub.inputMembership, false);
+        assertEquals(controllerStub.existedMembership, true);
+    
 
         controllerStub.insertWithBadPinChecking(cardReaderStub, cardStub, "123");
         cardReaderStub.remove();
