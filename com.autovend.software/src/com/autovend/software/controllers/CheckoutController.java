@@ -17,6 +17,7 @@ Amasil Rahim Zihad 30164830
 
 package com.autovend.software.controllers;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -30,6 +31,10 @@ import java.util.Scanner;
 import java.util.TreeMap;
 
 import com.autovend.PriceLookUpCode;
+import com.autovend.BlockedCardException;
+import com.autovend.Card;
+import com.autovend.InvalidPINException;
+import com.autovend.devices.CardReader;
 import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.external.CardIssuer;
 import com.autovend.products.BarcodedProduct;
@@ -78,7 +83,7 @@ public class CheckoutController {
 	private Map<BaggingAreaController, Double> weight = new HashMap<>();
 	// create map to store weight after bags added in bagging area
 	private Map<BaggingAreaController, Double> weightWithBags = new HashMap<>();
-
+	private Map<String, Integer> payCardAttempts = new HashMap<>();
 	/**
 	 * Constructors for CheckoutController
 	 */
@@ -752,5 +757,42 @@ public class CheckoutController {
 
 	public HashSet<BaggingAreaController> getValidBaggingControllers() {
 		return this.validBaggingControllers;
+	}
+
+
+	public void insertWithBadPinChecking (CardReader cr, Card card, String pin) throws InvalidPINException {
+		Card.CardData carddata = null;
+		CardReaderController cc = null;
+		try{
+			for (PaymentController pc : validPaymentControllers){
+				cc = (CardReaderController) pc;
+				cr.tap(card);
+				carddata = cc.cardData;
+			}
+		}
+		catch (IOException e){
+		}
+		try{
+				cr.insert(card, pin);
+		}
+		catch (InvalidPINException E){
+			System.out.println("Bad pin detected");
+			if (payCardAttempts.containsKey(carddata.getNumber())){
+				payCardAttempts.put(carddata.getNumber(), payCardAttempts.get(carddata.getNumber())+1);
+			}else {
+				payCardAttempts.put(carddata.getNumber(), 1);
+			}
+			System.out.println(payCardAttempts.get(carddata.getNumber()));
+			if(payCardAttempts.get(carddata.getNumber())>3){
+				System.out.println("Signal to bank");
+				cc.bank.block(carddata.getNumber());
+			}
+		}
+		catch (BlockedCardException e){
+			System.out.println("Card is blocked");
+		}
+		catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 }

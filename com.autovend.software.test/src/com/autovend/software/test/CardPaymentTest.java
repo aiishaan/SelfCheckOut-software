@@ -18,6 +18,7 @@ Amasil Rahim Zihad 30164830
 package com.autovend.software.test;
 
 import com.autovend.CreditCard;
+import com.autovend.InvalidPINException;
 import com.autovend.devices.CardReader;
 import com.autovend.devices.SimulationException;
 import com.autovend.external.CardIssuer;
@@ -256,7 +257,26 @@ public class CardPaymentTest {
 
     }
 
+    @Test
+    public void testInsertBadPin() throws InvalidPINException {
+        assertTrue(cardReaderStub.isDisabled());
+        bankStub.canPostTransaction = true;
+        bankStub.holdAuthorized = true;
 
+
+        controllerStub.insertWithBadPinChecking(cardReaderStub, cardStub, "123");
+        cardReaderStub.remove();
+        controllerStub.insertWithBadPinChecking(cardReaderStub, cardStub, "123");
+        cardReaderStub.remove();
+        controllerStub.insertWithBadPinChecking(cardReaderStub, cardStub, "123");
+        cardReaderStub.remove();
+        controllerStub.insertWithBadPinChecking(cardReaderStub, cardStub, "123");
+        cardReaderStub.remove();
+        controllerStub.insertWithBadPinChecking(cardReaderStub, cardStub, "123");
+        cardReaderStub.remove();
+
+
+    }
 
 
     @After

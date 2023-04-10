@@ -31,7 +31,7 @@ public class CardReaderController extends PaymentController<CardReader, CardRead
 	public CardReaderController(CardReader newDevice) {
 		super(newDevice);
 	}
-
+	public Card.CardData cardData;
 	public CardIssuer bank;
 	private BigDecimal amount;
 
@@ -57,6 +57,7 @@ public class CardReaderController extends PaymentController<CardReader, CardRead
 
 	@Override
 	public void reactToCardDataReadEvent(CardReader reader, Card.CardData data) {
+		cardData = data;
 		if (reader != this.getDevice() || !this.isPaying || this.bank==null) {
 			return;
 		}
