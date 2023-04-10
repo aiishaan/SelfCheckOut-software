@@ -1,3 +1,4 @@
+
 package com.autovend.software.controllers;
 import java.util.HashMap;
 
@@ -56,4 +57,15 @@ public class AttendantController {
 		return user_id;
 	}
 
+
+	
+	public void attendantStationStartup(CheckoutController checkoutController, SelfCheckoutStation scs) {
+		checkoutController.stationStartup(scs);
+	}
+	
+	public void attendantStationShutdown(CheckoutController checkoutController, SelfCheckoutStation scs) {
+		checkoutController.stationShutdown(scs);
+	}
+
 }
+

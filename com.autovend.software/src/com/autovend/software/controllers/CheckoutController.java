@@ -28,6 +28,8 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.TreeMap;
 
+import com.autovend.devices.BillDispenser;
+import com.autovend.devices.CoinDispenser;
 import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.devices.SimulationException;
 import com.autovend.external.CardIssuer;
@@ -685,6 +687,7 @@ public class CheckoutController {
 		return this.validBaggingControllers;
 	}
 	
+
 	
 	// Function to Log in
 	public void Log_in_Attendant(String userID, String password) {
@@ -724,4 +727,51 @@ public class CheckoutController {
 		
 	}		
 	
+
+	public void stationStartup(SelfCheckoutStation station) {
+		station.baggingArea.enable();
+		station.billInput.enable();
+		station.billOutput.enable();
+		station.billStorage.enable();
+		station.billValidator.enable();
+		station.cardReader.enable();
+		station.coinStorage.enable();
+		station.coinTray.enable();
+		station.coinValidator.enable();
+		station.handheldScanner.enable();
+		station.mainScanner.enable();
+		station.printer.enable();
+		station.scale.enable();
+		station.screen.enable();
+		for(CoinDispenser coinDispenser: station.coinDispensers.values()) {
+			coinDispenser.enable();
+		}
+		for(BillDispenser billDispenser: station.billDispensers.values()) {
+			billDispenser.enable();
+		}
+	}
+	
+	public void stationShutdown(SelfCheckoutStation station) {
+		station.baggingArea.disable();
+		station.billInput.disable();
+		station.billOutput.disable();
+		station.billStorage.disable();
+		station.billValidator.disable();
+		station.cardReader.disable();
+		station.coinStorage.disable();
+		station.coinTray.disable();
+		station.coinValidator.disable();
+		station.handheldScanner.disable();
+		station.mainScanner.disable();
+		station.printer.disable();
+		station.scale.disable();
+		station.screen.disable();
+		for(CoinDispenser coinDispenser: station.coinDispensers.values()) {
+			coinDispenser.disable();
+		}
+		for(BillDispenser billDispenser: station.billDispensers.values()) {
+			billDispenser.disable();
+		}
+	}
+
 }
