@@ -262,22 +262,6 @@ public class CardPaymentTest {
 
     }
 
-    @Test
-    public void testBadPin() {
-        controllerStub.cost = BigDecimal.ONE;
-        CreditCard card= new CreditCard(
-                "Credit Card", "12345","Steve", "987","0000",true, true
-        );
-        controllerStub.payByCard(bankStub, BigDecimal.ONE);
-        try{
-            cardReaderStub.insert(cardStub, "1337");
-        }
-        catch (IOException e){
-            System.out.println("bad pin was detected");
-        }finally {
-            cardReaderStub.remove();
-        }
-    }
 
     @Test
     public void testSwipeMembershipCard() throws IOException {

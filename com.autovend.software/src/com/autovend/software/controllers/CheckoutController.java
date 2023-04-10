@@ -28,7 +28,7 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.TreeMap;
 
-import com.autovend.devices.Keyboard;
+
 import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.external.CardIssuer;
 import com.autovend.products.Product;
@@ -73,7 +73,7 @@ public class CheckoutController {
 	private Map<BaggingAreaController, Double> weightWithBags = new HashMap<>();
 
 	private CardReaderController cardReaderController;
-	private KeyBoardController keyBoardController;
+
 	public MembershipCardController membershipCardController = new MembershipCardController();
 	public String membershipNum = new String();
 	public boolean existedMembership = false;
@@ -248,19 +248,6 @@ public class CheckoutController {
 		}
 	}
 
-//	no key board find in checkout station
-
-//	void registerKeyboardController(Keyboard controller) {
-//		if (receiptPrinter == null) {
-//			this.receiptPrinter = printer;
-//		}
-//	}
-
-	void deregisterkeyboardController(Keyboard controller) {
-		if (this.changeSlotControllers.contains(controller)) {
-			this.changeSlotControllers.remove(controller);
-		}
-	}
 	void registerAll() {
 		for (ItemAdderController controller : validItemAdderControllers) {
 			controller.setMainController(this);
