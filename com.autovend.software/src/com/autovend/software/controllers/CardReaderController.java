@@ -58,12 +58,15 @@ public class CardReaderController extends PaymentController<CardReader, CardRead
 	@Override
 	public void reactToCardDataReadEvent(CardReader reader, Card.CardData data) {
 		//
-		if(data.getType().equals("Membership")){
-			if(!this.getMainController().existedMembership && this.getMainController().membershipCardController.isValid(data.getNumber())) {
-				this.getMainController().membershipNum = data.getNumber();
-				this.getMainController().existedMembership = true;
+		if (this.getMainController().inputMembership){
+			if(data.getType().equals("Membership")){
+				if(!this.getMainController().existedMembership && this.getMainController().membershipCardController.isValid(data.getNumber())) {
+					this.getMainController().membershipNum = data.getNumber();
+					this.getMainController().existedMembership = true;
+					this.getMainController().inputMembership = false;
+				}
+				return;
 			}
-			return;
 		}
 		if (reader != this.getDevice() || !this.isPaying || this.bank==null) {
 			return;

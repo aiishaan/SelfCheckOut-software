@@ -77,6 +77,7 @@ public class CheckoutController {
 	public MembershipCardController membershipCardController = new MembershipCardController();
 	public String membershipNum = new String();
 	public boolean existedMembership = false;
+	public boolean inputMembership = false;
 	/**
 	 * Constructors for CheckoutController
 	 */

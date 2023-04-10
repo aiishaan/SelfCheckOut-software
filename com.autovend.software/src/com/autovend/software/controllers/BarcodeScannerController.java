@@ -42,11 +42,16 @@ public class BarcodeScannerController extends ItemAdderController<BarcodeScanner
 		if (barcodeScanner != this.getDevice()) {
 			return;
 		}
-		if (!this.getMainController().existedMembership && this.getMainController().membershipCardController.isValid(barcode.toString())){
-			this.getMainController().membershipNum = barcode.toString();
+		if (this.getMainController().inputMembership){
+			if (!this.getMainController().existedMembership && this.getMainController().membershipCardController.isValid(barcode.toString())){
+				this.getMainController().membershipNum = barcode.toString();
 //			System.out.println(this.getMainController().membershipNum);
-			this.getMainController().existedMembership = true;
+				this.getMainController().existedMembership = true;
+				this.getMainController().inputMembership = false;
+				return;
+			}
 		}
+
 
 		BarcodedProduct scannedItem = ProductDatabases.BARCODED_PRODUCT_DATABASE.get(barcode);
 		if (scannedItem != null) {

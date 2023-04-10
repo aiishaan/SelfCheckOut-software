@@ -264,12 +264,15 @@ public class CardPaymentTest {
 
 
     @Test
-    public void testSwipeMembershipCard() throws IOException {
+    public void testTapMembershipCard() throws IOException {
         // For QA team please move this test to the MembershipTest, I write here just because it has fully init CardReader env
+        controllerStub.inputMembership = true;
         cardReaderStub.tap(mCardStub);
         String mNum = controllerStub.getMembershipNum();
 //        System.out.println(mNum);
         assertEquals("123123123123", mNum);
+        assertEquals(controllerStub.inputMembership, false);
+        assertEquals(controllerStub.existedMembership, true);
     }
 
 
