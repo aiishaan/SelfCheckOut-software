@@ -52,6 +52,9 @@ public class CardReaderController extends PaymentController<CardReader, CardRead
 	public boolean creditPayment = false;
 	public boolean debitPayment = false;
 	public boolean giftPayment = false;
+	public boolean bTap = false;
+	public boolean bSwipe = false;
+	public boolean bInsert = false;
 	public GiftCard giftCard;
 	public CardReaderController(CardReader newDevice) {
 		super(newDevice);
@@ -204,6 +207,7 @@ public class CardReaderController extends PaymentController<CardReader, CardRead
 		//Sets internal flag for insert payment.
 		this.isPaying = true;
 		this.insertPayment = true;
+		bInsert = true;
 	}
 
 	@Override
@@ -216,6 +220,7 @@ public class CardReaderController extends PaymentController<CardReader, CardRead
 		//Sets internal flag for tap payment.
 		this.isPaying = true;
 		this.tapPayment = true;
+		bTap = true;
 	}
 
 	@Override
@@ -223,6 +228,7 @@ public class CardReaderController extends PaymentController<CardReader, CardRead
 		//Sets internal flag for swipe payment.
 		this.isPaying = true;
 		this.swipePayment = true;
+		bSwipe = true;
 	}
 
 	@Override
@@ -345,5 +351,34 @@ public class CardReaderController extends PaymentController<CardReader, CardRead
 		this.giftCard = localGift;
 		this.amount = amount;
 		this.giftPayment = true;
+	}
+	
+	public BigDecimal getAmountDue() {
+		return this.amount;
+	}
+	
+	public BigDecimal getAmountPaid() {
+		return getMainController().amountPaid;
+	}
+	
+	public String tapInput() {
+		if(bTap) {
+			return "TAP";
+		}
+		return null;
+	}
+	
+	public String insertInput() {
+		if(bInsert) {
+			return "INSERT";
+		}
+		return null;
+	}
+	 
+	public String swipeInput() {
+		if(bSwipe) {
+			return "SWIPE";
+		}
+		return null;
 	}
 }
