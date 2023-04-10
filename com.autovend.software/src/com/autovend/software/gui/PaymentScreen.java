@@ -111,10 +111,14 @@ public class PaymentScreen {
 				pay.addActionListener(new ActionListener(){
 					public void actionPerformed(ActionEvent e) {
 					
+						cashPanel.setVisible(false);
+		//-----------------------------------------------------------------------------------------------------------
 						//when the pay button is pressed, the pay method from the software should be called
 						//and the amount due should be updated.
 						//when the amount due becomes zero, it takes you to the next screen(print receipt)
 						//for testing, i have true for now. true should be replaced with BigDecimal.ZERO ig.
+		
+		//-----------------------------------------------------------------------------------------------------------				
 						if(true) {
 							cashPanel.setVisible(false);
 							paymentSuccessful = new JPanel();
@@ -208,11 +212,14 @@ public class PaymentScreen {
 				
 				pay1.addActionListener(new ActionListener(){
 					public void actionPerformed(ActionEvent e) {
+						
+						creditPanel.setVisible(false);
 					
 						//when the pay button is pressed, the pay method from the software should be called
 						//and the amount due should be updated.
 						//when the amount due becomes zero, it takes you to the next screen(print receipt)
 						//for testing, i have true for now. true should be replaced with BigDecimal.ZERO ig.
+						
 						if(true) {
 							creditPanel.setVisible(false);
 							paymentSuccessful = new JPanel();
@@ -303,11 +310,14 @@ public class PaymentScreen {
 				
 				pay2.addActionListener(new ActionListener(){
 					public void actionPerformed(ActionEvent e) {
+						
+						debitPanel.setVisible(false);
 					
 						//when the pay button is pressed, the pay method from the software should be called
 						//and the amount due should be updated.
 						//when the amount due becomes zero, it takes you to the next screen(print receipt)
 						//for testing, i have it as true for now
+						
 						if(true) {
 							debitPanel.setVisible(false);
 							paymentSuccessful = new JPanel();
@@ -398,11 +408,13 @@ public class PaymentScreen {
 				
 				pay3.addActionListener(new ActionListener(){
 					public void actionPerformed(ActionEvent e) {
+						giftPanel.setVisible(false);
 					
 						//when the pay button is pressed, the pay method from the software should be called
 						//and the amount due should be updated.
 						//when the amount due becomes zero, it takes you to the next screen(print receipt)
 						//for testing, i have false for now. true should be replaced with BigDecimal.ZERO ig.
+						
 						if(false) {
 							giftPanel.setVisible(false);
 							paymentSuccessful = new JPanel();
