@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -58,13 +59,26 @@ public class JSwingClass {
 		mainPanel.add(PLUTextField);
 		PLUTextField.setColumns(10);
 		
+		// Catalogue setup, to put this button here, i pushed membership, bags,... lower, check setBounds for updates *Alvin
+		JButton itemCata = new JButton("Tap here to browse our catalogue of favorite items!");
+		itemCata.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		itemCata.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				cataPopup();
+			}
+		});
+		
+		itemCata.setBounds(42, 106, 468, 40);
+		mainPanel.add(itemCata);
+		
+		// This should update to membership owner name imo *Alvin
 		memberTextField = new JTextField();
 		memberTextField.setEditable(false);
 		memberTextField.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		memberTextField.setText("Sign in with membership for rewards");
 		memberTextField.setHorizontalAlignment(JTextField.CENTER);
 		memberTextField.setColumns(10);
-		memberTextField.setBounds(42, 106, 468, 40);
+		memberTextField.setBounds(42, 183, 468, 40);
 		mainPanel.add(memberTextField);
 		
 		table = new JTable();
@@ -78,7 +92,7 @@ public class JSwingClass {
 			}
 		});
 		
-		purchaseBagsButton.setBounds(42, 183, 468, 40);
+		purchaseBagsButton.setBounds(42, 256, 468, 40);
 		mainPanel.add(purchaseBagsButton);
 		
 		Component rigidArea = Box.createRigidArea(new Dimension(20, 20));
@@ -99,7 +113,7 @@ public class JSwingClass {
 			public void actionPerformed(ActionEvent e) {
 			}
 		});
-		btnNewButton_1_1.setBounds(42, 256, 468, 40);
+		btnNewButton_1_1.setBounds(42, 329, 468, 40);
 		mainPanel.add(btnNewButton_1_1);
 		
 		secondaryPanel = new JPanel();
@@ -118,6 +132,206 @@ public class JSwingClass {
 		
 		touchScreenFrame.setVisible(true);
 	}
+	
+	// Catalogue popup *Alvin
+	private void cataPopup() {
+		// Set up catalogue panel, my idea is to have a navigation bar on top of the panel and the rest will be top selling items
+		// because of limited time, i think the way we should implement is to use this as top 9 most popular items in last week
+		JPanel cataPanel = new JPanel();
+		layeredPane.setLayer(cataPanel, 1);
+		cataPanel.setBounds(0, 0, 1000, 900);
+		cataPanel.setBackground(Color.LIGHT_GRAY);
+		layeredPane.add(cataPanel);
+		cataPanel.setLayout(new GridBagLayout());
+		
+		// Set up gridbagconstraints
+		GridBagConstraints tempC = new GridBagConstraints();
+		
+		// Back to main screen button
+		JButton back = new JButton("Back to main screen");
+		back.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		back.setPreferredSize(new Dimension(200,50));
+		//back.setSize(200, 50);
+		back.setBounds(392, 20, 200, 50);
+		// add to panel
+		tempC.gridx = 1;
+		tempC.gridy = 0;
+		tempC.fill = GridBagConstraints.HORIZONTAL;
+		tempC.anchor = GridBagConstraints.NORTH;
+		back.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				cataPanel.setVisible(false);
+			}
+		});
+		cataPanel.add(back, c);
+		
+		// Set up items, inside each button listerner should do sth to add to the summary
+		
+		// Item 1
+		JButton itemCata1 = new JButton();
+		Image itemCataPic1 = new ImageIcon(this.getClass().getResource("/beer.png")).getImage();
+		itemCata1.setBackground(Color.DARK_GRAY);
+		itemCata1.setIcon(new ImageIcon(itemCataPic1));
+		itemCata1.setPreferredSize(new Dimension(200,200));
+		itemCata1.setBounds(42, 100, 150, 150);
+		// add to panel
+		tempC.gridx = 0;
+		tempC.gridy = 1;
+		//tempC.fill = GridBagConstraints.HORIZONTAL;
+		itemCata1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				cataPanel.setVisible(false);
+			}
+		});
+		cataPanel.add(itemCata1, c);
+		
+		// Item 2
+		JButton itemCata2 = new JButton();
+		Image itemCataPic2 = new ImageIcon(this.getClass().getResource("/bread.png")).getImage();
+		itemCata2.setBackground(Color.DARK_GRAY);
+		itemCata2.setIcon(new ImageIcon(itemCataPic2));
+		itemCata2.setPreferredSize(new Dimension(200,200));
+		itemCata2.setBounds(417, 100, 150, 150);
+		// add to panel
+		tempC.gridx = 1;
+		tempC.gridy = 1;
+		//tempC.fill = GridBagConstraints.HORIZONTAL;
+		itemCata2.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				cataPanel.setVisible(false);
+			}
+		});
+		cataPanel.add(itemCata2, c);
+
+		// Item 3
+		JButton itemCata3 = new JButton();
+		Image itemCataPic3 = new ImageIcon(this.getClass().getResource("/cereals.png")).getImage();
+		itemCata3.setBackground(Color.DARK_GRAY);
+		itemCata3.setIcon(new ImageIcon(itemCataPic3));
+		itemCata3.setPreferredSize(new Dimension(200,200));
+		itemCata3.setBounds(792, 100, 150, 150);
+		// add to panel
+		tempC.gridx = 2;
+		tempC.gridy = 1;
+		//tempC.fill = GridBagConstraints.HORIZONTAL;
+		itemCata3.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				cataPanel.setVisible(false);
+			}
+		});
+		cataPanel.add(itemCata3, c);
+		
+		// Item 4
+		JButton itemCata4 = new JButton();
+		Image itemCataPic4 = new ImageIcon(this.getClass().getResource("/eggs.png")).getImage();
+		itemCata4.setBackground(Color.DARK_GRAY);
+		itemCata4.setIcon(new ImageIcon(itemCataPic4));
+		itemCata4.setPreferredSize(new Dimension(200,200));
+		itemCata4.setBounds(42, 317, 150, 150); //535
+		// add to panel
+		tempC.gridx = 0;
+		tempC.gridy = 2;
+		//tempC.fill = GridBagConstraints.HORIZONTAL;
+		itemCata4.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				cataPanel.setVisible(false);
+			}
+		});
+		cataPanel.add(itemCata4, c);
+		
+		// Item 5
+		JButton itemCata5 = new JButton();
+		Image itemCataPic5 = new ImageIcon(this.getClass().getResource("/milk.png")).getImage();
+		itemCata5.setBackground(Color.DARK_GRAY);
+		itemCata5.setIcon(new ImageIcon(itemCataPic5));
+		itemCata5.setPreferredSize(new Dimension(200,200));
+		itemCata5.setBounds(417, 317, 150, 150);
+		// add to panel
+		tempC.gridx = 1;
+		tempC.gridy = 2;
+		//tempC.fill = GridBagConstraints.HORIZONTAL;
+		itemCata5.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				cataPanel.setVisible(false);
+			}
+		});
+		cataPanel.add(itemCata5, c);
+
+		// Item 6
+		JButton itemCata6 = new JButton();
+		Image itemCataPic6 = new ImageIcon(this.getClass().getResource("/products.png")).getImage(); // snacks actually
+		itemCata6.setBackground(Color.DARK_GRAY);
+		itemCata6.setIcon(new ImageIcon(itemCataPic6));
+		itemCata6.setPreferredSize(new Dimension(200,200));
+		itemCata6.setBounds(792, 317, 150, 150);
+		// add to panel
+		tempC.gridx = 2;
+		tempC.gridy = 2;
+		//tempC.fill = GridBagConstraints.HORIZONTAL;
+		itemCata6.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				cataPanel.setVisible(false);
+			}
+		});
+		cataPanel.add(itemCata6, c);
+		
+		// Item 7
+		JButton itemCata7 = new JButton();
+		Image itemCataPic7 = new ImageIcon(this.getClass().getResource("/soda.png")).getImage();
+		itemCata7.setBackground(Color.DARK_GRAY);
+		itemCata7.setIcon(new ImageIcon(itemCataPic7));
+		itemCata7.setPreferredSize(new Dimension(200,200));
+		itemCata7.setBounds(42, 535, 150, 150);
+		// add to panel
+		tempC.gridx = 0;
+		tempC.gridy = 2;
+		//tempC.fill = GridBagConstraints.HORIZONTAL;
+		itemCata7.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				cataPanel.setVisible(false);
+			}
+		});
+		cataPanel.add(itemCata7, c);
+		
+		// Item 8
+		JButton itemCata8 = new JButton();
+		Image itemCataPic8 = new ImageIcon(this.getClass().getResource("/sweets.png")).getImage();
+		itemCata8.setBackground(Color.DARK_GRAY);
+		itemCata8.setIcon(new ImageIcon(itemCataPic8));
+		itemCata8.setPreferredSize(new Dimension(200,200));
+		itemCata8.setBounds(417, 535, 150, 150);
+		// add to panel
+		tempC.gridx = 1;
+		tempC.gridy = 2;
+		//tempC.fill = GridBagConstraints.HORIZONTAL;
+		itemCata8.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				cataPanel.setVisible(false);
+			}
+		});
+		cataPanel.add(itemCata8, c);
+
+		// Item 9
+		JButton itemCata9 = new JButton();
+		Image itemCataPic9 = new ImageIcon(this.getClass().getResource("/cheese.png")).getImage();
+		itemCata9.setBackground(Color.DARK_GRAY);
+		itemCata9.setIcon(new ImageIcon(itemCataPic9));
+		itemCata9.setPreferredSize(new Dimension(200,200));
+		itemCata9.setBounds(792, 535, 150, 150);
+		// add to panel
+		tempC.gridx = 2;
+		tempC.gridy = 2;
+		//tempC.fill = GridBagConstraints.HORIZONTAL;
+		itemCata9.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				cataPanel.setVisible(false);
+			}
+		});
+		cataPanel.add(itemCata9, c);
+	}
+	
+	
+	
 	private void tapScreen() {
 		
 		tapScreenPanel = new JPanel();
