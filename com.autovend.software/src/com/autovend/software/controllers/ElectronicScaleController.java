@@ -29,6 +29,8 @@ public class ElectronicScaleController extends BaggingAreaController<ElectronicS
 
 	private boolean AttendantApproval;
 
+	CheckoutController mainController = getMainController();
+
 	public ElectronicScaleController(ElectronicScale newDevice) {
 		super(newDevice);
 	}
@@ -57,7 +59,6 @@ public class ElectronicScaleController extends BaggingAreaController<ElectronicS
 	
 	public void attendantInput(boolean approval) {
 		AttendantApproval = approval;
-		return;
 	}
 
 	@Override
@@ -115,6 +116,24 @@ public class ElectronicScaleController extends BaggingAreaController<ElectronicS
 				"The scale is currently overloaded, please take items off it to avoid damaging the system.");
 	}
 
+	public final void doNotAddItemToBaggingArea(ElectronicScale scale, double weight) {
+		//lock from adding more items
+		this.getMainController().baggingItemLock = true;
+
+		//TODO: System: Signals to the Attendant I/O that a no-bagging request is in progress.
+		//TODO: Approve request (function created below)
+
+		//if attendant approved, reduce expected weight
+		if (this.getMainController().AttendantApproved) {
+			for (BaggingAreaController baggingController : this.getMainController().getValidBaggingControllers()) {
+				removeAddedWeight(weight);
+			}
+		}
+		//unlock system when done so they can continue adding items
+		this.getMainController().baggingItemLock = false;
+
+	}
+
 	@Override
 	public void reactToOutOfOverloadEvent(ElectronicScale scale) {
 		if (scale != this.getDevice()) {
@@ -142,6 +161,10 @@ public class ElectronicScaleController extends BaggingAreaController<ElectronicS
 
 	public boolean getAddingBags() {
 		return this.addingBags;
+	}
+	
+	public void removeAddedWeight(double weight) {
+		this.expectedWeight -= weight;
 	}
 
 }

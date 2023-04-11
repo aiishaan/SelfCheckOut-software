@@ -17,6 +17,7 @@ Amasil Rahim Zihad 30164830
 
 package com.autovend.software.controllers;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -25,15 +26,38 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 import java.util.TreeMap;
 
+
 import com.autovend.devices.BillDispenser;
 import com.autovend.devices.CoinDispenser;
+
+
+import com.autovend.PriceLookUpCode;
+
+
+import com.autovend.Card;
+import com.autovend.GiftCard;
+
+import com.autovend.PriceLookUpCode;
+import com.autovend.BlockedCardException;
+import com.autovend.Card;
+import com.autovend.InvalidPINException;
+import com.autovend.devices.CardReader;
+
+
+
 import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.devices.SimulationException;
 import com.autovend.external.CardIssuer;
+import com.autovend.products.BarcodedProduct;
+import com.autovend.products.PLUCodedProduct;
 import com.autovend.products.Product;
+
+import static com.autovend.external.ProductDatabases.BARCODED_PRODUCT_DATABASE;
+import static com.autovend.external.ProductDatabases.PLU_PRODUCT_DATABASE;
 
 @SuppressWarnings("rawtypes")
 
@@ -41,6 +65,7 @@ public class CheckoutController {
 	private static int IDcounter = 1;
 	private int stationID = IDcounter++;
 
+	
 	private LinkedHashMap<Product, Number[]> order;
 	public BigDecimal cost;
 	protected BigDecimal amountPaid;
@@ -73,6 +98,7 @@ public class CheckoutController {
 	private Map<BaggingAreaController, Double> weight = new HashMap<>();
 	// create map to store weight after bags added in bagging area
 	private Map<BaggingAreaController, Double> weightWithBags = new HashMap<>();
+
 	
 	// Tells the system about the current attendant
 	public AttendantController Attendant ;
@@ -81,6 +107,15 @@ public class CheckoutController {
 	// String to Display the name of current Attendant in charge
 	public String Attendant_ID;
 
+	private Map<String, Integer> payCardAttempts = new HashMap<>();
+
+
+	private CardReaderController cardReaderController;
+
+	public MembershipCardController membershipCardController = new MembershipCardController();
+	public String membershipNum = new String();
+	public boolean existedMembership = false;
+	public boolean inputMembership = false;
 	/**
 	 * Constructors for CheckoutController
 	 */
@@ -108,7 +143,7 @@ public class CheckoutController {
 
 		BillPaymentController billPayController = new BillPaymentController(checkout.billValidator);
 		CoinPaymentController coinPaymentController = new CoinPaymentController(checkout.coinValidator);
-		CardReaderController cardReaderController = new CardReaderController(checkout.cardReader);
+		this.cardReaderController = new CardReaderController(checkout.cardReader);
 
 		this.validPaymentControllers = new HashSet<>(
 				List.of(billPayController, coinPaymentController, cardReaderController));
@@ -139,7 +174,6 @@ public class CheckoutController {
 					new CoinDispenserController(checkout.coinDispensers.get(denom), denom) {
 					});
 		}
-
 		// Add additional device peripherals for Customer I/O and Attendant I/O here
 		registerAll();
 		clearOrder();
@@ -431,6 +465,84 @@ public class CheckoutController {
 
 		baggingItemLock = true;
 	}
+	
+	public void addItemByPLU(ItemAdderController adder, PriceLookUpCode plucode  , String quantity) {
+        PLUCodedProduct pluProduct = PLU_PRODUCT_DATABASE.get(plucode);
+        //each PluProduct is per kilogram, quatity is the number of kilograms
+        if (pluProduct != null) {
+            BigDecimal itemQuantity = new BigDecimal(quantity);
+            BigDecimal itemPrice = pluProduct.getPrice();
+            BigDecimal itemTotalPrice = itemPrice.multiply(itemQuantity);
+            double itemWeight = 1 * Double.parseDouble(quantity);//quantity(number of kilograms) * 1 kilogram
+            PLUCodedProduct UpdatedProduct = new PLUCodedProduct(pluProduct.getPLUCode(), pluProduct.getDescription(), itemTotalPrice);
+            //Needed because addItem calls .getPrice() and the updated price is required
+            // Here you can add any additional logic related to the calculated total price
+
+            addItem(adder, UpdatedProduct, itemWeight);
+        } else {
+            throw new NoSuchElementException("No item could be found with the specified PLU code.");
+        }
+    }
+	
+	//redesigned to make it so that the user can pass in their own database that will be searched
+	public void addItemByTextSearch(ItemAdderController adder, String text) {
+		String[] keywords = text.split(" ");
+		boolean found = false;
+		
+
+		for (BarcodedProduct barprod : BARCODED_PRODUCT_DATABASE.values()) {
+			String desc = barprod.getDescription();
+			System.out.println(desc);
+			for (String word : desc.split(" ")) {
+				int matches = 0;
+
+				for (String keyword : keywords) {
+					if (word.equals(keyword)) {
+						matches++;
+					}
+				}
+				// If all keywords are present in this product's description, then it is matched
+				if (matches == keywords.length) {
+					found = true;
+					this.addItem(adder, barprod, barprod.getExpectedWeight());
+					break;
+				}
+			}
+
+		}
+		if (!found) {
+			for (PLUCodedProduct pluprod : PLU_PRODUCT_DATABASE.values()) {
+				String desc = pluprod.getDescription();
+				System.out.println(desc);
+
+				for (String word : desc.split(" ")) {
+					int matches = 0;
+
+					for (String keyword : keywords) {
+						if (word.equals(keyword)) {
+							matches++;
+						}
+					}
+					// If all keywords are present in this product's description, then it is matched
+					if (matches == keywords.length) {
+						found = true;
+						this.addItemByPLU(adder, pluprod.getPLUCode(), "1");//WIll call when Aman implements add by plu code.
+						break;
+					}
+				}
+			}
+		}
+		if (!found) {
+			throw new NoSuchElementException("No item could be found in the database with all specified keywords.");
+		}
+	}
+	
+	
+	
+	
+	
+	
+	
 
 	public void addToAmountPaid(BigDecimal val) {
 		amountPaid = amountPaid.add(val);
@@ -606,7 +718,7 @@ public class CheckoutController {
 	// since both methods of paying by credit and debit cards are simulated the same
 	// way
 	// only one method is needed. - Arie
-	public void payByCard(CardIssuer source, BigDecimal amount) {
+	public void payByCard(CardIssuer source, BigDecimal amount, Card card) {
 		if (baggingItemLock || systemProtectionLock || payingChangeLock || source == null) {
 			return;
 		}
@@ -618,10 +730,32 @@ public class CheckoutController {
 		}
 		for (PaymentController controller : validPaymentControllers) {
 			if (controller instanceof CardReaderController) {
-				((CardReaderController) controller).enablePayment(source, amount);
+				((CardReaderController) controller).card = card;
+				((CardReaderController) controller).enablePayment(source, card, amount);
 			}
 		}
-		// TODO: If this fails then do stuff idk
+		// Needs to return to GUI if fail.
+		return;
+	}
+	
+	public void payByGiftCard(BigDecimal amount, GiftCard card) {
+		if (baggingItemLock || systemProtectionLock || payingChangeLock) {
+			return;
+		}
+		if (amount.compareTo(getRemainingAmount()) > 0) {
+			return;
+			// only reason to pay more than the order with card is to mess with the amount
+			// of change the system has for some reason
+			// so preventing stuff like this would be a good idea.
+		}
+		for (PaymentController controller : validPaymentControllers) {
+			if (controller instanceof CardReaderController) {
+				((CardReaderController) controller).giftCard = card;
+				((CardReaderController) controller).enableGiftPayment(card, amount);	
+			}
+		}
+		// Needs to return to GUI if fail.
+		return;
 	}
 
 	/*
@@ -686,6 +820,7 @@ public class CheckoutController {
 	public HashSet<BaggingAreaController> getValidBaggingControllers() {
 		return this.validBaggingControllers;
 	}
+
 	
 
 	
@@ -776,6 +911,46 @@ public class CheckoutController {
 		for(BillDispenser billDispenser: station.billDispensers.values()) {
 			billDispenser.disable();
 		}
+
+
+	public void insertWithBadPinChecking (CardReader cr, Card card, String pin) throws InvalidPINException {
+		Card.CardData carddata = null;
+		CardReaderController cc = null;
+		try{
+			for (PaymentController pc : validPaymentControllers){
+				cc = (CardReaderController) pc;
+				cr.tap(card);
+				carddata = cc.cardData;
+			}
+		}
+		catch (IOException e){
+		}
+		try{
+				cr.insert(card, pin);
+		}
+		catch (InvalidPINException E){
+			System.out.println("Bad pin detected");
+			if (payCardAttempts.containsKey(carddata.getNumber())){
+				payCardAttempts.put(carddata.getNumber(), payCardAttempts.get(carddata.getNumber())+1);
+			}else {
+				payCardAttempts.put(carddata.getNumber(), 1);
+			}
+			System.out.println(payCardAttempts.get(carddata.getNumber()));
+			if(payCardAttempts.get(carddata.getNumber())>3){
+				System.out.println("Signal to bank");
+				cc.bank.block(carddata.getNumber());
+			}
+		}
+		catch (BlockedCardException e){
+			System.out.println("Card is blocked");
+		}
+		catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	public String getMembershipNum(){
+		return membershipNum;
+
 	}
 
 }
