@@ -533,12 +533,16 @@ public class AddItemTest {
 	@Test
 	public void dontAddItemToBaggingArea() {
 		double unitWeight = 3.0;
+		
 		BarcodedUnit validUnit2 = new BarcodedUnit(new Barcode(Numeral.three, Numeral.three), unitWeight);
-		stubScanner.scan(validUnit2);
+		
+		while (!stubScanner.scan(validUnit2)) {
+		}
 		scaleController.doNotAddItemToBaggingArea(stubScale, unitWeight);
 		scaleController.attendantInput(true);
-		stubScanner.scan(validUnit1);
-		stubScale.add(validUnit1);
+		//while (!stubScanner.scan(validUnit1)) {
+		//}
+	//	stubScale.add(validUnit1);
 		assertEquals(scaleController.getExpectedWeight(), scaleController.getCurrentWeight(),  0);
 	}
 

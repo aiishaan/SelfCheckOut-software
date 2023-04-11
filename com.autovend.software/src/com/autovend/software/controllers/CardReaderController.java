@@ -58,6 +58,7 @@ public class CardReaderController extends PaymentController<CardReader, CardRead
 	public boolean bcredit = false;
 	public boolean bdebit = false;
 	public GiftCard giftCard;
+	public CardData cardData;
 	public CardReaderController(CardReader newDevice) {
 		super(newDevice);
 	}
@@ -235,7 +236,7 @@ public class CardReaderController extends PaymentController<CardReader, CardRead
 
 	@Override
 	public void reactToCardDataReadEvent(CardReader reader, Card.CardData data)  {
-		cardData = data;
+		
 		if (this.getMainController().inputMembership){
 			if(data.getType().equals("Membership")){
 				if(!this.getMainController().existedMembership && this.getMainController().membershipCardController.isValid(data.getNumber())) {
