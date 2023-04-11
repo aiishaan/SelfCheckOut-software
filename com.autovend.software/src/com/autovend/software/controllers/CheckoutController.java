@@ -30,11 +30,16 @@ import java.util.NoSuchElementException;
 import java.util.Scanner;
 import java.util.TreeMap;
 
+
+import com.autovend.Card;
+import com.autovend.GiftCard;
+
 import com.autovend.PriceLookUpCode;
 import com.autovend.BlockedCardException;
 import com.autovend.Card;
 import com.autovend.InvalidPINException;
 import com.autovend.devices.CardReader;
+
 
 import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.external.CardIssuer;
@@ -685,7 +690,7 @@ public class CheckoutController {
 	// since both methods of paying by credit and debit cards are simulated the same
 	// way
 	// only one method is needed. - Arie
-	public void payByCard(CardIssuer source, BigDecimal amount) {
+	public void payByCard(CardIssuer source, BigDecimal amount, Card card) {
 		if (baggingItemLock || systemProtectionLock || payingChangeLock || source == null) {
 			return;
 		}
@@ -697,10 +702,32 @@ public class CheckoutController {
 		}
 		for (PaymentController controller : validPaymentControllers) {
 			if (controller instanceof CardReaderController) {
-				((CardReaderController) controller).enablePayment(source, amount);
+				((CardReaderController) controller).card = card;
+				((CardReaderController) controller).enablePayment(source, card, amount);
 			}
 		}
-		// TODO: If this fails then do stuff idk
+		// Needs to return to GUI if fail.
+		return;
+	}
+	
+	public void payByGiftCard(BigDecimal amount, GiftCard card) {
+		if (baggingItemLock || systemProtectionLock || payingChangeLock) {
+			return;
+		}
+		if (amount.compareTo(getRemainingAmount()) > 0) {
+			return;
+			// only reason to pay more than the order with card is to mess with the amount
+			// of change the system has for some reason
+			// so preventing stuff like this would be a good idea.
+		}
+		for (PaymentController controller : validPaymentControllers) {
+			if (controller instanceof CardReaderController) {
+				((CardReaderController) controller).giftCard = card;
+				((CardReaderController) controller).enableGiftPayment(card, amount);	
+			}
+		}
+		// Needs to return to GUI if fail.
+		return;
 	}
 
 	/*
