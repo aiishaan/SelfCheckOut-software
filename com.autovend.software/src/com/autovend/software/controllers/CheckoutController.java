@@ -31,6 +31,10 @@ import java.util.Scanner;
 import java.util.TreeMap;
 
 
+import com.autovend.devices.BillDispenser;
+import com.autovend.devices.CoinDispenser;
+
+
 import com.autovend.PriceLookUpCode;
 
 
@@ -44,7 +48,9 @@ import com.autovend.InvalidPINException;
 import com.autovend.devices.CardReader;
 
 
+
 import com.autovend.devices.SelfCheckoutStation;
+import com.autovend.devices.SimulationException;
 import com.autovend.external.CardIssuer;
 import com.autovend.products.BarcodedProduct;
 import com.autovend.products.PLUCodedProduct;
@@ -92,7 +98,17 @@ public class CheckoutController {
 	private Map<BaggingAreaController, Double> weight = new HashMap<>();
 	// create map to store weight after bags added in bagging area
 	private Map<BaggingAreaController, Double> weightWithBags = new HashMap<>();
+
+	
+	// Tells the system about the current attendant
+	public AttendantController Attendant ;
+	// Tells the system if an attendant is logged in
+	public boolean Log_in_Status;
+	// String to Display the name of current Attendant in charge
+	public String Attendant_ID;
+
 	private Map<String, Integer> payCardAttempts = new HashMap<>();
+
 
 	private CardReaderController cardReaderController;
 
@@ -112,6 +128,7 @@ public class CheckoutController {
 		this.changeDispenserControllers = new TreeMap<>();
 		this.changeSlotControllers = new LinkedHashSet<>();
 		clearOrder();
+		this.Log_in_Status=false;
 	}
 
 	public CheckoutController(SelfCheckoutStation checkout) {
@@ -137,6 +154,14 @@ public class CheckoutController {
 		// TODO: Finish Coin Tray Controller and add to controllers set
 		this.changeSlotControllers = new LinkedHashSet<>(List.of(billChangeSlotController, coinChangeSlotController));
 		this.changeDispenserControllers = new TreeMap<>();
+		
+		// Attendant
+		// Tells the system if an attendant is logged in
+		Log_in_Status=false;
+		// String to Display the name of current Attendant in charge
+		Attendant_ID=null;
+		Attendant = new AttendantController("Tom", "6234523");
+		
 
 		// TODO: Also add coin dispensers to changeDispenserControllers (once done)
 
@@ -796,6 +821,97 @@ public class CheckoutController {
 		return this.validBaggingControllers;
 	}
 
+	
+
+	
+	// Function to Log in
+	public boolean Log_in_Attendant(String userID, String password) {
+		// Already Logged in
+		if (Log_in_Status==true) {
+			throw new SimulationException("An Attendant is currently Logged in");
+		}
+		// New Log In 
+		if (Attendant.AttendantList.containsKey(userID) && Attendant.AttendantList.get(userID).equals(password)) {
+			// Sets log in status to true
+			Log_in_Status =true;
+			// Updates the name of current Attendant on the System
+			Attendant_ID=userID;
+			
+			// Add code for Attendant is permitted to use the station
+			System.out.println("The attendant is allowed to use the station");
+			
+		}else {
+			throw new SimulationException("The login credentials do not match any Attendant.");
+		}
+		// Return the Log in Status as true if successfully logged in
+		return Log_in_Status;
+		
+	}
+	
+	public boolean Log_Out_Attendant() {
+		if (Log_in_Status==false) {
+			throw new SimulationException("There is no attendant who is currenlty logged in.");
+			
+		}
+		if (Log_in_Status==true) {
+			// Resets the Attendant ID and Log in Status
+			Attendant_ID=null;
+			this.Log_in_Status=false;
+			// Add code for Attendant is not-permitted to use the station
+		
+			System.out.println("The attendant is not allowed to use the station.");
+		}
+		//Returns the login status as false if succsfully logged out
+		return Log_in_Status;
+		
+	}		
+	
+
+	public void stationStartup(SelfCheckoutStation station) {
+		station.baggingArea.enable();
+		station.billInput.enable();
+		station.billOutput.enable();
+		station.billStorage.enable();
+		station.billValidator.enable();
+		station.cardReader.enable();
+		station.coinStorage.enable();
+		station.coinTray.enable();
+		station.coinValidator.enable();
+		station.handheldScanner.enable();
+		station.mainScanner.enable();
+		station.printer.enable();
+		station.scale.enable();
+		station.screen.enable();
+		for(CoinDispenser coinDispenser: station.coinDispensers.values()) {
+			coinDispenser.enable();
+		}
+		for(BillDispenser billDispenser: station.billDispensers.values()) {
+			billDispenser.enable();
+		}
+	}
+	
+	public void stationShutdown(SelfCheckoutStation station) {
+		station.baggingArea.disable();
+		station.billInput.disable();
+		station.billOutput.disable();
+		station.billStorage.disable();
+		station.billValidator.disable();
+		station.cardReader.disable();
+		station.coinStorage.disable();
+		station.coinTray.disable();
+		station.coinValidator.disable();
+		station.handheldScanner.disable();
+		station.mainScanner.disable();
+		station.printer.disable();
+		station.scale.disable();
+		station.screen.disable();
+		for(CoinDispenser coinDispenser: station.coinDispensers.values()) {
+			coinDispenser.disable();
+		}
+		for(BillDispenser billDispenser: station.billDispensers.values()) {
+			billDispenser.disable();
+		}
+
 
 	public void insertWithBadPinChecking (CardReader cr, Card card, String pin) throws InvalidPINException {
 		Card.CardData carddata = null;
@@ -834,6 +950,7 @@ public class CheckoutController {
 	}
 	public String getMembershipNum(){
 		return membershipNum;
+
 	}
 
 }
