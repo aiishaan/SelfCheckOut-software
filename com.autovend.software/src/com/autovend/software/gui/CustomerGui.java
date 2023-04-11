@@ -44,18 +44,15 @@ import com.autovend.software.controllers.CheckoutController;
 import com.autovend.software.controllers.MembershipCardController;
 import com.autovend.devices.SelfCheckoutStation;
 public class CustomerGui{
+	
 	// these are using to call from attendantmain
 	JFrame touchScreenFrame;
 	boolean oB = false;			// own bag
 	JPanel ownBagAdded;
 	
-	
-	
-	
 	private CheckoutController checkoutController;
 	private MembershipCardController membershipCardController;
 	private JComboBox<String> languageBox;
-	private DefaultTableModel paymentTableModel;
 	private JPanel tapScreenPanel;
 	private JPanel mainPanel;
 	private JPanel secondaryPanel;
@@ -94,10 +91,13 @@ public class CustomerGui{
     private double bagsValue = bagsCount*0.1;
     
     // Put data here to access the payment table
-    String[][] data = new String[][] {{"Bag(s) @$0.10", String.valueOf(bagsCount), "$"+String.valueOf(bagsValue)},{"Wagyu beef @$250.00", "0.50", "$125.00"},{"Pork chop @$4.67", "5.00", "$23.35"}};
-    
-    // dataI is used to update data
-    private int dataI = 3;
+    String[][] data = new String[100][3];
+    String[] dataNeo = new String[100];
+    int dataCount = 0;
+    String[] cName = {"Item ", "@cost per unit", "Total cost"};
+    DefaultTableModel dataModel = new DefaultTableModel(data, cName);
+    DefaultTableModel paymentTableModel = new DefaultTableModel(null, cName);
+    double cartValue = 0.00;
     
     // use to count digits
     private int tempCount = 0;
@@ -129,6 +129,9 @@ public class CustomerGui{
 		tapScreen();
 		ownBag();
 		
+		// use this if you only want to run customergui
+		//this.touchScreenFrame.setVisible(true);
+		// use this if you want to start from attendantgui
 		this.touchScreenFrame.setVisible(false);
 	}
 	
@@ -211,12 +214,15 @@ public class CustomerGui{
 		rigidArea3.setBounds(42, 219, 468, 39);
 		mainPanel.add(rigidArea3);
 		
+		// can only remove last item rn
 		removeItemButton = new JButton("Remove an Item");
 		removeItemButton.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		removeItemButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				mainPanel.setVisible(false);
-				Remove remove = new Remove(cStation);
+//				for (int i = 0; i <= )
+//				paymentTableModel.get
+				Remove remove = new Remove(cStation, dataNeo, dataCount);
 			}
 		});
 		removeItemButton.setBounds(42, 329, 468, 40);
@@ -255,7 +261,6 @@ public class CustomerGui{
 		JButton back = new JButton("Back to main screen");
 		back.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		back.setPreferredSize(new Dimension(200,50));
-		//back.setSize(200, 50);
 		back.setBounds(392, 20, 200, 50);
 		// add to panel
 		tempC.gridx = 1;
@@ -323,17 +328,13 @@ public class CustomerGui{
 				
 				purBagPane.setVisible(false);
 				bagsValue = bagsCount * 0.1;
-				System.out.println(bagsCount);
-				System.out.println(bagsValue);
-//				List<List<String>> temp = new 
-//				
-//				data[dataI][0] = "Bag(s)";
-//				data[dataI][1] = String.valueOf(bagsCount);
-//				data[dataI][2] = String.valueOf(bagsValue);
-				//setUpPaymentTable();
+//				System.out.println(bagsCount);
+//				System.out.println(bagsValue);
+
 				DecimalFormat tempValue = new DecimalFormat("0.00");
-				
-				paymentTableModel.addRow(new Object[] {"Bag(s) @$0.10", String.valueOf(bagsCount), "$"+String.valueOf(tempValue.format(bagsValue))});
+				data[dataCount] = new String[] {"Bag(s) @$0.10", String.valueOf(bagsCount), "$"+String.valueOf(tempValue.format(bagsValue))}; 
+				dataCount++;
+				updateTable(new String[] {"Bag(s) @$0.10", String.valueOf(bagsCount), "$"+String.valueOf(tempValue.format(bagsValue))});
 			}
 		});
 		purBagPane.add(purchase, c);
@@ -368,14 +369,24 @@ public class CustomerGui{
 		layeredPane.add(cataPanel);
 		cataPanel.setLayout(new GridBagLayout());
 		
+		// Set up items for catalogue
+		String[] dataBeer = {"Beer @$26.99", "1.00", "$26.99"};
+		String[] dataBread = {"Bread @$1.97", "1.00", "$1.97"};
+		String[] dataCereals = {"Cereals @$4.77", "1.00", "$4.77"};
+		String[] dataCheese = {"Cheese @$8.27", "1.00", "$8.27"};
+		String[] dataEggs = {"Eggs @$3.68", "1.00", "$3.68"};
+		String[] dataMilk = {"Milk @$5.89", "1.00", "$5.89"};
+		String[] dataProducts = {"Products @$1.98", "1.00", "$1.98"};
+		String[] dataSoda = {"Soda @$2.47", "1.00", "$2.47"};
+		String[] dataSweets = {"Sweets @$0.99", "1.00", "$0.99"};
+		
 		// Set up gridbagconstraints
 		GridBagConstraints tempC = new GridBagConstraints();
 		
 		// Back to main screen button
 		JButton back = new JButton("Back to main screen");
 		back.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		back.setPreferredSize(new Dimension(200,50));
-		//back.setSize(200, 50);
+		back.setPreferredSize(new Dimension(200,50));;
 		back.setBounds(392, 20, 200, 50);
 		// add to panel
 		tempC.gridx = 1;
@@ -401,9 +412,12 @@ public class CustomerGui{
 		// add to panel
 		tempC.gridx = 0;
 		tempC.gridy = 1;
-		//tempC.fill = GridBagConstraints.HORIZONTAL;
 		itemCata1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				data[dataCount] = dataBeer;
+				dataCount++;
+				dataModel.addRow(dataBeer);
+				updateTable(dataBeer);
 				cataPanel.setVisible(false);
 			}
 		});
@@ -419,9 +433,12 @@ public class CustomerGui{
 		// add to panel
 		tempC.gridx = 1;
 		tempC.gridy = 1;
-		//tempC.fill = GridBagConstraints.HORIZONTAL;
 		itemCata2.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				data[dataCount] = dataBread;
+				dataCount++;
+				dataModel.addRow(dataBread);
+				updateTable(dataBread);
 				cataPanel.setVisible(false);
 			}
 		});
@@ -437,9 +454,12 @@ public class CustomerGui{
 		// add to panel
 		tempC.gridx = 2;
 		tempC.gridy = 1;
-		//tempC.fill = GridBagConstraints.HORIZONTAL;
 		itemCata3.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				data[dataCount] = dataCereals;
+				dataCount++;
+				dataModel.addRow(dataCereals);
+				updateTable(dataCereals);
 				cataPanel.setVisible(false);
 			}
 		});
@@ -455,9 +475,12 @@ public class CustomerGui{
 		// add to panel
 		tempC.gridx = 0;
 		tempC.gridy = 2;
-		//tempC.fill = GridBagConstraints.HORIZONTAL;
 		itemCata4.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				data[dataCount] = dataEggs;
+				dataCount++;
+				dataModel.addRow(dataEggs);
+				updateTable(dataEggs);
 				cataPanel.setVisible(false);
 			}
 		});
@@ -473,9 +496,12 @@ public class CustomerGui{
 		// add to panel
 		tempC.gridx = 1;
 		tempC.gridy = 2;
-		//tempC.fill = GridBagConstraints.HORIZONTAL;
 		itemCata5.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				data[dataCount] = dataMilk;
+				dataCount++;
+				dataModel.addRow(dataMilk);
+				updateTable(dataMilk);
 				cataPanel.setVisible(false);
 			}
 		});
@@ -490,9 +516,12 @@ public class CustomerGui{
 		// add to panel
 		tempC.gridx = 2;
 		tempC.gridy = 2;
-		//tempC.fill = GridBagConstraints.HORIZONTAL;
 		itemCata6.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				data[dataCount] = dataProducts;
+				dataCount++;
+				dataModel.addRow(dataProducts);
+				updateTable(dataProducts);
 				cataPanel.setVisible(false);
 			}
 		});
@@ -508,9 +537,12 @@ public class CustomerGui{
 		// add to panel
 		tempC.gridx = 0;
 		tempC.gridy = 2;
-		//tempC.fill = GridBagConstraints.HORIZONTAL;
 		itemCata7.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				data[dataCount] = dataSoda;
+				dataCount++;
+				dataModel.addRow(dataSoda);
+				updateTable(dataSoda);
 				cataPanel.setVisible(false);
 			}
 		});
@@ -526,9 +558,12 @@ public class CustomerGui{
 		// add to panel
 		tempC.gridx = 1;
 		tempC.gridy = 2;
-		//tempC.fill = GridBagConstraints.HORIZONTAL;
 		itemCata8.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				data[dataCount] = dataSweets;
+				dataCount++;
+				dataModel.addRow(dataSweets);
+				updateTable(dataSweets);
 				cataPanel.setVisible(false);
 			}
 		});
@@ -543,9 +578,12 @@ public class CustomerGui{
 		// add to panel
 		tempC.gridx = 2;
 		tempC.gridy = 2;
-		//tempC.fill = GridBagConstraints.HORIZONTAL;
 		itemCata9.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				data[dataCount] = dataCheese;
+				dataCount++;
+				dataModel.addRow(dataCheese);
+				updateTable(dataCheese);
 				cataPanel.setVisible(false);
 			}
 		});
@@ -746,16 +784,14 @@ public class CustomerGui{
 		mainPanel.add(scrollPane);
 		
 		// Setup jtable, waiting to connect to software
-	    //String[][] data = {{"Bag(s) @$0.10", String.valueOf(bagsCount), String.valueOf(bagsValue)},{"Wagyu beef @$250.00", "0.50", "$125.00"},{"Pork chop @$4.67", "5.00", "$23.35"}};
-	    
-	    // column name
-		String[] cName = {"Item ", "@cost per unit", "Total cost"};
+
+		table = new JTable(paymentTableModel);
+//		paymentTableModel = (DefaultTableModel) table.getModel();
 		
-		table = new JTable(new DefaultTableModel(data, cName));
-		paymentTableModel = (DefaultTableModel) table.getModel();
 		scrollPane.setViewportView(table);
 		// count total cart value and pass to the setuppaymenttotal
-		setUpPaymentTotal("$50.00  ");
+		// These should use the software when connected imo
+		setUpPaymentTotal("$0.00  ");
 	}
 	
 	private void digitsFailed() {
@@ -1024,9 +1060,20 @@ public class CustomerGui{
 		paymentButton.setEnabled(true);
 	}
 	
-	public void updateTable(String itemPrice, String itemWeight) {
-		paymentTableModel.addRow(new Object[] {"placeholder", itemPrice, itemWeight});
-		System.out.println("Hello");
+	public void updateTable(String[] item) {
+		paymentTableModel.addRow(new Object[] {item[0], item[1], item[2]});
+		dataNeo[dataCount-1]=item[0];
+//		System.out.println("Item added: " + item[0]);
+		String tmp = item[2].replace("$", "");
+		// count total cart value and pass to the setuppaymenttotal
+		// These should use the software when connected imo
+		cartValue = cartValue + Double.valueOf(tmp);
+		DecimalFormat cartValueFormatted = new DecimalFormat("#.00");
+		setUpPaymentTotal("$"+String.valueOf(cartValueFormatted.format(cartValue))+"  ");
+		
+		// These are for test if data is keep track of the order
+//		System.out.println(dataCount);
+//		System.out.println(data[dataCount-1][2]);
 	}
 	public static void main(String[] args) {
 		int[] billDenominations = new int[] {5, 10, 20, 50, 100};

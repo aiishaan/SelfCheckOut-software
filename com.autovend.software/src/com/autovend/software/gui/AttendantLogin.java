@@ -131,6 +131,11 @@ public class AttendantLogin {
 		//adding the label to the logInScreen panel
 		logInScreen.add(passwordLabel);
 		
+		// Sign in infos: 				*wrong rn
+		// username: James
+		// password: 4268
+		
+		
 		//creating a new button
 		loginButton = new JButton("Login");
 		loginButton.setBounds(534, 446, 201, 51);
