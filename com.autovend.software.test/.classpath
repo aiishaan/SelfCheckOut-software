@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/com.autovend.hardware_0.3.3"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/com.autovend.hardware_0.3.4"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/com.autovend.software"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
@@ -12,6 +12,6 @@
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/com.autovend.software"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/com.autovend.hardware_0.3.3"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/com.autovend.hardware_0.3.4"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
