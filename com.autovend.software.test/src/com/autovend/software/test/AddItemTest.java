@@ -526,6 +526,7 @@ public class AddItemTest {
 	}
 
 
+
 	/**
 	 * Test that you can scan after you don't add to the bagging area
 	 */

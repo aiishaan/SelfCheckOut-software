@@ -137,5 +137,6 @@ public class AddItemByTextSearchTest {
 		// Adds item
 		checkoutController.addItemByTextSearch(scannerController, "orange");
 
+
 	}
 }
