@@ -136,7 +136,7 @@ public class AddItemByTextSearchTest {
 	public void testAddItemInNeitherDatabase() {
 		// Adds item
 		checkoutController.addItemByTextSearch(scannerController, "orange");
-		
+
 
 	}
 }
