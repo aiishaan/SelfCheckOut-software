@@ -29,17 +29,29 @@ import com.autovend.products.BarcodedProduct;
  */
 public class BarcodeScannerController extends ItemAdderController<BarcodeScanner, BarcodeScannerObserver>
 		implements BarcodeScannerObserver {
+
 	public BarcodeScannerController(BarcodeScanner scanner) {
 		super(scanner);
 	}
 
 	public void reactToBarcodeScannedEvent(BarcodeScanner barcodeScanner, Barcode barcode) {
+
 		// if barcode is for a valid object, then add the product found to the order on
 		// the main controller.
 		// otherwise ignore the item.
 		if (barcodeScanner != this.getDevice()) {
 			return;
 		}
+		if (this.getMainController().inputMembership){
+			if (!this.getMainController().existedMembership && this.getMainController().membershipCardController.isValid(barcode.toString())){
+				this.getMainController().membershipNum = barcode.toString();
+//			System.out.println(this.getMainController().membershipNum);
+				this.getMainController().existedMembership = true;
+				this.getMainController().inputMembership = false;
+				return;
+			}
+		}
+
 
 		BarcodedProduct scannedItem = ProductDatabases.BARCODED_PRODUCT_DATABASE.get(barcode);
 		if (scannedItem != null) {

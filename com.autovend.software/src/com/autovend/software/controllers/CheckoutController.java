@@ -17,6 +17,7 @@ Amasil Rahim Zihad 30164830
 
 package com.autovend.software.controllers;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -25,12 +26,38 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 import java.util.TreeMap;
 
+
+import com.autovend.devices.BillDispenser;
+import com.autovend.devices.CoinDispenser;
+
+
+import com.autovend.PriceLookUpCode;
+
+
+import com.autovend.Card;
+import com.autovend.GiftCard;
+
+import com.autovend.PriceLookUpCode;
+import com.autovend.BlockedCardException;
+import com.autovend.Card;
+import com.autovend.InvalidPINException;
+import com.autovend.devices.CardReader;
+
+
+
 import com.autovend.devices.SelfCheckoutStation;
+import com.autovend.devices.SimulationException;
 import com.autovend.external.CardIssuer;
+import com.autovend.products.BarcodedProduct;
+import com.autovend.products.PLUCodedProduct;
 import com.autovend.products.Product;
+
+import static com.autovend.external.ProductDatabases.BARCODED_PRODUCT_DATABASE;
+import static com.autovend.external.ProductDatabases.PLU_PRODUCT_DATABASE;
 
 @SuppressWarnings("rawtypes")
 
@@ -38,6 +65,7 @@ public class CheckoutController {
 	private static int IDcounter = 1;
 	private int stationID = IDcounter++;
 
+	
 	private LinkedHashMap<Product, Number[]> order;
 	public BigDecimal cost;
 	protected BigDecimal amountPaid;
@@ -71,6 +99,23 @@ public class CheckoutController {
 	// create map to store weight after bags added in bagging area
 	private Map<BaggingAreaController, Double> weightWithBags = new HashMap<>();
 
+	
+	// Tells the system about the current attendant
+	public AttendantController Attendant ;
+	// Tells the system if an attendant is logged in
+	public boolean Log_in_Status;
+	// String to Display the name of current Attendant in charge
+	public String Attendant_ID;
+
+	private Map<String, Integer> payCardAttempts = new HashMap<>();
+
+
+	private CardReaderController cardReaderController;
+
+	public MembershipCardController membershipCardController = new MembershipCardController();
+	public String membershipNum = new String();
+	public boolean existedMembership = false;
+	public boolean inputMembership = false;
 	/**
 	 * Constructors for CheckoutController
 	 */
@@ -83,6 +128,7 @@ public class CheckoutController {
 		this.changeDispenserControllers = new TreeMap<>();
 		this.changeSlotControllers = new LinkedHashSet<>();
 		clearOrder();
+		this.Log_in_Status=false;
 	}
 
 	public CheckoutController(SelfCheckoutStation checkout) {
@@ -97,7 +143,7 @@ public class CheckoutController {
 
 		BillPaymentController billPayController = new BillPaymentController(checkout.billValidator);
 		CoinPaymentController coinPaymentController = new CoinPaymentController(checkout.coinValidator);
-		CardReaderController cardReaderController = new CardReaderController(checkout.cardReader);
+		this.cardReaderController = new CardReaderController(checkout.cardReader);
 
 		this.validPaymentControllers = new HashSet<>(
 				List.of(billPayController, coinPaymentController, cardReaderController));
@@ -108,6 +154,14 @@ public class CheckoutController {
 		// TODO: Finish Coin Tray Controller and add to controllers set
 		this.changeSlotControllers = new LinkedHashSet<>(List.of(billChangeSlotController, coinChangeSlotController));
 		this.changeDispenserControllers = new TreeMap<>();
+		
+		// Attendant
+		// Tells the system if an attendant is logged in
+		Log_in_Status=false;
+		// String to Display the name of current Attendant in charge
+		Attendant_ID=null;
+		Attendant = new AttendantController("Tom", "6234523");
+		
 
 		// TODO: Also add coin dispensers to changeDispenserControllers (once done)
 
@@ -120,7 +174,6 @@ public class CheckoutController {
 					new CoinDispenserController(checkout.coinDispensers.get(denom), denom) {
 					});
 		}
-
 		// Add additional device peripherals for Customer I/O and Attendant I/O here
 		registerAll();
 		clearOrder();
@@ -412,6 +465,84 @@ public class CheckoutController {
 
 		baggingItemLock = true;
 	}
+	
+	public void addItemByPLU(ItemAdderController adder, PriceLookUpCode plucode  , String quantity) {
+        PLUCodedProduct pluProduct = PLU_PRODUCT_DATABASE.get(plucode);
+        //each PluProduct is per kilogram, quatity is the number of kilograms
+        if (pluProduct != null) {
+            BigDecimal itemQuantity = new BigDecimal(quantity);
+            BigDecimal itemPrice = pluProduct.getPrice();
+            BigDecimal itemTotalPrice = itemPrice.multiply(itemQuantity);
+            double itemWeight = 1 * Double.parseDouble(quantity);//quantity(number of kilograms) * 1 kilogram
+            PLUCodedProduct UpdatedProduct = new PLUCodedProduct(pluProduct.getPLUCode(), pluProduct.getDescription(), itemTotalPrice);
+            //Needed because addItem calls .getPrice() and the updated price is required
+            // Here you can add any additional logic related to the calculated total price
+
+            addItem(adder, UpdatedProduct, itemWeight);
+        } else {
+            throw new NoSuchElementException("No item could be found with the specified PLU code.");
+        }
+    }
+	
+	//redesigned to make it so that the user can pass in their own database that will be searched
+	public void addItemByTextSearch(ItemAdderController adder, String text) {
+		String[] keywords = text.split(" ");
+		boolean found = false;
+		
+
+		for (BarcodedProduct barprod : BARCODED_PRODUCT_DATABASE.values()) {
+			String desc = barprod.getDescription();
+			System.out.println(desc);
+			for (String word : desc.split(" ")) {
+				int matches = 0;
+
+				for (String keyword : keywords) {
+					if (word.equals(keyword)) {
+						matches++;
+					}
+				}
+				// If all keywords are present in this product's description, then it is matched
+				if (matches == keywords.length) {
+					found = true;
+					this.addItem(adder, barprod, barprod.getExpectedWeight());
+					break;
+				}
+			}
+
+		}
+		if (!found) {
+			for (PLUCodedProduct pluprod : PLU_PRODUCT_DATABASE.values()) {
+				String desc = pluprod.getDescription();
+				System.out.println(desc);
+
+				for (String word : desc.split(" ")) {
+					int matches = 0;
+
+					for (String keyword : keywords) {
+						if (word.equals(keyword)) {
+							matches++;
+						}
+					}
+					// If all keywords are present in this product's description, then it is matched
+					if (matches == keywords.length) {
+						found = true;
+						this.addItemByPLU(adder, pluprod.getPLUCode(), "1");//WIll call when Aman implements add by plu code.
+						break;
+					}
+				}
+			}
+		}
+		if (!found) {
+			throw new NoSuchElementException("No item could be found in the database with all specified keywords.");
+		}
+	}
+	
+	
+	
+	
+	
+	
+	
 
 	public void addToAmountPaid(BigDecimal val) {
 		amountPaid = amountPaid.add(val);
@@ -587,7 +718,7 @@ public class CheckoutController {
 	// since both methods of paying by credit and debit cards are simulated the same
 	// way
 	// only one method is needed. - Arie
-	public void payByCard(CardIssuer source, BigDecimal amount) {
+	public void payByCard(CardIssuer source, BigDecimal amount, Card card) {
 		if (baggingItemLock || systemProtectionLock || payingChangeLock || source == null) {
 			return;
 		}
@@ -599,10 +730,32 @@ public class CheckoutController {
 		}
 		for (PaymentController controller : validPaymentControllers) {
 			if (controller instanceof CardReaderController) {
-				((CardReaderController) controller).enablePayment(source, amount);
+				((CardReaderController) controller).card = card;
+				((CardReaderController) controller).enablePayment(source, card, amount);
 			}
 		}
-		// TODO: If this fails then do stuff idk
+		// Needs to return to GUI if fail.
+		return;
+	}
+	
+	public void payByGiftCard(BigDecimal amount, GiftCard card) {
+		if (baggingItemLock || systemProtectionLock || payingChangeLock) {
+			return;
+		}
+		if (amount.compareTo(getRemainingAmount()) > 0) {
+			return;
+			// only reason to pay more than the order with card is to mess with the amount
+			// of change the system has for some reason
+			// so preventing stuff like this would be a good idea.
+		}
+		for (PaymentController controller : validPaymentControllers) {
+			if (controller instanceof CardReaderController) {
+				((CardReaderController) controller).giftCard = card;
+				((CardReaderController) controller).enableGiftPayment(card, amount);	
+			}
+		}
+		// Needs to return to GUI if fail.
+		return;
 	}
 
 	/*
@@ -667,4 +820,137 @@ public class CheckoutController {
 	public HashSet<BaggingAreaController> getValidBaggingControllers() {
 		return this.validBaggingControllers;
 	}
+
+	
+
+	
+	// Function to Log in
+	public boolean Log_in_Attendant(String userID, String password) {
+		// Already Logged in
+		if (Log_in_Status==true) {
+			throw new SimulationException("An Attendant is currently Logged in");
+		}
+		// New Log In 
+		if (Attendant.AttendantList.containsKey(userID) && Attendant.AttendantList.get(userID).equals(password)) {
+			// Sets log in status to true
+			Log_in_Status =true;
+			// Updates the name of current Attendant on the System
+			Attendant_ID=userID;
+			
+			// Add code for Attendant is permitted to use the station
+			System.out.println("The attendant is allowed to use the station");
+			
+		}else {
+			throw new SimulationException("The login credentials do not match any Attendant.");
+		}
+		// Return the Log in Status as true if successfully logged in
+		return Log_in_Status;
+		
+	}
+	
+	public boolean Log_Out_Attendant() {
+		if (Log_in_Status==false) {
+			throw new SimulationException("There is no attendant who is currenlty logged in.");
+			
+		}
+		if (Log_in_Status==true) {
+			// Resets the Attendant ID and Log in Status
+			Attendant_ID=null;
+			this.Log_in_Status=false;
+			// Add code for Attendant is not-permitted to use the station
+		
+			System.out.println("The attendant is not allowed to use the station.");
+		}
+		//Returns the login status as false if succsfully logged out
+		return Log_in_Status;
+		
+	}		
+	
+
+	public void stationStartup(SelfCheckoutStation station) {
+		station.baggingArea.enable();
+		station.billInput.enable();
+		station.billOutput.enable();
+		station.billStorage.enable();
+		station.billValidator.enable();
+		station.cardReader.enable();
+		station.coinStorage.enable();
+		station.coinTray.enable();
+		station.coinValidator.enable();
+		station.handheldScanner.enable();
+		station.mainScanner.enable();
+		station.printer.enable();
+		station.scale.enable();
+		station.screen.enable();
+		for(CoinDispenser coinDispenser: station.coinDispensers.values()) {
+			coinDispenser.enable();
+		}
+		for(BillDispenser billDispenser: station.billDispensers.values()) {
+			billDispenser.enable();
+		}
+	}
+	
+	public void stationShutdown(SelfCheckoutStation station) {
+		station.baggingArea.disable();
+		station.billInput.disable();
+		station.billOutput.disable();
+		station.billStorage.disable();
+		station.billValidator.disable();
+		station.cardReader.disable();
+		station.coinStorage.disable();
+		station.coinTray.disable();
+		station.coinValidator.disable();
+		station.handheldScanner.disable();
+		station.mainScanner.disable();
+		station.printer.disable();
+		station.scale.disable();
+		station.screen.disable();
+		for(CoinDispenser coinDispenser: station.coinDispensers.values()) {
+			coinDispenser.disable();
+		}
+		for(BillDispenser billDispenser: station.billDispensers.values()) {
+			billDispenser.disable();
+		}
+
+
+	public void insertWithBadPinChecking (CardReader cr, Card card, String pin) throws InvalidPINException {
+		Card.CardData carddata = null;
+		CardReaderController cc = null;
+		try{
+			for (PaymentController pc : validPaymentControllers){
+				cc = (CardReaderController) pc;
+				cr.tap(card);
+				carddata = cc.cardData;
+			}
+		}
+		catch (IOException e){
+		}
+		try{
+				cr.insert(card, pin);
+		}
+		catch (InvalidPINException E){
+			System.out.println("Bad pin detected");
+			if (payCardAttempts.containsKey(carddata.getNumber())){
+				payCardAttempts.put(carddata.getNumber(), payCardAttempts.get(carddata.getNumber())+1);
+			}else {
+				payCardAttempts.put(carddata.getNumber(), 1);
+			}
+			System.out.println(payCardAttempts.get(carddata.getNumber()));
+			if(payCardAttempts.get(carddata.getNumber())>3){
+				System.out.println("Signal to bank");
+				cc.bank.block(carddata.getNumber());
+			}
+		}
+		catch (BlockedCardException e){
+			System.out.println("Card is blocked");
+		}
+		catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	public String getMembershipNum(){
+		return membershipNum;
+
+	}
+
 }
