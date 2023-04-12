@@ -57,7 +57,6 @@ import static org.junit.Assert.assertEquals;
 
 /**
  * @author hossa
- *
  */
 public class AddByBrowseItemControllerTest {
     TouchScreen stubSreen;

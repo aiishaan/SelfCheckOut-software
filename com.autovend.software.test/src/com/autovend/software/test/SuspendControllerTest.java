@@ -68,7 +68,7 @@ public class SuspendControllerTest {
     @Test
     public void testSuspend() {
         SuspendController suspendController = new SuspendController(null);
-        Station testStation = suspendController.new Station("Test Station" , false);
+        Station testStation = suspendController.new Station("Test Station", false);
         testStation.setInUse(false);
         assertEquals("Test Station", testStation.getName());
         suspendController = new SuspendController(testStation);
@@ -110,8 +110,8 @@ public class SuspendControllerTest {
 
     @Test
     public void testUnsuspend() {
-    	suspendController.suspended = false;
-    	suspendController.unsuspend();
-    	assertFalse(suspendController.isSuspended());
+        suspendController.suspended = false;
+        suspendController.unsuspend();
+        assertFalse(suspendController.isSuspended());
     }
 }

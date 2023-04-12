@@ -1,36 +1,8 @@
 package com.autovend.software.controllers;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
-
 public class SuspendController {
     public Station station;
     public boolean suspended; // Indicates if the station is currently suspended
-
-    //Create a Station class for suspendController test.
-    public class Station {
-        private String name;
-        private boolean inUse = false;
-
-        public Station(String name, boolean inUse) {
-            this.name = name;
-            this.inUse = inUse;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public boolean isInUse() {
-            return inUse;
-        }
-
-        public void setInUse(boolean inUse) {
-            this.inUse = inUse;
-        }
-    }
-
 
     // Constructor
     public SuspendController(Station station) {
@@ -57,7 +29,7 @@ public class SuspendController {
             return suspended;
         } else if (suspended) {
             System.out.println("The Station is already suspended.");
-            suspended=false;
+            suspended = false;
             return suspended;
         } else {
             //The system won't be suspended when user is in use.
@@ -80,5 +52,28 @@ public class SuspendController {
     public boolean isSuspended() {
 
         return suspended;
+    }
+
+    //Create a Station class for suspendController test.
+    public class Station {
+        private final String name;
+        private boolean inUse = false;
+
+        public Station(String name, boolean inUse) {
+            this.name = name;
+            this.inUse = inUse;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public boolean isInUse() {
+            return inUse;
+        }
+
+        public void setInUse(boolean inUse) {
+            this.inUse = inUse;
+        }
     }
 }

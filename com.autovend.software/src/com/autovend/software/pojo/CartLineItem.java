@@ -44,6 +44,7 @@ public class CartLineItem {
     private BigDecimal price;
     private double quantity;
     private double lineTotalPrice;
+
     public CartLineItem(String productCode, CODETYPE codeType, BigDecimal price, boolean isPerUnit, String description,
                         double expectedWeight, double quantity) {
         this.productCode = productCode;

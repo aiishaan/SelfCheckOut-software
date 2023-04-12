@@ -51,6 +51,7 @@ public class AddByBrowseItemController extends ItemAdderController<TouchScreen, 
     BigDecimal itemPrice;
     BarcodedProduct barcodedItem;
     double itemWeight;
+
     public AddByBrowseItemController(TouchScreen screen) {
         super(screen);
         // TODO Auto-generated constructor stub
