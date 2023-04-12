@@ -82,14 +82,14 @@ public class PaymentScreen {
 
     public PaymentScreen(SelfCheckoutStation cStation, DefaultTableModel paymentTable, double cartValue) {
         this.paymentTable = paymentTable;
-        Object[] columnData = new Object[paymentTable.getColumnCount()];
-        Object[] rowData = new Object[paymentTable.getRowCount()];
-        System.out.println(Arrays.toString(columnData));
-        System.out.println(Arrays.toString(rowData));
-
-//		for (int i = 0; i < paymentTable.getRowCount(); i++) {
+//        Object[] columnData = new Object[paymentTable.getColumnCount()];
+//        Object[] rowData = new Object[paymentTable.getRowCount()];
+//        System.out.println(Arrays.toString(columnData));
+//        System.out.println(Arrays.toString(rowData));
 //
-//		}
+//		 for (int i = 0; i < paymentTable.getRowCount(); i++) {
+//
+//		 }
 
         // Round the cart value to a proper dollar amount
         DecimalFormat df = new DecimalFormat("#.##");
