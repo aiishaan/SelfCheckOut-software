@@ -1,4 +1,3 @@
-
 package com.autovend.software.controllers;
 import java.util.HashMap;
 
@@ -15,23 +14,19 @@ public class AttendantController {
 	// Attendant Lists for the Software
 	public HashMap<String, String> AttendantList = new HashMap<String, String>();
 	
-	
-	
 	/** Constructs an Attendant with user ID and Password 
 	 * 
 	 * @param username
 	 * @param key
 	 */
-	
-	public AttendantController(String username, String pass) {
+  public AttendantController(String username, String pass) {
 		this.user_id= username;
 		this.password=pass;
 		// Adding Some Current Attendants to the List
 		AttendantList.put("James", "4628");
 		AttendantList.put("Wayne", "331");
 		AttendantList.put("Shaw", "unux89");
-		AttendantList.put("Pablo", "12345678");
-		
+		AttendantList.put("Pablo", "12345678");		
 	}
 	
 	/** Adds the userID and password for a new attendant
@@ -53,14 +48,12 @@ public class AttendantController {
 		AttendantList.remove(username, pass);
 	}
 	
-	
-	// Getter method for Attendant ID
+  // Getter method for Attendant ID
 	public String getUser_id() {
 		return user_id;
 	}
+}
 
-
-	
 	public void attendantStationStartup(CheckoutController checkoutController, SelfCheckoutStation scs) {
 		checkoutController.stationStartup(scs);
 	}
@@ -70,4 +63,3 @@ public class AttendantController {
 	}
 
 }
-
