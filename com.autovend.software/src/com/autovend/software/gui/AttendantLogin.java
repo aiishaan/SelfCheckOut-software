@@ -3,35 +3,37 @@ package com.autovend.software.gui;
 //Necessary imports
 import javax.swing.JFrame;
 
-
 import javax.swing.JPanel;
-
+import java.awt.BorderLayout;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
-
+import javax.swing.border.LineBorder;
 
 import java.awt.Font;
-
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.math.BigDecimal;
 import java.util.Currency;
+import java.util.List;
 import java.awt.Color;
 import java.awt.Dimension;
 
 import javax.swing.JPasswordField;
-
+import javax.swing.JScrollPane;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 import javax.swing.JButton;
+import java.awt.FlowLayout;
 
 import com.autovend.software.controllers.AttendantController;
-
+import com.autovend.software.gui.AttendantMain.StationStatusBar;
+import com.autovend.devices.AbstractDevice;
 import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.devices.SupervisionStation;
-import com.autovend.devices.Keyboard;
-
-
+import com.autovend.devices.observers.AbstractDeviceObserver;
+import com.autovend.devices.observers.TouchScreenObserver;
+import com.autovend.devices.TouchScreen;
 
 
 public class AttendantLogin {
@@ -48,7 +50,6 @@ public class AttendantLogin {
 	private JButton loginButton;
 	private JLabel failMessage;
 	private JLabel loginText;
-	private Keyboard keyboard;
 	
 	private AttendantController attendant;
 
@@ -56,6 +57,10 @@ public class AttendantLogin {
 	
 	//constructor
 	public AttendantLogin(SupervisionStation aStation) {
+		
+		
+		
+		
 		
 		//creating a new JFrame
 		this.touchScreenFrame = aStation.screen.getFrame();
@@ -126,11 +131,6 @@ public class AttendantLogin {
 		passwordLabel.setFont(new Font("Times New Roman", Font.PLAIN, 18));
 		//adding the label to the logInScreen panel
 		logInScreen.add(passwordLabel);
-		
-		// Sign in infos: 				*wrong rn
-		// username: James
-		// password: 4268
-		
 		
 		//creating a new button
 		loginButton = new JButton("Login");

@@ -466,7 +466,7 @@ public class CheckoutController {
         baggingItemLock = true;
     }
 
-    public PLUCodedProduct addItemByPLU(ItemAdderController adder, PriceLookUpCode plucode, String quantity) {
+    public void addItemByPLU(ItemAdderController adder, PriceLookUpCode plucode, String quantity) {
         PLUCodedProduct pluProduct = PLU_PRODUCT_DATABASE.get(plucode);
         //each PluProduct is per kilogram, quatity is the number of kilograms
         if (pluProduct != null) {
@@ -479,13 +479,10 @@ public class CheckoutController {
             // Here you can add any additional logic related to the calculated total price
 
             addItem(adder, UpdatedProduct, itemWeight);
-            return UpdatedProduct; 
-            
         } else {
             throw new NoSuchElementException("No item could be found with the specified PLU code.");
         }
     }
-    
 
     //redesigned to make it so that the user can pass in their own database that will be searched
     public void addItemByTextSearch(ItemAdderController adder, String text) {

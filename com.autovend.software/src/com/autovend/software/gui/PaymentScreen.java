@@ -20,6 +20,7 @@ import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 import javax.swing.JButton;
 
+import com.autovend.software.controllers.CheckoutController;
 
 public class PaymentScreen {
 	
@@ -52,13 +53,13 @@ public class PaymentScreen {
 	
 	public PaymentScreen(SelfCheckoutStation cStation) {
 		
+		CheckoutController c = new CheckoutController(cStation);
+		amdue = new BigDecimal(78);
 		//creating a new JFrame
 		this.touchScreenFrame = cStation.screen.getFrame();
         this.touchScreenFrame.setExtendedState(JFrame.NORMAL);
         this.touchScreenFrame.setSize(1000,900);
         this.touchScreenFrame.setResizable(true);
-		
-   
 		
 		
 		paymentPanel = new JPanel();
@@ -113,7 +114,9 @@ public class PaymentScreen {
 				pay.addActionListener(new ActionListener(){
 					public void actionPerformed(ActionEvent e) {
 					
+						amdue = amdue.subtract(new BigDecimal(25));
 						cashPanel.setVisible(false);
+						
 						
 		//-----------------------------------------------------------------------------------------------------------
 						//when the pay button is pressed, the pay method from the software should be called
@@ -122,7 +125,7 @@ public class PaymentScreen {
 						//for testing, i have true for now. true should be replaced with BigDecimal.ZERO ig.
 		
 		//-----------------------------------------------------------------------------------------------------------				
-						if(true) {
+						if(amdue.equals(new BigDecimal(0))) {
 							cashPanel.setVisible(false);
 							paymentSuccessful = new JPanel();
 							paymentSuccessful.setSize(new Dimension(985,785));
@@ -145,6 +148,7 @@ public class PaymentScreen {
 							printReceipt.addActionListener(new ActionListener() {
 								public void actionPerformed(ActionEvent e) {
 									//call the printReceipt method here
+									c.printReceipt();
 									
 								}
 							});
@@ -195,8 +199,7 @@ public class PaymentScreen {
 				totalDue.setBounds(358, 200, 359, 54);
 				//get the amount due from the software.
 				//for testing, i have used d(a BigDecimal) for now. when the software is plugged, d should be replaced with the amount that is due
-				BigDecimal d = new BigDecimal(0);
-				String due = d.toString();
+				String due = amdue.toString();
 				totalDueVal = new JLabel(due);
 				totalDueVal.setFont(new Font("Times New Roman", Font.BOLD, 22));
 				totalDueVal.setBounds(533, 200, 350, 54);
@@ -246,7 +249,7 @@ public class PaymentScreen {
 							printReceipt.addActionListener(new ActionListener() {
 								public void actionPerformed(ActionEvent e) {
 									//call the printReceipt method here
-									
+									c.printReceipt();
 								}
 							});
 							
@@ -294,8 +297,7 @@ public class PaymentScreen {
 				totalDue.setBounds(358, 200, 359, 54);
 				//get the amount due from the software.
 				//for testing, i have used d(a BigDecimal) for now. when the software is plugged, d should be replaced with the amount that is due
-				BigDecimal d = new BigDecimal(0);
-				String due = d.toString();
+				String due = amdue.toString();
 				totalDueVal = new JLabel(due);
 				totalDueVal.setFont(new Font("Times New Roman", Font.BOLD, 22));
 				totalDueVal.setBounds(533, 200, 350, 54);
@@ -344,6 +346,8 @@ public class PaymentScreen {
 							printReceipt.addActionListener(new ActionListener() {
 								public void actionPerformed(ActionEvent e) {
 									//call the printReceipt method here
+									c.printReceipt();
+
 									
 								}
 							});
@@ -392,8 +396,7 @@ public class PaymentScreen {
 				totalDue.setBounds(358, 200, 359, 54);
 				//get the amount due from the software.
 				//for testing, i have used d(a BigDecimal) for now. when the software is plugged, d should be replaced with the amount that is due
-				BigDecimal d = new BigDecimal(0);
-				String due = d.toString();
+				String due = amdue.toString();
 				totalDueVal = new JLabel(due);
 				totalDueVal.setFont(new Font("Times New Roman", Font.BOLD, 22));
 				totalDueVal.setBounds(533, 200, 350, 54);
@@ -418,7 +421,7 @@ public class PaymentScreen {
 						//when the amount due becomes zero, it takes you to the next screen(print receipt)
 						//for testing, i have false for now. true should be replaced with BigDecimal.ZERO ig.
 						
-						if(false) {
+						if(true) {
 							giftPanel.setVisible(false);
 							paymentSuccessful = new JPanel();
 							paymentSuccessful.setSize(new Dimension(985,785));
@@ -441,6 +444,8 @@ public class PaymentScreen {
 							printReceipt.addActionListener(new ActionListener() {
 								public void actionPerformed(ActionEvent e) {
 									//call the printReceipt method here
+									c.printReceipt();
+
 									
 								}
 							});
@@ -472,10 +477,6 @@ public class PaymentScreen {
 		this.touchScreenFrame.getContentPane().add(paymentPanel);
 		this.touchScreenFrame.setVisible(true);
 
-	
-
-		
-		
 		
 	}
 	
