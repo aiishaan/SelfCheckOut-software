@@ -68,8 +68,11 @@ public class SuspendControllerTest {
     @Test
     public void testSuspend() {
         SuspendController suspendController = new SuspendController(null);
-        Station testStation = suspendController.new Station("Test Station", false);
+        Station testStation = suspendController.new Station("Test Station" , false);
+        testStation.setInUse(false);
+        assertEquals("Test Station", testStation.getName());
         suspendController = new SuspendController(testStation);
+        assertEquals(false, testStation.isInUse());
         suspendController.suspend();
         assertTrue(suspendController.isSuspended());
     }
@@ -105,15 +108,10 @@ public class SuspendControllerTest {
         assertFalse(suspendController.isSuspended());
     }
 
-    /**
-     * Test if the method unSuspend() does not change the boolean value suspended if it is currently false
-     * Expected: public field suspended should be false after calling this method
-     */
     @Test
-    public void UnSuspend_NotSuspended_Test() {
-        suspendController.suspended = false;
-        assertFalse(suspendController.isSuspended());
+    public void testUnsuspend() {
+    	suspendController.suspended = false;
+    	suspendController.unsuspend();
+    	assertFalse(suspendController.isSuspended());
     }
-
-
 }
