@@ -33,18 +33,6 @@ UCID		Name
 
 package com.autovend.software.test;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
-import java.math.BigDecimal;
-import java.util.Currency;
-import java.util.HashSet;
-import java.util.Map;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
 import com.autovend.Barcode;
 import com.autovend.BarcodedUnit;
 import com.autovend.Numeral;
@@ -57,221 +45,232 @@ import com.autovend.software.controllers.BaggingAreaController;
 import com.autovend.software.controllers.BarcodeScannerController;
 import com.autovend.software.controllers.CheckoutController;
 import com.autovend.software.controllers.ElectronicScaleController;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.math.BigDecimal;
+import java.util.Currency;
+import java.util.HashSet;
+import java.util.Map;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 @SuppressWarnings("rawtypes")
 
 public class AddOwnBagsTest {
-	BarcodeScannerController scannerController;
-	BarcodeScanner stubScanner;
+    BarcodeScannerController scannerController;
+    BarcodeScanner stubScanner;
 
-	ElectronicScaleController scaleController;
-	ElectronicScale stubScale;
-	BarcodedProduct databaseItem;
+    ElectronicScaleController scaleController;
+    ElectronicScale stubScale;
+    BarcodedProduct databaseItem;
 
-	BarcodedUnit validUnit;
-	BarcodedUnit bag;
-	CheckoutController checkoutController;
-	SelfCheckoutStation stubStation;
+    BarcodedUnit validUnit;
+    BarcodedUnit bag;
+    CheckoutController checkoutController;
+    SelfCheckoutStation stubStation;
 
-	/**
-	 * Set up of objects, variables etc.. that happens before tests
-	 */
-	@Before
-	public void setup() {
-		SelfCheckoutStation stubStation = new SelfCheckoutStation(Currency.getInstance("CAD"),
-				new int[] { 5, 10, 20, 50, 100 },
-				new BigDecimal[] { new BigDecimal(25), new BigDecimal(100), new BigDecimal(5) }, 1000, 1);
-		databaseItem = new BarcodedProduct(new Barcode(Numeral.three, Numeral.three), "test item",
-				BigDecimal.valueOf(83.29), 359.0);
-		ProductDatabases.BARCODED_PRODUCT_DATABASE.put(databaseItem.getBarcode(), databaseItem);
-		validUnit = new BarcodedUnit(new Barcode(Numeral.three, Numeral.three), 76.0);
-		bag = new BarcodedUnit(new Barcode(Numeral.three, Numeral.three), 0.75);
+    /**
+     * Set up of objects, variables etc.. that happens before tests
+     */
+    @Before
+    public void setup() {
+        SelfCheckoutStation stubStation = new SelfCheckoutStation(Currency.getInstance("CAD"),
+                new int[]{5, 10, 20, 50, 100},
+                new BigDecimal[]{new BigDecimal(25), new BigDecimal(100), new BigDecimal(5)}, 1000, 1);
+        databaseItem = new BarcodedProduct(new Barcode(Numeral.three, Numeral.three), "test item",
+                BigDecimal.valueOf(83.29), 359.0);
+        ProductDatabases.BARCODED_PRODUCT_DATABASE.put(databaseItem.getBarcode(), databaseItem);
+        validUnit = new BarcodedUnit(new Barcode(Numeral.three, Numeral.three), 76.0);
+        bag = new BarcodedUnit(new Barcode(Numeral.three, Numeral.three), 0.75);
 
-		stubScanner = stubStation.mainScanner;
-		stubScale = stubStation.baggingArea;
-		checkoutController = new CheckoutController(stubStation);
+        stubScanner = stubStation.mainScanner;
+        stubScale = stubStation.baggingArea;
+        checkoutController = new CheckoutController(stubStation);
 
-		scannerController = new BarcodeScannerController(stubScanner);
-		scannerController.setMainController(checkoutController);
-		scannerController.enableDevice();
+        scannerController = new BarcodeScannerController(stubScanner);
+        scannerController.setMainController(checkoutController);
+        scannerController.enableDevice();
 
-		scaleController = new ElectronicScaleController(stubScale);
-		scaleController.setMainController(checkoutController);
-		scaleController.enableDevice();
+        scaleController = new ElectronicScaleController(stubScale);
+        scaleController.setMainController(checkoutController);
+        scaleController.enableDevice();
 
-		stubScanner.register(scannerController);
-		stubScale.register(scaleController);
-	}
+        stubScanner.register(scannerController);
+        stubScale.register(scaleController);
+    }
 
-	/**
-	 * Tears down objects so they can be initialized again with setup
-	 */
-	@After
-	public void teardown() {
-		stubScanner = null;
-		checkoutController = null;
-		scannerController = null;
-		scaleController = null;
-		stubScale = null;
-		stubStation = null;
-	}
+    /**
+     * Tears down objects so they can be initialized again with setup
+     */
+    @After
+    public void teardown() {
+        stubScanner = null;
+        checkoutController = null;
+        scannerController = null;
+        scaleController = null;
+        stubScale = null;
+        stubStation = null;
+    }
 
-	/**
-	 * Tests if the system is locked when the Attendant does not approve due to a
-	 * weight discrepancy Expected: system should stay locked if the attendant does
-	 * not approve
-	 */
-	@Test
-	public void addOwnBags_attendantNotApproved_lockedStation() {
-		stubScanner.scan(validUnit);
-		checkoutController.addOwnBags();
-		checkoutController.AttendantApproved = false;
-		assertTrue(checkoutController.systemProtectionLock);
-	}
+    /**
+     * Tests if the system is locked when the Attendant does not approve due to a
+     * weight discrepancy Expected: system should stay locked if the attendant does
+     * not approve
+     */
+    @Test
+    public void addOwnBags_attendantNotApproved_lockedStation() {
+        stubScanner.scan(validUnit);
+        checkoutController.addOwnBags();
+        checkoutController.AttendantApproved = false;
+        assertTrue(checkoutController.systemProtectionLock);
+    }
 
-	/**
-	 * Checks to see if the system is unlocked when the Attendant does approve due
-	 * to a lack of a weight discrepancy Expected: system should be unlocked if
-	 * attendant does approve
-	 */
-	@Test
-	public void addOwnBags_attendantApproved_UnlockedStation() {
-		stubScanner.scan(validUnit);
-		checkoutController.AttendantApproved = true;
-		checkoutController.addOwnBags();
-		assertFalse(checkoutController.systemProtectionLock);
-	}
+    /**
+     * Checks to see if the system is unlocked when the Attendant does approve due
+     * to a lack of a weight discrepancy Expected: system should be unlocked if
+     * attendant does approve
+     */
+    @Test
+    public void addOwnBags_attendantApproved_UnlockedStation() {
+        stubScanner.scan(validUnit);
+        checkoutController.AttendantApproved = true;
+        checkoutController.addOwnBags();
+        assertFalse(checkoutController.systemProtectionLock);
+    }
 
-	/**
-	 * Checks to see if the bagging area with bags is greater than the bagging area
-	 * without bags Expected: weight of bagging area with bags should be greater
-	 * than the weight of the bagging area without bags
-	 */
-	@Test
-	public void addOwnBags_WeightWithBagsGreaterWeight() {
-		boolean bigger = true;
+    /**
+     * Checks to see if the bagging area with bags is greater than the bagging area
+     * without bags Expected: weight of bagging area with bags should be greater
+     * than the weight of the bagging area without bags
+     */
+    @Test
+    public void addOwnBags_WeightWithBagsGreaterWeight() {
+        boolean bigger = true;
 
-		checkoutController.addOwnBags();
-		Map<BaggingAreaController, Double> weight = checkoutController.getWeight();
-		Map<BaggingAreaController, Double> weightWithBags = checkoutController.getWeightWithBags();
-		for (BaggingAreaController controller : weightWithBags.keySet()) {
-			weightWithBags.put(controller, 0.1);
+        checkoutController.addOwnBags();
+        Map<BaggingAreaController, Double> weight = checkoutController.getWeight();
+        Map<BaggingAreaController, Double> weightWithBags = checkoutController.getWeightWithBags();
+        for (BaggingAreaController controller : weightWithBags.keySet()) {
+            weightWithBags.put(controller, 0.1);
 
-			double weight1 = weight.get(controller);
-			double weight2 = weightWithBags.get(controller);
+            double weight1 = weight.get(controller);
+            double weight2 = weightWithBags.get(controller);
 
-			if (weight2 > weight1) {
-				bigger = true;
-			}
-		}
+            if (weight2 > weight1) {
+                bigger = true;
+            }
+        }
 
-		assertTrue(bigger);
-	}
+        assertTrue(bigger);
+    }
 
-	/**
-	 * Checks to see if the hashMap that contains the weight without bags is ready
-	 * to add bags, while the bagging area with no bags is not Expected: as above
-	 */
-	@Test
-	public void addOwnBags_ChecksSetAddingBags() {
-		stubScanner.scan(validUnit);
-		checkoutController.addOwnBags();
+    /**
+     * Checks to see if the hashMap that contains the weight without bags is ready
+     * to add bags, while the bagging area with no bags is not Expected: as above
+     */
+    @Test
+    public void addOwnBags_ChecksSetAddingBags() {
+        stubScanner.scan(validUnit);
+        checkoutController.addOwnBags();
 
-		boolean value = false;
+        boolean value = false;
 
-		checkoutController.addOwnBags();
-		Map<BaggingAreaController, Double> weight = checkoutController.getWeight();
-		Map<BaggingAreaController, Double> weightWithBags = checkoutController.getWeightWithBags();
+        checkoutController.addOwnBags();
+        Map<BaggingAreaController, Double> weight = checkoutController.getWeight();
+        Map<BaggingAreaController, Double> weightWithBags = checkoutController.getWeightWithBags();
 
-		for (BaggingAreaController controller : weightWithBags.keySet()) {
-			ElectronicScaleController scaleController1 = (ElectronicScaleController) controller;
-			scaleController1.setAddingBags(true);
-			boolean value1 = scaleController1.getAddingBags();
-			ElectronicScaleController scaleController2 = (ElectronicScaleController) controller;
-			scaleController1.setAddingBags(false);
-			boolean value2 = scaleController2.getAddingBags();
+        for (BaggingAreaController controller : weightWithBags.keySet()) {
+            ElectronicScaleController scaleController1 = (ElectronicScaleController) controller;
+            scaleController1.setAddingBags(true);
+            boolean value1 = scaleController1.getAddingBags();
+            ElectronicScaleController scaleController2 = (ElectronicScaleController) controller;
+            scaleController1.setAddingBags(false);
+            boolean value2 = scaleController2.getAddingBags();
 
-			if (value1 != value2) {
-				value = true;
-			}
-		}
+            if (value1 != value2) {
+                value = true;
+            }
+        }
 
-		assertTrue(value);
-	}
+        assertTrue(value);
+    }
 
-	/**
-	 * Checks to see if the bagging area with weight without bags is set to add bags
-	 * Expected: should be true to be set
-	 */
-	@Test
-	public void addOwnBags_settingBags1() {
-		checkoutController.addOwnBags();
+    /**
+     * Checks to see if the bagging area with weight without bags is set to add bags
+     * Expected: should be true to be set
+     */
+    @Test
+    public void addOwnBags_settingBags1() {
+        checkoutController.addOwnBags();
 
-		boolean value = false;
+        boolean value = false;
 
-		Map<BaggingAreaController, Double> weight = checkoutController.getWeight();
-		for (BaggingAreaController controller : weight.keySet()) {
-			ElectronicScaleController scaleController = (ElectronicScaleController) controller;
-			scaleController.setAddingBags(true);
-			value = scaleController.getAddingBags();
-		}
+        Map<BaggingAreaController, Double> weight = checkoutController.getWeight();
+        for (BaggingAreaController controller : weight.keySet()) {
+            ElectronicScaleController scaleController = (ElectronicScaleController) controller;
+            scaleController.setAddingBags(true);
+            value = scaleController.getAddingBags();
+        }
 
-		assertTrue(value);
-	}
+        assertTrue(value);
+    }
 
-	/**
-	 * Checks to see if the bagging area with weight with bags is not set to add
-	 * bags Expected: should be false to be set
-	 */
-	@Test
-	public void addOwnBags_settingBags2() {
-		stubScanner.scan(validUnit);
-		checkoutController.addOwnBags();
+    /**
+     * Checks to see if the bagging area with weight with bags is not set to add
+     * bags Expected: should be false to be set
+     */
+    @Test
+    public void addOwnBags_settingBags2() {
+        stubScanner.scan(validUnit);
+        checkoutController.addOwnBags();
 
-		boolean value = false;
+        boolean value = false;
 
-		Map<BaggingAreaController, Double> weightWithBags = checkoutController.getWeightWithBags();
-		for (BaggingAreaController controller : weightWithBags.keySet()) {
-			ElectronicScaleController scaleController = (ElectronicScaleController) controller;
-			value = scaleController.getAddingBags();
-		}
+        Map<BaggingAreaController, Double> weightWithBags = checkoutController.getWeightWithBags();
+        for (BaggingAreaController controller : weightWithBags.keySet()) {
+            ElectronicScaleController scaleController = (ElectronicScaleController) controller;
+            value = scaleController.getAddingBags();
+        }
 
-		assertFalse(value);
-	}
+        assertFalse(value);
+    }
 
-	/**
-	 * Checks to see if the updated expected weight of the bagging area without bags
-	 * is less than the updated expected weight with bags
-	 */
-	@Test
-	public void addOwnBags_updateWeightCheck() {
-		stubScanner.scan(validUnit);
-		boolean value = false;
-		HashSet<BaggingAreaController> validBaggingControllersBefore = checkoutController.getValidBaggingControllers();
-		double expectedWeightBeforeBags = 0.0;
+    /**
+     * Checks to see if the updated expected weight of the bagging area without bags
+     * is less than the updated expected weight with bags
+     */
+    @Test
+    public void addOwnBags_updateWeightCheck() {
+        stubScanner.scan(validUnit);
+        boolean value = false;
+        HashSet<BaggingAreaController> validBaggingControllersBefore = checkoutController.getValidBaggingControllers();
+        double expectedWeightBeforeBags = 0.0;
 
-		for (BaggingAreaController baggingController : validBaggingControllersBefore) {
-			ElectronicScaleController scale = (ElectronicScaleController) baggingController;
-			expectedWeightBeforeBags += scale.getExpectedWeight();
-		}
+        for (BaggingAreaController baggingController : validBaggingControllersBefore) {
+            ElectronicScaleController scale = (ElectronicScaleController) baggingController;
+            expectedWeightBeforeBags += scale.getExpectedWeight();
+        }
 
-		double expectedWeightAfterBags = 0.0;
+        double expectedWeightAfterBags = 0.0;
 
-		checkoutController.addOwnBags();
-		HashSet<BaggingAreaController> validBaggingControllersAfter = checkoutController.getValidBaggingControllers();
+        checkoutController.addOwnBags();
+        HashSet<BaggingAreaController> validBaggingControllersAfter = checkoutController.getValidBaggingControllers();
 
-		for (BaggingAreaController baggingController : validBaggingControllersBefore) {
-			ElectronicScaleController scale = (ElectronicScaleController) baggingController;
-			scale.updateWithBagWeight(0.1);
-			expectedWeightAfterBags += scale.getExpectedWeight();
-		}
+        for (BaggingAreaController baggingController : validBaggingControllersBefore) {
+            ElectronicScaleController scale = (ElectronicScaleController) baggingController;
+            scale.updateWithBagWeight(0.1);
+            expectedWeightAfterBags += scale.getExpectedWeight();
+        }
 
-		if (expectedWeightAfterBags > expectedWeightBeforeBags) {
-			value = true;
-		}
+        if (expectedWeightAfterBags > expectedWeightBeforeBags) {
+            value = true;
+        }
 
-		assertTrue(value);
+        assertTrue(value);
 
-	}
+    }
 
 }

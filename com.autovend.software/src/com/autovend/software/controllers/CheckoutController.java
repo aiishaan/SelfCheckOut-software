@@ -33,43 +33,16 @@ UCID		Name
 
 package com.autovend.software.controllers;
 
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Scanner;
-import java.util.TreeMap;
-
-
-import com.autovend.devices.BillDispenser;
-import com.autovend.devices.CoinDispenser;
-
-
-import com.autovend.PriceLookUpCode;
-
-
-import com.autovend.Card;
-import com.autovend.GiftCard;
-
-import com.autovend.PriceLookUpCode;
-import com.autovend.BlockedCardException;
-import com.autovend.Card;
-import com.autovend.InvalidPINException;
-import com.autovend.devices.CardReader;
-
-
-import com.autovend.devices.SelfCheckoutStation;
-import com.autovend.devices.SimulationException;
+import com.autovend.*;
+import com.autovend.devices.*;
 import com.autovend.external.CardIssuer;
 import com.autovend.products.BarcodedProduct;
 import com.autovend.products.PLUCodedProduct;
 import com.autovend.products.Product;
+
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.util.*;
 
 import static com.autovend.external.ProductDatabases.BARCODED_PRODUCT_DATABASE;
 import static com.autovend.external.ProductDatabases.PLU_PRODUCT_DATABASE;
@@ -78,21 +51,19 @@ import static com.autovend.external.ProductDatabases.PLU_PRODUCT_DATABASE;
 
 public class CheckoutController {
     private static int IDcounter = 1;
-    private int stationID = IDcounter++;
-
-
-    private LinkedHashMap<Product, Number[]> order;
-    public BigDecimal cost;
-    protected BigDecimal amountPaid;
-
+    private final int stationID = IDcounter++;
     // sets of valid sources of information to the main controller.
     private final HashSet<BaggingAreaController> validBaggingControllers;
     private final HashSet<ItemAdderController> validItemAdderControllers;
-    private HashSet<PaymentController> validPaymentControllers;
-    private ReceiptPrinterController receiptPrinter;
+    private final HashSet<PaymentController> validPaymentControllers;
     private final LinkedHashSet<ChangeSlotController> changeSlotControllers;
-    private TreeMap<BigDecimal, ChangeDispenserController> changeDispenserControllers;
-
+    private final TreeMap<BigDecimal, ChangeDispenserController> changeDispenserControllers;
+    // create map to store current weight in bagging area
+    private final Map<BaggingAreaController, Double> weight = new HashMap<>();
+    // create map to store weight after bags added in bagging area
+    private final Map<BaggingAreaController, Double> weightWithBags = new HashMap<>();
+    private final Map<String, Integer> payCardAttempts = new HashMap<>();
+    public BigDecimal cost;
     // Flag to prevent further addition of items if waiting to bag item or an
     // invalid item was found in the bagging area.
     public boolean baggingItemLock;
@@ -101,36 +72,26 @@ public class CheckoutController {
     // Specifically bagging area for this case, but could be used elsewhere if
     // needed.
     public boolean systemProtectionLock;
-
-    private boolean payingChangeLock;
-
     /*
      * Boolean that indicates if an attendant has approved a certain action
      */
     public boolean AttendantApproved = false;
-
-    // create map to store current weight in bagging area
-    private Map<BaggingAreaController, Double> weight = new HashMap<>();
-    // create map to store weight after bags added in bagging area
-    private Map<BaggingAreaController, Double> weightWithBags = new HashMap<>();
-
-
     // Tells the system about the current attendant
     public AttendantController Attendant;
     // Tells the system if an attendant is logged in
     public boolean Log_in_Status;
     // String to Display the name of current Attendant in charge
     public String Attendant_ID;
-
-    private Map<String, Integer> payCardAttempts = new HashMap<>();
-
-
-    private CardReaderController cardReaderController;
-
     public MembershipCardController membershipCardController = new MembershipCardController();
-    public String membershipNum = new String();
+    public String membershipNum = "";
     public boolean existedMembership = false;
     public boolean inputMembership = false;
+    public boolean needPrinterRefill = false;
+    protected BigDecimal amountPaid;
+    private LinkedHashMap<Product, Number[]> order;
+    private ReceiptPrinterController receiptPrinter;
+    private boolean payingChangeLock;
+    private CardReaderController cardReaderController;
 
     /**
      * Constructors for CheckoutController
@@ -224,6 +185,15 @@ public class CheckoutController {
         return this.order;
     }
 
+    public void setOrder(LinkedHashMap<Product, Number[]> newOrd) {
+        this.order = newOrd;
+
+        for (Map.Entry<Product, Number[]> entry : this.order.entrySet()) {
+            Product product = entry.getKey();
+            this.cost = this.cost.add(product.getPrice());
+        }
+    }
+
     public BigDecimal getCost() {
         return this.cost;
     }
@@ -288,15 +258,11 @@ public class CheckoutController {
     }
 
     void registerChangeSlotController(ChangeSlotController controller) {
-        if (!this.changeSlotControllers.contains(controller)) {
-            this.changeSlotControllers.add(controller);
-        }
+        this.changeSlotControllers.add(controller);
     }
 
     void deregisterChangeSlotController(ChangeSlotController controller) {
-        if (this.changeSlotControllers.contains(controller)) {
-            this.changeSlotControllers.remove(controller);
-        }
+        this.changeSlotControllers.remove(controller);
     }
 
     void registerChangeDispenserController(BigDecimal denom, ChangeDispenserController controller) {
@@ -365,6 +331,10 @@ public class CheckoutController {
         newSet.remove(null);
         return newSet;
     }
+
+    /*
+     * Methods used by ItemAdderControllers
+     */
 
     /**
      * A method to get the number of bags from the customer response
@@ -440,10 +410,6 @@ public class CheckoutController {
         System.out.println("Reusable bag has been added, you may continue.");
 
     }
-
-    /*
-     * Methods used by ItemAdderControllers
-     */
 
     /**
      * Method to add items to the order TODO: Make this general to handle objects
@@ -552,7 +518,9 @@ public class CheckoutController {
             throw new NoSuchElementException("No item could be found in the database with all specified keywords.");
         }
     }
-
+    /*
+     * Methods used by BaggingAreaControllers
+     */
 
     public void addToAmountPaid(BigDecimal val) {
         amountPaid = amountPaid.add(val);
@@ -561,9 +529,6 @@ public class CheckoutController {
     public BigDecimal getRemainingAmount() {
         return getCost().subtract(amountPaid);
     }
-    /*
-     * Methods used by BaggingAreaControllers
-     */
 
     /**
      * Method called by bagging area controllers which says to remove the lock on
@@ -637,8 +602,6 @@ public class CheckoutController {
         clearOrder();
     }
 
-    public boolean needPrinterRefill = false;
-
     void printerOutOfResources(ReceiptPrinterController controller) {
         if (controller != this.receiptPrinter) {
             return;
@@ -651,15 +614,6 @@ public class CheckoutController {
             return;
         }
         this.needPrinterRefill = false;
-    }
-
-    public void setOrder(LinkedHashMap<Product, Number[]> newOrd) {
-        this.order = newOrd;
-
-        for (Map.Entry<Product, Number[]> entry : this.order.entrySet()) {
-            Product product = entry.getKey();
-            this.cost = this.cost.add(product.getPrice());
-        }
     }
 
     /**
@@ -692,7 +646,7 @@ public class CheckoutController {
         if (!changeSlotControllers.contains(controller)) {
             return;
         }
-        if ((getRemainingAmount().compareTo(BigDecimal.ZERO) == 0) && payingChangeLock == true) {
+        if ((getRemainingAmount().compareTo(BigDecimal.ZERO) == 0) && payingChangeLock) {
             this.receiptPrinter.printReceipt(this.order, this.cost);
         } else {
             BigDecimal denom = changeDispenserControllers.lastKey();
@@ -718,9 +672,9 @@ public class CheckoutController {
         }
 
         if (controller instanceof BillDispenserController) {
-            System.out.println(String.format("Bill dispenser with denomination %s out of bills.", denom.toString()));
+            System.out.printf("Bill dispenser with denomination %s out of bills.%n", denom.toString());
         } else {
-            System.out.println(String.format("Coin dispenser with denomination %s out of coins.", denom.toString()));
+            System.out.printf("Coin dispenser with denomination %s out of coins.%n", denom.toString());
         }
         this.amountPaid = this.amountPaid.add(denom);
     }
@@ -745,7 +699,6 @@ public class CheckoutController {
             }
         }
         // Needs to return to GUI if fail.
-        return;
     }
 
     public void payByGiftCard(BigDecimal amount, GiftCard card) {
@@ -765,7 +718,6 @@ public class CheckoutController {
             }
         }
         // Needs to return to GUI if fail.
-        return;
     }
 
     /*
@@ -835,7 +787,7 @@ public class CheckoutController {
     // Function to Log in
     public boolean Log_in_Attendant(String userID, String password) {
         // Already Logged in
-        if (Log_in_Status == true) {
+        if (Log_in_Status) {
             throw new SimulationException("An Attendant is currently Logged in");
         }
         // New Log In
@@ -857,11 +809,11 @@ public class CheckoutController {
     }
 
     public boolean Log_Out_Attendant() {
-        if (Log_in_Status == false) {
+        if (!Log_in_Status) {
             throw new SimulationException("There is no attendant who is currenlty logged in.");
 
         }
-        if (Log_in_Status == true) {
+        if (Log_in_Status) {
             // Resets the Attendant ID and Log in Status
             Attendant_ID = null;
             this.Log_in_Status = false;

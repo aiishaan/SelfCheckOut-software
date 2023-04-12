@@ -36,21 +36,21 @@ import com.autovend.devices.BillSlot;
 import com.autovend.devices.observers.BillSlotObserver;
 
 public class BillChangeSlotController extends ChangeSlotController<BillSlot, BillSlotObserver>
-		implements BillSlotObserver {
-	public BillChangeSlotController(BillSlot newDevice) {
-		super(newDevice);
-	}
+        implements BillSlotObserver {
+    public BillChangeSlotController(BillSlot newDevice) {
+        super(newDevice);
+    }
 
-	@Override
-	public void reactToBillInsertedEvent(BillSlot slot) {
-	}
+    @Override
+    public void reactToBillInsertedEvent(BillSlot slot) {
+    }
 
-	@Override
-	public void reactToBillEjectedEvent(BillSlot slot) {
-	}
+    @Override
+    public void reactToBillEjectedEvent(BillSlot slot) {
+    }
 
-	@Override
-	public void reactToBillRemovedEvent(BillSlot slot) {
-		this.getMainController().dispenseChange(this);
-	}
+    @Override
+    public void reactToBillRemovedEvent(BillSlot slot) {
+        this.getMainController().dispenseChange(this);
+    }
 }

@@ -33,32 +33,32 @@ UCID		Name
 
 package com.autovend.software.controllers;
 
-import java.math.BigDecimal;
-import java.util.Currency;
-
 import com.autovend.devices.BillValidator;
 import com.autovend.devices.observers.BillValidatorObserver;
+
+import java.math.BigDecimal;
+import java.util.Currency;
 
 /*
  * A class for objects that controls payment made with cash bills
  */
 public class BillPaymentController extends PaymentController<BillValidator, BillValidatorObserver>
-		implements BillValidatorObserver {
+        implements BillValidatorObserver {
 
-	public BillPaymentController(BillValidator device) {
-		super(device);
-	}
+    public BillPaymentController(BillValidator device) {
+        super(device);
+    }
 
-	/**
-	 * The following class checks we have the same device and then
-	 */
-	@Override
-	public void reactToValidBillDetectedEvent(BillValidator validator, Currency currency, int value) {
-		this.getMainController().addToAmountPaid(new BigDecimal(value));
-	}
+    /**
+     * The following class checks we have the same device and then
+     */
+    @Override
+    public void reactToValidBillDetectedEvent(BillValidator validator, Currency currency, int value) {
+        this.getMainController().addToAmountPaid(new BigDecimal(value));
+    }
 
-	@Override
-	public void reactToInvalidBillDetectedEvent(BillValidator validator) {
-	}
+    @Override
+    public void reactToInvalidBillDetectedEvent(BillValidator validator) {
+    }
 
 }

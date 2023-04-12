@@ -32,184 +32,176 @@ UCID		Name
 */
 package com.autovend.software.controllers;
 
-import java.math.BigDecimal;
-import java.util.LinkedHashMap;
-
 import com.autovend.devices.EmptyException;
 import com.autovend.devices.OverloadException;
 import com.autovend.devices.ReceiptPrinter;
 import com.autovend.devices.observers.ReceiptPrinterObserver;
 import com.autovend.products.Product;
 
+import java.math.BigDecimal;
+import java.util.LinkedHashMap;
+
 public class ReceiptPrinterController extends DeviceController<ReceiptPrinter, ReceiptPrinterObserver>
-		implements ReceiptPrinterObserver {
-	private CheckoutController mainController;
-	private ReceiptPrinter printer;
+        implements ReceiptPrinterObserver {
+    // Flags/indicators that ink or paper levels are low
+    public boolean inkLow = true;
+    public boolean paperLow = true;
+    public int estimatedInk = 0;
+    public int estimatedPaper = 0;
+    private CheckoutController mainController;
+    private ReceiptPrinter printer;
 
-	// Flags/indicators that ink or paper levels are low
-	public boolean inkLow = true;
-	public boolean paperLow = true;
+    // How do we update the estimated ink and paper on refills? - Arie
 
-	public int estimatedInk = 0;
-	public int estimatedPaper = 0;
+    public ReceiptPrinterController(ReceiptPrinter newDevice) {
+        super(newDevice);
+    }
 
-	// How do we update the estimated ink and paper on refills? - Arie
+    public final CheckoutController getMainController() {
+        return this.mainController;
+    }
 
-	public ReceiptPrinterController(ReceiptPrinter newDevice) {
-		super(newDevice);
-	}
+    public final void setMainController(CheckoutController newMainController) {
+        if (this.mainController != null) {
+            this.mainController.deregisterReceiptPrinter(this);
+        }
+        this.mainController = newMainController;
+        if (this.mainController != null) {
+            this.mainController.registerReceiptPrinter(this);
+        }
+    }
 
-	public final CheckoutController getMainController() {
-		return this.mainController;
-	}
+    /**
+     * Function for software to keep track of how much ink printer has Since there
+     * are no sensors, whenever ink is added to printer, its incremented in the
+     * software using this function
+     *
+     * @param inkAmount: amount of ink added to printer
+     */
+    public void addedInk(int inkAmount) {
+        if (inkAmount > 0)
+            estimatedInk += inkAmount;
+        else
+            System.out.println("Negative Ink Not Allowed to be Added");
 
-	public final void setMainController(CheckoutController newMainController) {
-		if (this.mainController != null) {
-			this.mainController.deregisterReceiptPrinter(this);
-		}
-		this.mainController = newMainController;
-		if (this.mainController != null) {
-			this.mainController.registerReceiptPrinter(this);
-		}
-	}
+        inkLow = inkAmount <= 500;
+    }
 
-	/**
-	 * Function for software to keep track of how much ink printer has Since there
-	 * are no sensors, whenever ink is added to printer, its incremented in the
-	 * software using this function
-	 * 
-	 * @param inkAmount: amount of ink added to printer
-	 */
-	public void addedInk(int inkAmount) {
-		if (inkAmount > 0)
-			estimatedInk += inkAmount;
-		else
-			System.out.println("Negative Ink Not Allowed to be Added");
+    /**
+     * Function for software to keep track of how much paper printer has Since there
+     * are no sensors, whenever paper is added to printer, its incremented in the
+     * software using this function
+     *
+     * @param paperAmount: amount of paper added to printer
+     */
+    public void addedPaper(int paperAmount) {
+        if (paperAmount > 0)
+            estimatedPaper += paperAmount;
+        else
+            System.out.println("Negative Paper Not Allowed to be Added");
 
-		if (inkAmount > 500)
-			inkLow = false;
-		else
-			inkLow = true;
-	}
+        paperLow = paperAmount <= 200;
+    }
 
-	/**
-	 * Function for software to keep track of how much paper printer has Since there
-	 * are no sensors, whenever paper is added to printer, its incremented in the
-	 * software using this function
-	 * 
-	 * @param paperAmount: amount of paper added to printer
-	 */
-	public void addedPaper(int paperAmount) {
-		if (paperAmount > 0)
-			estimatedPaper += paperAmount;
-		else
-			System.out.println("Negative Paper Not Allowed to be Added");
+    /**
+     * Responsible for printing out a properly formatted Receipt using the list of
+     * Products and total cost. The receipt will contain a numbered list containing
+     * the price of each product.
+     *
+     * @param order: HashMap of Products on the order
+     * @param cost:  total cost of the order
+     */
+    public void printReceipt(LinkedHashMap<Product, Number[]> order, BigDecimal cost) {
 
-		if (paperAmount > 200)
-			paperLow = false;
-		else
-			paperLow = true;
-	}
+        printer = getDevice();
 
-	/**
-	 * Responsible for printing out a properly formatted Receipt using the list of
-	 * Products and total cost. The receipt will contain a numbered list containing
-	 * the price of each product.
-	 * 
-	 * @param order: HashMap of Products on the order
-	 * @param cost:  total cost of the order
-	 */
-	public void printReceipt(LinkedHashMap<Product, Number[]> order, BigDecimal cost) {
+        // initialize String Builder to build the receipt
+        StringBuilder receipt = new StringBuilder();
+        receipt.append("Purchase Details:\n");
 
-		printer = getDevice();
+        // loop through every product in the order, appending the appropriate strings to
+        // the receipt
+        int i = 1;
 
-		// initialize String Builder to build the receipt
-		StringBuilder receipt = new StringBuilder();
-		receipt.append("Purchase Details:\n");
+        for (Product product : order.keySet()) {
+            Number[] productInfo = order.get(product);
 
-		// loop through every product in the order, appending the appropriate strings to
-		// the receipt
-		int i = 1;
+            // We only need to focus on per-unit costs currently, weight-based will be
+            // handled later.
+            // if (product.isPerUnit()){
+            // going through the string and splitting to avoid writing too much
+            // on one line
+            String productName = product.getClass().getSimpleName();
+            String productString = String.format("%d $%.2f %dx %s\n", i, productInfo[1], productInfo[0].intValue(),
+                    productName);
+            int splitPos = 59;
+            String splitterSubString = "-\n    -";
+            while (splitPos < productString.length() - 1) {// -1 to not worry about the \n at the end.
+                productString = productString.substring(0, splitPos) + splitterSubString
+                        + productString.substring(splitPos);
+                splitPos += 61;// 1 extra to account for \n being 1 character (prevents double-spacing of text)
+            }
+            // }
+            receipt.append(productString);
+            i++;
+        }
+        // append total cost at the end of the receipt
+        receipt.append(String.format("Total: $%.2f\n", cost));
 
-		for (Product product : order.keySet()) {
-			Number[] productInfo = order.get(product);
+        try {
+            for (char c : receipt.toString().toCharArray()) {
+                if (c == '\n') {
+                    estimatedPaper--;
+                } else if (!Character.isWhitespace(c)) {
+                    estimatedInk--;
+                }
 
-			// We only need to focus on per-unit costs currently, weight-based will be
-			// handled later.
-			// if (product.isPerUnit()){
-			// going through the string and splitting to avoid writing too much
-			// on one line
-			String productName = product.getClass().getSimpleName();
-			String productString = String.format("%d $%.2f %dx %s\n", i, productInfo[1], productInfo[0].intValue(),
-					productName);
-			int splitPos = 59;
-			String splitterSubString = "-\n    -";
-			while (splitPos < productString.length() - 1) {// -1 to not worry about the \n at the end.
-				productString = productString.substring(0, splitPos) + splitterSubString
-						+ productString.substring(splitPos);
-				splitPos += 61;// 1 extra to account for \n being 1 character (prevents double-spacing of text)
-			}
-			// }
-			receipt.append(productString);
-			i++;
-		}
-		// append total cost at the end of the receipt
-		receipt.append(String.format("Total: $%.2f\n", cost));
+                printer.print(c);
+            }
+            printer.cutPaper();
+        } catch (OverloadException e) {
+            System.out.println("The receipt is too long.");
+        } catch (EmptyException e) {
+            System.out.println("The printer is out of paper or ink.");
+            this.mainController.printerOutOfResources(this);
+        }
 
-		try {
-			for (char c : receipt.toString().toCharArray()) {
-				if (c == '\n') {
-					estimatedPaper--;
-				} else if (!Character.isWhitespace(c)) {
-					estimatedInk--;
-				}
+        if (estimatedInk <= 500) {
+            // Inform the I/O for attendant from the error message about low ink
+            // this is a placeholder currently.
+            System.out.println("Ink Low for Station: " + mainController.getID());
+            inkLow = true;
+        } else
+            inkLow = false;
+        if (estimatedPaper <= 200) {
+            // Inform the I/O for attendant from the error message about low ink
+            // this is a placeholder currently.
+            System.out.println("Paper Low for Station: " + mainController.getID());
+            paperLow = true;
+        } else
+            paperLow = false;
+    }
 
-				printer.print(c);
-			}
-			printer.cutPaper();
-		} catch (OverloadException e) {
-			System.out.println("The receipt is too long.");
-		} catch (EmptyException e) {
-			System.out.println("The printer is out of paper or ink.");
-			this.mainController.printerOutOfResources(this);
-		}
+    @Override
+    public void reactToOutOfPaperEvent(ReceiptPrinter printer) {
+        estimatedPaper = 0;
+        this.mainController.printerOutOfResources(this);
+    }
 
-		if (estimatedInk <= 500) {
-			// Inform the I/O for attendant from the error message about low ink
-			// this is a placeholder currently.
-			System.out.println("Ink Low for Station: " + mainController.getID());
-			inkLow = true;
-		} else
-			inkLow = false;
-		if (estimatedPaper <= 200) {
-			// Inform the I/O for attendant from the error message about low ink
-			// this is a placeholder currently.
-			System.out.println("Paper Low for Station: " + mainController.getID());
-			paperLow = true;
-		} else
-			paperLow = false;
-	}
+    @Override
+    public void reactToOutOfInkEvent(ReceiptPrinter printer) {
+        estimatedInk = 0;
+        this.mainController.printerOutOfResources(this);
+    }
 
-	@Override
-	public void reactToOutOfPaperEvent(ReceiptPrinter printer) {
-		estimatedPaper = 0;
-		this.mainController.printerOutOfResources(this);
-	}
+    @Override
+    public void reactToPaperAddedEvent(ReceiptPrinter printer) {
+        this.mainController.printerRefilled(this);
+    }
 
-	@Override
-	public void reactToOutOfInkEvent(ReceiptPrinter printer) {
-		estimatedInk = 0;
-		this.mainController.printerOutOfResources(this);
-	}
-
-	@Override
-	public void reactToPaperAddedEvent(ReceiptPrinter printer) {
-		this.mainController.printerRefilled(this);
-	}
-
-	@Override
-	public void reactToInkAddedEvent(ReceiptPrinter printer) {
-		this.mainController.printerRefilled(this);
-	}
+    @Override
+    public void reactToInkAddedEvent(ReceiptPrinter printer) {
+        this.mainController.printerRefilled(this);
+    }
 
 }

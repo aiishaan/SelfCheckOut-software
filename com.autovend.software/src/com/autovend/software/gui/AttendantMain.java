@@ -51,11 +51,11 @@ public class AttendantMain {
     JButton logoutButton;
     JPanel stationListPane;
 
-    public AttendantMain(SupervisionStation attendantStation){
+    public AttendantMain(SupervisionStation attendantStation) {
 
         this.touchScreenFrame = attendantStation.screen.getFrame();
         this.touchScreenFrame.setExtendedState(JFrame.NORMAL);
-        this.touchScreenFrame.setSize(1000,900);
+        this.touchScreenFrame.setSize(1000, 900);
         this.touchScreenFrame.setResizable(true);
 
         mainPanel = new JPanel();
@@ -73,7 +73,7 @@ public class AttendantMain {
         List<SelfCheckoutStation> supervisedStations = attendantStation.supervisedStations();
         for (int i = 0; i < supervisedStations.size(); i++) {
             SelfCheckoutStation checkoutStation = supervisedStations.get(i);
-            StationStatusBar tempBar = new StationStatusBar(checkoutStation, i+1);
+            StationStatusBar tempBar = new StationStatusBar(checkoutStation, i + 1);
             tempBar.setPreferredSize(new Dimension(980, 100));
             stationListPane.add(tempBar);
         }
@@ -88,10 +88,23 @@ public class AttendantMain {
         this.touchScreenFrame.setVisible(true);
     }
 
+    public static void main(String[] args) {
+        SupervisionStation attendantStation = new SupervisionStation();
+        //add a bunch of checkout stations to test scrolling
+        attendantStation.add(new SelfCheckoutStation(Currency.getInstance("CAD"), new int[]{1, 24}, new BigDecimal[]{BigDecimal.ONE}, 1, 1));
+        attendantStation.add(new SelfCheckoutStation(Currency.getInstance("CAD"), new int[]{1, 24}, new BigDecimal[]{BigDecimal.ONE}, 1, 1));
+        attendantStation.add(new SelfCheckoutStation(Currency.getInstance("CAD"), new int[]{1, 24}, new BigDecimal[]{BigDecimal.ONE}, 1, 1));
+        attendantStation.add(new SelfCheckoutStation(Currency.getInstance("CAD"), new int[]{1, 24}, new BigDecimal[]{BigDecimal.ONE}, 1, 1));
+        attendantStation.add(new SelfCheckoutStation(Currency.getInstance("CAD"), new int[]{1, 24}, new BigDecimal[]{BigDecimal.ONE}, 1, 1));
+        attendantStation.add(new SelfCheckoutStation(Currency.getInstance("CAD"), new int[]{1, 24}, new BigDecimal[]{BigDecimal.ONE}, 1, 1));
+        attendantStation.add(new SelfCheckoutStation(Currency.getInstance("CAD"), new int[]{1, 24}, new BigDecimal[]{BigDecimal.ONE}, 1, 1));
+        AttendantMain attendantGUI = new AttendantMain(attendantStation);
+    }
+
     public void logoutButtonPressed(SupervisionStation attendantStation) {
         //logout action
-    	mainPanel.setVisible(false);
-    	AttendantLogin logInScreen = new AttendantLogin(attendantStation);
+        mainPanel.setVisible(false);
+        AttendantLogin logInScreen = new AttendantLogin(attendantStation);
     }
 
     static class StationStatusBar extends JPanel {
@@ -106,7 +119,7 @@ public class AttendantMain {
         public StationStatusBar(SelfCheckoutStation checkoutStationIn, int ID) {
             this.selfCheckoutStation = checkoutStationIn;
             this.setBackground(Color.LIGHT_GRAY);
-            this.setSize(980,100);
+            this.setSize(980, 100);
 
             this.setBorder(new LineBorder(Color.BLACK));
             this.setLayout(null);
@@ -148,7 +161,7 @@ public class AttendantMain {
 
         public void disableButtonPressed() {
             String buttonText = disableButton.getText();
-            if(buttonText.equals("Disable Station")) {
+            if (buttonText.equals("Disable Station")) {
                 //code to disable station
                 disableButton.setText("Enable Station");
             } else {
@@ -194,19 +207,6 @@ public class AttendantMain {
             warningField.setText("Station running normally");
         }
 
-    }
-
-    public static void main(String[] args) {
-        SupervisionStation attendantStation = new SupervisionStation();
-        //add a bunch of checkout stations to test scrolling
-        attendantStation.add(new SelfCheckoutStation(Currency.getInstance("CAD"), new int[]{1,24}, new BigDecimal[]{BigDecimal.ONE}, 1, 1));
-        attendantStation.add(new SelfCheckoutStation(Currency.getInstance("CAD"), new int[]{1,24}, new BigDecimal[]{BigDecimal.ONE}, 1, 1));
-        attendantStation.add(new SelfCheckoutStation(Currency.getInstance("CAD"), new int[]{1,24}, new BigDecimal[]{BigDecimal.ONE}, 1, 1));
-        attendantStation.add(new SelfCheckoutStation(Currency.getInstance("CAD"), new int[]{1,24}, new BigDecimal[]{BigDecimal.ONE}, 1, 1));
-        attendantStation.add(new SelfCheckoutStation(Currency.getInstance("CAD"), new int[]{1,24}, new BigDecimal[]{BigDecimal.ONE}, 1, 1));
-        attendantStation.add(new SelfCheckoutStation(Currency.getInstance("CAD"), new int[]{1,24}, new BigDecimal[]{BigDecimal.ONE}, 1, 1));
-        attendantStation.add(new SelfCheckoutStation(Currency.getInstance("CAD"), new int[]{1,24}, new BigDecimal[]{BigDecimal.ONE}, 1, 1));
-        AttendantMain attendantGUI = new AttendantMain(attendantStation);
     }
 
 }

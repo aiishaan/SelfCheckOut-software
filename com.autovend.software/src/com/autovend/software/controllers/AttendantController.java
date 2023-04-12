@@ -32,9 +32,9 @@ UCID		Name
 */
 package com.autovend.software.controllers;
 
-import java.util.HashMap;
-
 import com.autovend.devices.SelfCheckoutStation;
+
+import java.util.HashMap;
 
 public class AttendantController {
     // Handles the Operations of the attendant

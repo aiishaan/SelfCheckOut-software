@@ -33,43 +33,43 @@ UCID		Name
 
 package com.autovend.software.controllers;
 
-import java.math.BigDecimal;
-
 import com.autovend.devices.AbstractDevice;
 import com.autovend.devices.observers.AbstractDeviceObserver;
 
+import java.math.BigDecimal;
+
 abstract public class ChangeDispenserController<D extends AbstractDevice<O>, O extends AbstractDeviceObserver>
-		extends DeviceController<D, O> {
+        extends DeviceController<D, O> {
 
-	private BigDecimal denom;
-	private CheckoutController mainController;
+    private BigDecimal denom;
+    private CheckoutController mainController;
 
-	public ChangeDispenserController(D newDevice, BigDecimal denom) {
-		super(newDevice);
-		this.denom = denom;
-	}
+    public ChangeDispenserController(D newDevice, BigDecimal denom) {
+        super(newDevice);
+        this.denom = denom;
+    }
 
-	final CheckoutController getMainController() {
-		return this.mainController;
-	}
+    final CheckoutController getMainController() {
+        return this.mainController;
+    }
 
-	public final void setMainController(CheckoutController newMainController) {
-		if (this.mainController != null) {
-			this.mainController.deregisterChangeDispenserController(this.denom, this);
-		}
-		this.mainController = newMainController;
-		if (this.mainController != null) {
-			this.mainController.registerChangeDispenserController(this.denom, this);
-		}
-	}
+    public final void setMainController(CheckoutController newMainController) {
+        if (this.mainController != null) {
+            this.mainController.deregisterChangeDispenserController(this.denom, this);
+        }
+        this.mainController = newMainController;
+        if (this.mainController != null) {
+            this.mainController.registerChangeDispenserController(this.denom, this);
+        }
+    }
 
-	void setDenom(BigDecimal denom) {
-		this.denom = denom;
-	}
+    BigDecimal getDenom() {
+        return this.denom;
+    }
 
-	BigDecimal getDenom() {
-		return this.denom;
-	}
+    void setDenom(BigDecimal denom) {
+        this.denom = denom;
+    }
 
-	abstract void emitChange();
+    abstract void emitChange();
 }

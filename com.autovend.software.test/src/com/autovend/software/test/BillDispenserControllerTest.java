@@ -37,7 +37,6 @@ import com.autovend.Barcode;
 import com.autovend.Bill;
 import com.autovend.Numeral;
 import com.autovend.devices.BillDispenser;
-import com.autovend.devices.EmptyException;
 import com.autovend.devices.OverloadException;
 import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.external.ProductDatabases;
@@ -68,10 +67,10 @@ public class BillDispenserControllerTest {
     @Before
     public void setup() {
         // Init denominations
-        billDenominations = new int[] {5, 10, 20, 50, 100};
-        coinDenominations = new BigDecimal[] {new BigDecimal(0.05), new BigDecimal(0.1), new BigDecimal(0.25), new BigDecimal(100), new BigDecimal(200)};
+        billDenominations = new int[]{5, 10, 20, 50, 100};
+        coinDenominations = new BigDecimal[]{new BigDecimal("0.05"), new BigDecimal("0.1"), new BigDecimal("0.25"), new BigDecimal(100), new BigDecimal(200)};
 
-        selfCheckoutStation = new SelfCheckoutStation(Currency.getInstance("CAD"), billDenominations, coinDenominations,200, 1);
+        selfCheckoutStation = new SelfCheckoutStation(Currency.getInstance("CAD"), billDenominations, coinDenominations, 200, 1);
 
         checkoutControllerStub = new CheckoutController();
         billPaymentControllerStub = new BillPaymentController(selfCheckoutStation.billValidator);
@@ -93,7 +92,7 @@ public class BillDispenserControllerTest {
         ProductDatabases.BARCODED_PRODUCT_DATABASE.put(barcodedProduct.getBarcode(), barcodedProduct);
 
         int billCountToAdd = 100;
-        for (Map.Entry<Integer, BillDispenser> entry: selfCheckoutStation.billDispensers.entrySet()) {
+        for (Map.Entry<Integer, BillDispenser> entry : selfCheckoutStation.billDispensers.entrySet()) {
             int value = entry.getKey();
             try {
                 for (int i = 0; i < billCountToAdd; i++) {
@@ -121,7 +120,7 @@ public class BillDispenserControllerTest {
         }
 
         double amountRemaining = checkoutControllerStub.getRemainingAmount().doubleValue();
-        double expextedAmount = new BigDecimal(19.99).doubleValue();
+        double expextedAmount = new BigDecimal("19.99").doubleValue();
 
         assertEquals(amountRemaining, expextedAmount, 0);
     }
@@ -145,7 +144,7 @@ public class BillDispenserControllerTest {
         billDispenserController.emitChange();
         selfCheckoutStation.billOutput.removeDanglingBill();
         double amountRemaining = checkoutControllerStub.getRemainingAmount().doubleValue();
-        double expextedAmount = new BigDecimal(-0.05).doubleValue();
+        double expextedAmount = BigDecimal.valueOf(-0.05).doubleValue();
 
         assertNotEquals(amountRemaining, expextedAmount);
     }
@@ -168,9 +167,9 @@ public class BillDispenserControllerTest {
         assertEquals(selfCheckoutStation.billDispensers.get(10).size(), 0);
     }
 
-    @Test (expected = OverloadException.class)
+    @Test(expected = OverloadException.class)
     public void overfillBillDispenserTest() throws OverloadException {
-        for (Map.Entry<Integer, BillDispenser> entry: selfCheckoutStation.billDispensers.entrySet()) {
+        for (Map.Entry<Integer, BillDispenser> entry : selfCheckoutStation.billDispensers.entrySet()) {
             int value = entry.getKey();
             for (int i = 0; i < 2; i++) {
                 entry.getValue().load(new Bill(value, Currency.getInstance("CAD")));

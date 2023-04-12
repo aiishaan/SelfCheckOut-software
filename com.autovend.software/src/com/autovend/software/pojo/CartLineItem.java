@@ -36,81 +36,80 @@ package com.autovend.software.pojo;
 import java.math.BigDecimal;
 
 public class CartLineItem {
-	public enum CODETYPE {
-		BARCODE, PLU
-	}
+    private final boolean isPerUnit;
+    private final String description;
+    private final double expectedWeight;
+    private String productCode;
+    private CODETYPE codeType;
+    private BigDecimal price;
+    private double quantity;
+    private double lineTotalPrice;
+    public CartLineItem(String productCode, CODETYPE codeType, BigDecimal price, boolean isPerUnit, String description,
+                        double expectedWeight, double quantity) {
+        this.productCode = productCode;
+        this.codeType = codeType;
+        this.price = price;
+        this.isPerUnit = isPerUnit;
+        this.description = description;
+        this.expectedWeight = expectedWeight;
+        this.quantity = quantity;
+    }
 
-	private String productCode;
-	private CODETYPE codeType;
-	private BigDecimal price;
-	private boolean isPerUnit;
-	private String description;
-	private double expectedWeight;
-	private double quantity;
-	private double lineTotalPrice;
+    public String getProductCode() {
+        return productCode;
+    }
 
-	public CartLineItem(String productCode, CODETYPE codeType, BigDecimal price, boolean isPerUnit, String description,
-			double expectedWeight, double quantity) {
-		this.productCode = productCode;
-		this.codeType = codeType;
-		this.price = price;
-		this.isPerUnit = isPerUnit;
-		this.description = description;
-		this.expectedWeight = expectedWeight;
-		this.quantity = quantity;
-	}
+    public void setProductCode(String productCode) {
+        this.productCode = productCode;
+    }
 
-	public String getProductCode() {
-		return productCode;
-	}
+    public CODETYPE getCodeType() {
+        return codeType;
+    }
 
-	public void setProductCode(String productCode) {
-		this.productCode = productCode;
-	}
+    public void setCodeType(CODETYPE codeType) {
+        this.codeType = codeType;
+    }
 
-	public CODETYPE getCodeType() {
-		return codeType;
-	}
+    public BigDecimal getPrice() {
+        return price;
+    }
 
-	public void setCodeType(CODETYPE codeType) {
-		this.codeType = codeType;
-	}
+    public void setPrice(BigDecimal price) {
+        this.price = price;
+        recalculate();
+    }
 
-	public BigDecimal getPrice() {
-		return price;
-	}
+    public boolean isPerUnit() {
+        return isPerUnit;
+    }
 
-	public void setPrice(BigDecimal price) {
-		this.price = price;
-		recalculate();
-	}
+    public String getDescription() {
+        return description;
+    }
 
-	public boolean isPerUnit() {
-		return isPerUnit;
-	}
+    public double getExpectedWeight() {
+        return expectedWeight;
+    }
 
-	public String getDescription() {
-		return description;
-	}
+    public double getQuantity() {
+        return quantity;
+    }
 
-	public double getExpectedWeight() {
-		return expectedWeight;
-	}
+    public void setQuantity(double quantity) {
+        this.quantity = quantity;
+        recalculate();
+    }
 
-	public double getQuantity() {
-		return quantity;
-	}
+    public double getLineTotalPrice() {
+        return lineTotalPrice;
+    }
 
-	public void setQuantity(double quantity) {
-		this.quantity = quantity;
-		recalculate();
-	}
+    private void recalculate() {
+        this.lineTotalPrice = this.price.doubleValue() * quantity;
+    }
 
-	public double getLineTotalPrice() {
-		return lineTotalPrice;
-	}
-
-	private void recalculate() {
-		this.lineTotalPrice = this.price.doubleValue() * quantity;
-	}
+    public enum CODETYPE {
+        BARCODE, PLU
+    }
 }

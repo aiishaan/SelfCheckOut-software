@@ -34,60 +34,47 @@ package com.autovend.software.gui;
 
 //Necessary imports
 
-import javax.swing.JFrame;
-
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.SwingConstants;
-
 import com.autovend.devices.SelfCheckoutStation;
-import com.autovend.devices.SupervisionStation;
+import com.autovend.software.controllers.CheckoutController;
 
-import java.awt.Font;
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.math.BigDecimal;
-import java.awt.Dimension;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.Arrays;
-
-import javax.swing.JLabel;
-import javax.swing.JLayeredPane;
-import javax.swing.JButton;
-import javax.swing.table.DefaultTableModel;
-
-import com.autovend.software.controllers.CheckoutController;
 
 public class PaymentScreen {
 
     //PaymentScreen handles the GUI for the payment screen of the SelfCheckoutStation.
 
     //all the components that are added to the screen
-    private JFrame touchScreenFrame;
-    private JPanel paymentPanel;
+    private final JFrame touchScreenFrame;
+    private final JPanel paymentPanel;
+    private final JLabel label;
+    private final JButton cash;
+    private final JButton credit;
+    private final JButton debit;
+    private final JButton giftCard;
+    private final String amountDue;
+    private final DefaultTableModel paymentTable;
     private JPanel cashPanel;
     private JPanel creditPanel;
     private JPanel debitPanel;
     private JPanel giftPanel;
     private JPanel paymentSuccessful;
-    private JLabel label;
     private JLabel totalDue;
     private JLabel totalDueVal;
     private JLabel msg;
     private JLabel thanksMsg;
     private JLabel paymentMsg;
-    private JButton cash;
-    private JButton credit;
-    private JButton debit;
-    private JButton giftCard;
     private JButton pay;
     private JButton pay1;
     private JButton pay2;
     private JButton pay3;
     private JButton printReceipt;
-    private String amountDue;
-    private DefaultTableModel paymentTable;
 
 //	public PaymentScreen(SelfCheckoutStation cStation) {
 //

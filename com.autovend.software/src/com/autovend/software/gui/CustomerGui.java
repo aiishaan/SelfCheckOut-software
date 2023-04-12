@@ -32,67 +32,53 @@ UCID		Name
 */
 package com.autovend.software.gui;
 
-import java.awt.BorderLayout;
-import java.util.HashMap;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.GridLayout;
-import java.awt.Image;
+import com.autovend.Numeral;
+import com.autovend.devices.SelfCheckoutStation;
+import com.autovend.software.controllers.BillPaymentController;
+import com.autovend.software.controllers.CheckoutController;
+import com.autovend.software.controllers.MembershipCardController;
+
+import javax.swing.*;
+import javax.swing.border.BevelBorder;
+import javax.swing.border.Border;
+import javax.swing.table.DefaultTableModel;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Currency;
-import java.util.List;
-
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JLayeredPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.ScrollPaneConstants;
-import javax.swing.SwingConstants;
-import javax.swing.border.BevelBorder;
-import javax.swing.border.Border;
-import javax.swing.table.DefaultTableModel;
-
-import com.autovend.Numeral;
-import com.autovend.devices.TouchScreen;
-import com.autovend.software.controllers.BillPaymentController;
-import com.autovend.software.controllers.CheckoutController;
-import com.autovend.software.controllers.MembershipCardController;
-import com.autovend.devices.SelfCheckoutStation;
 
 public class CustomerGui {
 
+    final static boolean shouldFill = true;
+    final static boolean shouldWeightX = true;
+    private final CheckoutController checkoutController;
+    private final MembershipCardController membershipCardController;
+    private final JLayeredPane layeredPane;
     // these are using to call from attendantmain
     JFrame touchScreenFrame;
     boolean oB = false;            // own bag
     JPanel ownBagAdded;
-
-    private CheckoutController checkoutController;
-    private MembershipCardController membershipCardController;
+    boolean audioButtonOn = false;
+    boolean selectedPLU = false;
+    boolean selectedMembership = false;
+    // Put data here to access the payment table
+    String[][] data = new String[100][3];
+    String[] dataNeo = new String[100];
+    int dataCount = 0;
+    String[] cName = {"Item ", "@cost per unit", "Total cost"};
+    DefaultTableModel dataModel = new DefaultTableModel(data, cName);
+    DefaultTableModel paymentTableModel = new DefaultTableModel(null, cName);
+    double cartValue = 0.00;
+    // create a constraints object
+    GridBagConstraints c = new GridBagConstraints();
     private JComboBox<String> languageBox;
     private JPanel tapScreenPanel;
     private JPanel mainPanel;
     private JPanel secondaryPanel;
     private JPanel keyboardPanel;
-    private JLayeredPane layeredPane;
     private JButton PLUTextButton;
     private JButton itemCata;
     private JButton memberTextButton;
@@ -101,9 +87,6 @@ public class CustomerGui {
     private JButton screensaver;
     private JButton helpButton;
     private JButton audioButton;
-    boolean audioButtonOn = false;
-    boolean selectedPLU = false;
-    boolean selectedMembership = false;
     private JButton paymentButton;
     private JScrollPane scrollPane;
     private JTable table;
@@ -121,27 +104,10 @@ public class CustomerGui {
     private JButton keyExit;
     private JTextField keyboardTextField;
     private String keyboardText;
-
     private int bagsCount = 0;
     private double bagsValue = bagsCount * 0.1;
-
-    // Put data here to access the payment table
-    String[][] data = new String[100][3];
-    String[] dataNeo = new String[100];
-    int dataCount = 0;
-    String[] cName = {"Item ", "@cost per unit", "Total cost"};
-    DefaultTableModel dataModel = new DefaultTableModel(data, cName);
-    DefaultTableModel paymentTableModel = new DefaultTableModel(null, cName);
-    double cartValue = 0.00;
-
     // use to count digits
     private int tempCount = 0;
-
-
-    // create a constraints object
-    GridBagConstraints c = new GridBagConstraints();
-    final static boolean shouldFill = true;
-    final static boolean shouldWeightX = true;
 
     public CustomerGui(SelfCheckoutStation cStation, CheckoutController checkoutController, MembershipCardController membershipCardController, int ID) {
 
@@ -167,6 +133,20 @@ public class CustomerGui {
         // use this if you want to start from attendantgui
         this.touchScreenFrame.setVisible(true);
 
+    }
+
+    public static void main(String[] args) {
+        int[] billDenominations = new int[]{5, 10, 20, 50, 100};
+        BigDecimal[] coinDenominations = new BigDecimal[]{new BigDecimal("0.05"), new BigDecimal("0.1"), new BigDecimal("0.25"), new BigDecimal(100), new BigDecimal(200)};
+
+        SelfCheckoutStation selfCheckoutStation = new SelfCheckoutStation(Currency.getInstance("CAD"), billDenominations, coinDenominations, 200, 1);
+        CheckoutController checkoutController = new CheckoutController(selfCheckoutStation);
+        BillPaymentController billPaymentControllerStub = new BillPaymentController(selfCheckoutStation.billValidator);
+        billPaymentControllerStub.setMainController(checkoutController);
+        checkoutController.registerPaymentController(billPaymentControllerStub);
+        SelfCheckoutStation cStation = new SelfCheckoutStation(Currency.getInstance("CAD"), billDenominations, coinDenominations, 1, 1);
+        MembershipCardController membershipController = new MembershipCardController();
+        CustomerGui newGui = new CustomerGui(cStation, checkoutController, membershipController, 1);
     }
 
     private void setUpMainPanel(SelfCheckoutStation cStation) {
@@ -366,9 +346,9 @@ public class CustomerGui {
 //				System.out.println(bagsValue);
 
                 DecimalFormat tempValue = new DecimalFormat("0.00");
-                data[dataCount] = new String[]{"Bag(s) @$0.10", String.valueOf(bagsCount), "$" + String.valueOf(tempValue.format(bagsValue))};
+                data[dataCount] = new String[]{"Bag(s) @$0.10", String.valueOf(bagsCount), "$" + tempValue.format(bagsValue)};
                 dataCount++;
-                updateTable(new String[]{"Bag(s) @$0.10", String.valueOf(bagsCount), "$" + String.valueOf(tempValue.format(bagsValue))});
+                updateTable(new String[]{"Bag(s) @$0.10", String.valueOf(bagsCount), "$" + tempValue.format(bagsValue)});
             }
         });
         purBagPane.add(purchase, c);
@@ -384,7 +364,6 @@ public class CustomerGui {
             public void actionPerformed(ActionEvent e) {
                 //purBagPane.setVisible(false);
                 bagsCount = bagsCount + 1;
-                ;
                 tempBagsCount.setText(String.valueOf(bagsCount));
                 minus.setEnabled(true);
                 purchase.setEnabled(true);
@@ -422,7 +401,6 @@ public class CustomerGui {
         JButton back = new JButton("Back to main screen");
         back.setFont(new Font("Tahoma", Font.PLAIN, 15));
         back.setPreferredSize(new Dimension(200, 50));
-        ;
         back.setBounds(392, 20, 200, 50);
         // add to panel
         tempC.gridx = 1;
@@ -689,7 +667,7 @@ public class CustomerGui {
         // Set the oB to be true and wait for attendant to accept
         oB = true;
 
-        if (oB == false) {
+        if (!oB) {
             ownBagAdded.setVisible(false);
         }
 
@@ -753,11 +731,7 @@ public class CustomerGui {
         audioButton.setFont(new Font("Tahoma", Font.PLAIN, 15));
         audioButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                if (audioButtonOn) {
-                    audioButtonOn = false;
-                } else {
-                    audioButtonOn = true;
-                }
+                audioButtonOn = !audioButtonOn;
                 System.out.println("Text-to-speech is: " + audioButtonOn);
             }
         });
@@ -1187,24 +1161,10 @@ public class CustomerGui {
         // These should use the software when connected imo
         cartValue = cartValue + Double.valueOf(tmp);
         DecimalFormat cartValueFormatted = new DecimalFormat("#.00");
-        setUpPaymentTotal("$" + String.valueOf(cartValueFormatted.format(cartValue)) + "  ");
+        setUpPaymentTotal("$" + cartValueFormatted.format(cartValue) + "  ");
 
         // These are for test if data is keep track of the order
 //		System.out.println(dataCount);
 //		System.out.println(data[dataCount-1][2]);
-    }
-
-    public static void main(String[] args) {
-        int[] billDenominations = new int[]{5, 10, 20, 50, 100};
-        BigDecimal[] coinDenominations = new BigDecimal[]{new BigDecimal(0.05), new BigDecimal(0.1), new BigDecimal(0.25), new BigDecimal(100), new BigDecimal(200)};
-
-        SelfCheckoutStation selfCheckoutStation = new SelfCheckoutStation(Currency.getInstance("CAD"), billDenominations, coinDenominations, 200, 1);
-        CheckoutController checkoutController = new CheckoutController(selfCheckoutStation);
-        BillPaymentController billPaymentControllerStub = new BillPaymentController(selfCheckoutStation.billValidator);
-        billPaymentControllerStub.setMainController(checkoutController);
-        checkoutController.registerPaymentController(billPaymentControllerStub);
-        SelfCheckoutStation cStation = new SelfCheckoutStation(Currency.getInstance("CAD"), billDenominations, coinDenominations, 1, 1);
-        MembershipCardController membershipController = new MembershipCardController();
-        CustomerGui newGui = new CustomerGui(cStation, checkoutController, membershipController, 1);
     }
 }

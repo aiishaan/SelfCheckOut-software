@@ -32,25 +32,18 @@ UCID		Name
 */
 package com.autovend.software.gui;
 
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.JLabel;
-import java.awt.Font;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.BorderLayout;
-import javax.swing.BorderFactory;
+import javax.swing.*;
 import javax.swing.border.Border;
+import java.awt.*;
 
 public class weight {
 
     // PaymentScreen handles the GUI for the payment screen of the SelfCheckoutStation.
 
     // all the components that are added to the screen
-    private JFrame touchScreenFrame1;
-    private JPanel weightchange;
-    private JLabel label;
+    private final JFrame touchScreenFrame1;
+    private final JPanel weightchange;
+    private final JLabel label;
 
     public weight() {
 

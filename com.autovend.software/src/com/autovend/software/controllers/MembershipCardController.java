@@ -33,97 +33,94 @@ UCID		Name
 
 package com.autovend.software.controllers;
 
-import java.util.Scanner;
-
 import com.autovend.IllegalDigitException;
-import com.autovend.MembershipCard;
 
-public class MembershipCardController{
-	public String membershipNumber;
-	private boolean isActive = false;
-	// Did a max tries of 3, having a limit would help with like not having a
-	// infinite input that is invalid,
-	// and after the three invalid attempts it will return null
-	private static final int MAX_TRIES = 3;
+public class MembershipCardController {
+    // Did a max tries of 3, having a limit would help with like not having a
+    // infinite input that is invalid,
+    // and after the three invalid attempts it will return null
+    private static final int MAX_TRIES = 3;
+    private final boolean isActive = false;
+    public String membershipNumber;
 
-	public boolean getIsActive() {
-		return this.isActive;
-	}
+    public boolean getIsActive() {
+        return this.isActive;
+    }
 
-	/*
-	 * The isValid method will first check if memberNUM is null or if its length is
-	 * not equal to 12. If any of those conditions are true then it will through the
-	 * exception "IllegalDigitException" and say that it needs to be exactly 12
-	 * digits long. Then it will use the Character.isDigit to check each digit in
-	 * memberNum and see if there are any non-digits and that it is a digit between
-	 * 0-9. If there is a non-digit it will throw the "IllegalDigitException" saying
-	 * that it should be a digit between 0-9.
-	 */
+    /*
+     * The isValid method will first check if memberNUM is null or if its length is
+     * not equal to 12. If any of those conditions are true then it will through the
+     * exception "IllegalDigitException" and say that it needs to be exactly 12
+     * digits long. Then it will use the Character.isDigit to check each digit in
+     * memberNum and see if there are any non-digits and that it is a digit between
+     * 0-9. If there is a non-digit it will throw the "IllegalDigitException" saying
+     * that it should be a digit between 0-9.
+     */
 
-	public boolean isValid(String memberNum) throws IllegalDigitException {
-		if (memberNum == null || memberNum.length() != 12) {
-			throw new IllegalDigitException("The Membership number should be exactly 12 digits long.");
-		}
-		for (int i = 0; i < memberNum.length(); i++) {
-			char c = memberNum.charAt(i);
-			if (!Character.isDigit(c)) {
-				throw new IllegalDigitException("The Membership number should only contain digits between 0-9.");
-			}
-		}
-		return true;
-	}
+    public boolean isValid(String memberNum) throws IllegalDigitException {
+        if (memberNum == null || memberNum.length() != 12) {
+            throw new IllegalDigitException("The Membership number should be exactly 12 digits long.");
+        }
+        for (int i = 0; i < memberNum.length(); i++) {
+            char c = memberNum.charAt(i);
+            if (!Character.isDigit(c)) {
+                throw new IllegalDigitException("The Membership number should only contain digits between 0-9.");
+            }
+        }
+        return true;
+    }
 
-	/*
-	 * The getValidMembershipNumber method prompts the user to enter a Membership
-	 * number and checks whether the input is valid. If the input is valid (only
-	 * digits between 0-9 and is exactly 12 digits long), the method returns the
-	 * Membership number. If the input is invalid, the method prompts the user to
-	 * try again or continue without a Membership number, up to a maximum number of
-	 * tries (MAX_TRIES). If the user exceeds the maximum number of tries without
-	 * entering a valid Membership number, the method returns null.
-	 */
+    /*
+     * The getValidMembershipNumber method prompts the user to enter a Membership
+     * number and checks whether the input is valid. If the input is valid (only
+     * digits between 0-9 and is exactly 12 digits long), the method returns the
+     * Membership number. If the input is invalid, the method prompts the user to
+     * try again or continue without a Membership number, up to a maximum number of
+     * tries (MAX_TRIES). If the user exceeds the maximum number of tries without
+     * entering a valid Membership number, the method returns null.
+     */
 
-	public String getValidMembershipNumber(String MNum) throws IllegalDigitException {
-		int numTries = 0;
-		String memberNum = null;
-		while (numTries < MAX_TRIES) {
-			System.out.println("Enter your Membership number: ");
-			memberNum = MNum;
-			try {
-				if (isValid(memberNum)) {
-					return memberNum;
-				}
-			} catch (IllegalDigitException e) {
-				System.out.println(e.getMessage());
-			}
-			numTries++;
-			if (numTries < MAX_TRIES) {
-				System.out.println(
-						"Invalid membership number. Please try again or enter 'yes' to continue without a Membership number.");
-			}
-		}
-		return null;
-	}
+    public String getValidMembershipNumber(String MNum) throws IllegalDigitException {
+        int numTries = 0;
+        String memberNum = null;
+        while (numTries < MAX_TRIES) {
+            System.out.println("Enter your Membership number: ");
+            memberNum = MNum;
+            try {
+                if (isValid(memberNum)) {
+                    return memberNum;
+                }
+            } catch (IllegalDigitException e) {
+                System.out.println(e.getMessage());
+            }
+            numTries++;
+            if (numTries < MAX_TRIES) {
+                System.out.println(
+                        "Invalid membership number. Please try again or enter 'yes' to continue without a Membership number.");
+            }
+        }
+        return null;
+    }
 
-	/*
-	 * The updateMembershipStatus method prompts the user to enter whether they have
-	 * a membership or not. "yes" would call the getValidMembershipNumber method to
-	 * retrieve and validate the membership number. If it is valid the Membership
-	 * Card object is created with the given membership number and isActive would be
-	 * set to true. If the membership number is invalid the user will be informed
-	 * that they will be enrolled without a membership number. If the user responds
-	 * with "no," they are prompted again to confirm whether they want to continue
-	 * without a membership number. If the user responds with "no," the same process
-	 * as described above for the "yes" response is followed. If the user responds
-	 * with any other input, they are informed that their input is invalid and the
-	 * method returns. If the user responds with "cancel," the method prints a
-	 * message indicating that the membership enrollment has been cancelled and
-	 * returns. Finally, the method prints out the membership status and the
-	 * information about the membership card. If an IllegalDigitException is caught
-	 * during the execution of the method, the user is informed of the error and
-	 * prompted to try again. The method is then called recursively to repeat the
-	 * process.
-	 */
+    /*
+     * The updateMembershipStatus method prompts the user to enter whether they have
+     * a membership or not. "yes" would call the getValidMembershipNumber method to
+     * retrieve and validate the membership number. If it is valid the Membership
+     * Card object is created with the given membership number and isActive would be
+     * set to true. If the membership number is invalid the user will be informed
+     * that they will be enrolled without a membership number. If the user responds
+     * with "no," they are prompted again to confirm whether they want to continue
+     * without a membership number. If the user responds with "no," the same process
+     * as described above for the "yes" response is followed. If the user responds
+     * with any other input, they are informed that their input is invalid and the
+     * method returns. If the user responds with "cancel," the method prints a
+     * message indicating that the membership enrollment has been cancelled and
+     * returns. Finally, the method prints out the membership status and the
+     * information about the membership card. If an IllegalDigitException is caught
+     * during the execution of the method, the user is informed of the error and
+     * prompted to try again. The method is then called recursively to repeat the
+     * process.
+     */
 
 //	@SuppressWarnings("resource")
 //	public void updateMembershipStatus() {
