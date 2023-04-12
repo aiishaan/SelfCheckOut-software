@@ -57,10 +57,6 @@ public class AttendantLogin {
 	//constructor
 	public AttendantLogin(SupervisionStation aStation) {
 		
-		
-		
-		
-		
 		//creating a new JFrame
 		this.touchScreenFrame = aStation.screen.getFrame();
         this.touchScreenFrame.setExtendedState(JFrame.NORMAL);

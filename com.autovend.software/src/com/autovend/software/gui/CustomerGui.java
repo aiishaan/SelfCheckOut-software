@@ -1,6 +1,7 @@
 package com.autovend.software.gui;
 
 import java.awt.BorderLayout;
+import java.util.HashMap;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -133,6 +134,7 @@ public class CustomerGui {
         //this.touchScreenFrame.setVisible(true);
         // use this if you want to start from attendantgui
         this.touchScreenFrame.setVisible(true);
+      
     }
 
     private void setUpMainPanel(SelfCheckoutStation cStation) {
@@ -371,15 +373,15 @@ public class CustomerGui {
         cataPanel.setLayout(new GridBagLayout());
 
         // Set up items for catalogue
-        String[] dataBeer = {"Beer @$26.99", "1.00", "$26.99"};
-        String[] dataBread = {"Bread @$1.97", "1.00", "$1.97"};
-        String[] dataCereals = {"Cereals @$4.77", "1.00", "$4.77"};
-        String[] dataCheese = {"Cheese @$8.27", "1.00", "$8.27"};
-        String[] dataEggs = {"Eggs @$3.68", "1.00", "$3.68"};
-        String[] dataMilk = {"Milk @$5.89", "1.00", "$5.89"};
-        String[] dataProducts = {"Products @$1.98", "1.00", "$1.98"};
-        String[] dataSoda = {"Soda @$2.47", "1.00", "$2.47"};
-        String[] dataSweets = {"Sweets @$0.99", "1.00", "$0.99"};
+        String[] dataBeer = {"Beer @$26.99", "1.00", "$26.99", "1001"};
+        String[] dataBread = {"Bread @$1.97", "1.00", "$1.97", "1002"};
+        String[] dataCereals = {"Cereals @$4.77", "1.00", "$4.77", "1003"};
+        String[] dataCheese = {"Cheese @$8.27", "1.00", "$8.27", "1004"};
+        String[] dataEggs = {"Eggs @$3.68", "1.00", "$3.68", "1005"};
+        String[] dataMilk = {"Milk @$5.89", "1.00", "$5.89", "1006"};
+        String[] dataProducts = {"Products @$1.98", "1.00", "$1.98", "1007"};
+        String[] dataSoda = {"Soda @$2.47", "1.00", "$2.47", "1008"};
+        String[] dataSweets = {"Sweets @$0.99", "1.00", "$0.99", "1009"};
 
         // Set up gridbagconstraints
         GridBagConstraints tempC = new GridBagConstraints();
@@ -591,7 +593,7 @@ public class CustomerGui {
         });
         cataPanel.add(itemCata9, c);
     }
-
+      
     private void ownBag() {
         JPanel ownBag = new JPanel();
         layeredPane.setLayer(ownBag, 1);
@@ -818,6 +820,18 @@ public class CustomerGui {
     }
 
     private void setUpNumericKeyboard(int checkDigits) {
+    	
+        String[] dataBeer = {"Beer @$26.99", "1.00", "$26.99", "1001"};
+        String[] dataBread = {"Bread @$1.97", "1.00", "$1.97", "1002"};
+        String[] dataCereals = {"Cereals @$4.77", "1.00", "$4.77", "1003"};
+        String[] dataCheese = {"Cheese @$8.27", "1.00", "$8.27", "1004"};
+        String[] dataEggs = {"Eggs @$3.68", "1.00", "$3.68", "1005"};
+        String[] dataMilk = {"Milk @$5.89", "1.00", "$5.89", "1006"};
+        String[] dataProducts = {"Products @$1.98", "1.00", "$1.98", "1007"};
+        String[] dataSoda = {"Soda @$2.47", "1.00", "$2.47", "1008"};
+        String[] dataSweets = {"Sweets @$0.99", "1.00", "$0.99", "1009"};
+
+    	
         tempCount = 0;
 
         keyboardPanel = new JPanel();
@@ -975,9 +989,74 @@ public class CustomerGui {
         keyEnter.setBounds(100, 365, 190, 90);
         keyEnter.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                System.out.println(keyboardText);
+                System.out.println("Value" + keyboardText);
                 ArrayList<Numeral> numerals = new ArrayList<Numeral>();
 
+                
+                if(keyboardText.equals(dataBeer[3])) {
+                  	data[dataCount] = dataBeer;
+                    dataCount++;
+                    dataModel.addRow(dataBeer);
+                    updateTable(dataBeer);
+                }
+                
+                if(keyboardText.equals(dataBread[3])) {
+                	data[dataCount] = dataBread;
+                    dataCount++;
+                    dataModel.addRow(dataBread);
+                    updateTable(dataBread);
+                }
+                
+                if(keyboardText.equals(dataCereals[3])) {
+                	data[dataCount] = dataCereals;
+                    dataCount++;
+                    dataModel.addRow(dataCereals);
+                    updateTable(dataCereals);
+                }
+                
+                if(keyboardText.equals(dataCheese[3])) {
+                	data[dataCount] = dataCheese;
+                    dataCount++;
+                    dataModel.addRow(dataCheese);
+                    updateTable(dataCheese);
+                }
+                
+                if(keyboardText.equals(dataEggs[3])) {
+                	data[dataCount] = dataEggs;
+                    dataCount++;
+                    dataModel.addRow(dataEggs);
+                    updateTable(dataEggs);
+                }
+                
+                if(keyboardText.equals(dataMilk[3])) {
+                	data[dataCount] = dataMilk;
+                    dataCount++;
+                    dataModel.addRow(dataMilk);
+                    updateTable(dataMilk);
+                }
+                
+                if(keyboardText.equals(dataProducts[3])) {
+                	data[dataCount] = dataProducts;
+                    dataCount++;
+                    dataModel.addRow(dataProducts);
+                    updateTable(dataProducts);
+                }
+             
+                if(keyboardText.equals(dataSoda[3])) {
+                	data[dataCount] = dataSoda;
+                    dataCount++;
+                    dataModel.addRow(dataSoda);
+                    updateTable(dataSoda);
+                }
+                
+                if(keyboardText.equals(dataSweets[3])) {
+                	data[dataCount] = dataSweets;
+                    dataCount++;
+                    dataModel.addRow(dataSweets);
+                    updateTable(dataSweets);
+                }
+                      
+                
                 // If it's failed, pop up a screen, otherwise selectedmembership is true, at this moment
                 if (checkDigits == 1) {
                     if (tempCount != 12) {
@@ -1009,6 +1088,8 @@ public class CustomerGui {
                 closeKeyboard();
             }
         });
+        
+      
         keyboardPanel.add(keyEnter);
 
         keyExit = new JButton("X");
@@ -1029,6 +1110,8 @@ public class CustomerGui {
         keyboardPanel.add(keyExit);
 
         keyboardPanel.setVisible(false);
+        
+    
     }
 
     /**

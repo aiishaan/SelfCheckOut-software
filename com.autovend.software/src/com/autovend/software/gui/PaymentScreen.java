@@ -48,6 +48,7 @@ public class PaymentScreen {
 	private JButton pay2;
 	private JButton pay3;
 	private JButton printReceipt;
+	private BigDecimal amdue; 
 	
 	public PaymentScreen(SelfCheckoutStation cStation) {
 		
@@ -90,8 +91,9 @@ public class PaymentScreen {
 				totalDue.setBounds(358, 200, 359, 54);
 				//get the amount due from the software.
 				//for testing, i have used d(a BigDecimal) for now. when the software is plugged, d should be replaced with the amount that is due
-				BigDecimal d = new BigDecimal(0);
-				String due = d.toString();
+				
+				String due = amdue.toString();
+				
 				totalDueVal = new JLabel(due);
 				totalDueVal.setFont(new Font("Times New Roman", Font.BOLD, 22));
 				totalDueVal.setBounds(533, 200, 350, 54);
@@ -112,6 +114,7 @@ public class PaymentScreen {
 					public void actionPerformed(ActionEvent e) {
 					
 						cashPanel.setVisible(false);
+						
 		//-----------------------------------------------------------------------------------------------------------
 						//when the pay button is pressed, the pay method from the software should be called
 						//and the amount due should be updated.
