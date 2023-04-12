@@ -82,7 +82,7 @@ public class SuspendController {
         return suspended;
     }
 
-
+/**
     public static void main(String[] args) {
         // Create a list of stations
         List<SuspendController> stations = new ArrayList<>();
@@ -164,5 +164,6 @@ public class SuspendController {
             }
         }
     }
+    */
 }
 

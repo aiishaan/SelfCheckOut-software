@@ -28,7 +28,6 @@ public class MembershipCardController{
 	// Did a max tries of 3, having a limit would help with like not having a
 	// infinite input that is invalid,
 	// and after the three invalid attempts it will return null
-	private static final int MAX_TRIES = 3;
 
 	public boolean getIsActive() {
 		return this.isActive;
@@ -56,7 +55,7 @@ public class MembershipCardController{
 		}
 		return true;
 	}
-
+}
 	/*
 	 * The getValidMembershipNumber method prompts the user to enter a Membership
 	 * number and checks whether the input is valid. If the input is valid (only
@@ -66,84 +65,3 @@ public class MembershipCardController{
 	 * tries (MAX_TRIES). If the user exceeds the maximum number of tries without
 	 * entering a valid Membership number, the method returns null.
 	 */
-
-	public String getValidMembershipNumber(String MNum) throws IllegalDigitException {
-		int numTries = 0;
-		String memberNum = null;
-		while (numTries < MAX_TRIES) {
-			System.out.println("Enter your Membership number: ");
-			memberNum = MNum;
-			try {
-				if (isValid(memberNum)) {
-					return memberNum;
-				}
-			} catch (IllegalDigitException e) {
-				System.out.println(e.getMessage());
-			}
-			numTries++;
-			if (numTries < MAX_TRIES) {
-				System.out.println(
-						"Invalid membership number. Please try again or enter 'yes' to continue without a Membership number.");
-			}
-		}
-		return null;
-	}
-
-	/*
-	 * The updateMembershipStatus method prompts the user to enter whether they have
-	 * a membership or not. "yes" would call the getValidMembershipNumber method to
-	 * retrieve and validate the membership number. If it is valid the Membership
-	 * Card object is created with the given membership number and isActive would be
-	 * set to true. If the membership number is invalid the user will be informed
-	 * that they will be enrolled without a membership number. If the user responds
-	 * with "no," they are prompted again to confirm whether they want to continue
-	 * without a membership number. If the user responds with "no," the same process
-	 * as described above for the "yes" response is followed. If the user responds
-	 * with any other input, they are informed that their input is invalid and the
-	 * method returns. If the user responds with "cancel," the method prints a
-	 * message indicating that the membership enrollment has been cancelled and
-	 * returns. Finally, the method prints out the membership status and the
-	 * information about the membership card. If an IllegalDigitException is caught
-	 * during the execution of the method, the user is informed of the error and
-	 * prompted to try again. The method is then called recursively to repeat the
-	 * process.
-	 */
-
-//	@SuppressWarnings("resource")
-//	public void updateMembershipStatus() {
-//		Scanner scan = new Scanner(System.in);
-//		MembershipCard mc = new MembershipCard("Membership Card", "0000", "XYZ", false);
-//		System.out.println("Do you have a Membership number? (yes or no or cancel)");
-//		String response1 = scan.nextLine();
-//		if (response1.equalsIgnoreCase("yes")) {
-//			membershipNumber = getValidMembershipNumber(scan);
-//			if (membershipNumber != null) {
-//				mc = new MembershipCard("Membership Card", membershipNumber, "Regular Shopper", false);
-//				isActive = true;
-//			} else {
-//				System.out.println("You will be enrolled without a membership number.");
-//			}
-//		} else if (response1.equalsIgnoreCase("no")) {
-//			System.out.println("Do you want to continue without a Membership number? (yes or no)");
-//			String response2 = scan.nextLine();
-//			if (!response2.equalsIgnoreCase("no") && !response2.equalsIgnoreCase("yes")) {
-//				System.out.println("Invalid input. Please enter 'yes' or 'no'.");
-//				return;
-//			} else if (response2.equalsIgnoreCase("no")) {
-//				membershipNumber = getValidMembershipNumber(scan);
-//				if (membershipNumber != null) {
-//					mc = new MembershipCard("Membership Card", membershipNumber, "Regular Shopper", false);
-//					isActive = true;
-//				} else {
-//					System.out.println("You will be enrolled without a membership number.");
-//				}
-//			}
-//		} else if (response1.equalsIgnoreCase("cancel")) {
-//			System.out.println("Membership enrollment has been cancelled.");
-//			return;
-//		}
-//		System.out.println("Membership status: " + isActive);
-//		System.out.println("Membership card information: " + mc.toString());
-//	}
-
-}

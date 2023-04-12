@@ -52,7 +52,7 @@ public class AttendantController {
 	public String getUser_id() {
 		return user_id;
 	}
-}
+
 
 	public void attendantStationStartup(CheckoutController checkoutController, SelfCheckoutStation scs) {
 		checkoutController.stationStartup(scs);

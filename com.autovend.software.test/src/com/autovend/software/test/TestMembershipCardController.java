@@ -224,6 +224,8 @@ public class TestMembershipCardController {
 		crc = null;
 		
 	}
+	
+
 
 	@Test
 	public void testIsValidNullValue() throws IllegalDigitException {

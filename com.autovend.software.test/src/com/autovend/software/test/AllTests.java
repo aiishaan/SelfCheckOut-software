@@ -21,8 +21,12 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
+import com.autovend.software.controllers.AddByBrowseItemController;
+
 @RunWith(Suite.class)
 @SuiteClasses({ AddItemTest.class, AddOwnBagsTest.class, LowInkPaperTest.class, PurchaseBagsTest.class,
-		TestPrintReceipt.class, CardPaymentTest.class, TestMembershipCardController.class })
+		TestPrintReceipt.class, CardPaymentTest.class, TestMembershipCardController.class, AddByBrowseItemController.class,
+		AddItemByTextSearchTest.class, AttendantIDTest.class, BillDispenserControllerTest.class, BillPaymentControllerTest.class, StartupShutdownTest.class,
+		SuspendControllerTest.class, AddByBrowseItemControllerTest.class})
 public class AllTests {
 }

@@ -35,7 +35,10 @@ public class SuspendControllerTest {
     public void testSuspend() {
             SuspendController suspendController = new SuspendController(null);
             Station testStation = suspendController.new Station("Test Station" , false);
+            testStation.setInUse(false);
+            assertEquals("Test Station", testStation.getName());
             suspendController = new SuspendController(testStation);
+            assertEquals(false, testStation.isInUse());
             suspendController.suspend();
             assertTrue(suspendController.isSuspended());
     }
@@ -80,6 +83,13 @@ public class SuspendControllerTest {
     	suspendController.suspended = false; 
     	assertFalse(suspendController.isSuspended());
     }
+    @Test
+    public void testUnsuspend() {
+    	suspendController.suspended = false;
+    	suspendController.unsuspend();
+    	assertFalse(suspendController.isSuspended());
+    }
+
     
 
 }

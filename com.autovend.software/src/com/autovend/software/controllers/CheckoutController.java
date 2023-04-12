@@ -911,6 +911,7 @@ public class CheckoutController {
 		for(BillDispenser billDispenser: station.billDispensers.values()) {
 			billDispenser.disable();
 		}
+	}
 
 
 	public void insertWithBadPinChecking (CardReader cr, Card card, String pin) throws InvalidPINException {
