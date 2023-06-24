@@ -51,6 +51,7 @@ public class AttendantMain {
     JButton logoutButton;
     JPanel stationListPane;
 
+
     public AttendantMain(SupervisionStation attendantStation) {
 
         this.touchScreenFrame = attendantStation.screen.getFrame();
@@ -157,6 +158,11 @@ public class AttendantMain {
             removeApproveButton.setVisible(false);
 
             this.setVisible(true);
+            if(CustomerGui.help1) {
+            	System.out.println(CustomerGui.help1);
+            	warningField.setText("Attendant help required");
+           
+            }
         }
 
         public void disableButtonPressed() {

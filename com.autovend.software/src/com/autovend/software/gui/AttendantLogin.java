@@ -63,7 +63,6 @@ public class AttendantLogin {
 
     private AttendantController attendant;
 
-
     //constructor
     public AttendantLogin(SupervisionStation aStation) {
 

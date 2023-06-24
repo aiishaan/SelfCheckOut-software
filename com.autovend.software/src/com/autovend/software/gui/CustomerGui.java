@@ -33,6 +33,7 @@ UCID		Name
 package com.autovend.software.gui;
 
 import com.autovend.Numeral;
+
 import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.software.controllers.BillPaymentController;
 import com.autovend.software.controllers.CheckoutController;
@@ -50,6 +51,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Currency;
 
+
 public class CustomerGui {
 
     final static boolean shouldFill = true;
@@ -57,7 +59,7 @@ public class CustomerGui {
     private final CheckoutController checkoutController;
     private final MembershipCardController membershipCardController;
     private final JLayeredPane layeredPane;
-    // these are using to call from attendantmain
+    // these are using to call from attendant main
     JFrame touchScreenFrame;
     boolean oB = false;            // own bag
     JPanel ownBagAdded;
@@ -108,6 +110,8 @@ public class CustomerGui {
     private double bagsValue = bagsCount * 0.1;
     // use to count digits
     private int tempCount = 0;
+    
+    static boolean help1 = false;
 
     public CustomerGui(SelfCheckoutStation cStation, CheckoutController checkoutController, MembershipCardController membershipCardController, int ID) {
 
@@ -128,9 +132,9 @@ public class CustomerGui {
         tapScreen();
         ownBag();
 
-        // use this if you only want to run customergui
-        //this.touchScreenFrame.setVisible(true);
-        // use this if you want to start from attendantgui
+        // use this if you only want to run customer gui
+        //this.touchScreenFrame.setVisible(true); 
+        // use this if you want to start from attendant gui
         this.touchScreenFrame.setVisible(true);
 
     }
@@ -713,14 +717,17 @@ public class CustomerGui {
                 if (languageBox.getSelectedIndex() == 0) {
                     helpButton.setText("Need help?");
                     audioButton.setText("Text-to-speech");
+                    screensaver.setText("Welcome. \nPlease touch the screen to continue.");
                 }
                 if (languageBox.getSelectedIndex() == 1) {
                     helpButton.setText("Besoin d'aide?");
                     audioButton.setText("texte pour parler");
+                    screensaver.setText("Touch screen in french");
                 }
                 if (languageBox.getSelectedIndex() == 2) {
                     helpButton.setText("¿Necesitas ayuda?");
                     audioButton.setText("texto a voz");
+                    screensaver.setText("Touch screen in spanish");
                 }
             }
         });
@@ -745,6 +752,8 @@ public class CustomerGui {
         helpButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 System.out.println("Calling attendant");
+                help1 = true;
+                System.out.println(help1);
             }
         });
         helpButton.setBounds(799, 25, 160, 41);
