@@ -26,7 +26,7 @@
     - Use your IDE's build tools to compile the project. Typically, this can be done with a `Build` or `Make` command
 
 4. **Run the application:**
-    - Locate the main class (usually `Main.java` or a class with a `main` method).
+    - Locate the main class (usually `Main.java` or a class with a `main` method)
     - Run the main class to start the self-checkout software.
 
 ## Usage
