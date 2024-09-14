@@ -20,7 +20,7 @@
     ```
 2. **Open the project in your IDE:**
     - Open your preferred IDE.
-    - Import the cloned repository as a new project.
+    - Import the cloned repository as a new project
 
 3. **Build the project:**
     - Use your IDE's build tools to compile the project. Typically, this can be done with a `Build` or `Make` command.
