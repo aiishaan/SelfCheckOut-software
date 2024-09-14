@@ -19,7 +19,7 @@
     git clone https://github.com/your-username/SelfCheckOut-software.git
     ```
 2. **Open the project in your IDE:**
-    - Open your preferred IDE.
+    - Open your preferred IDE
     - Import the cloned repository as a new project
 
 3. **Build the project:**
