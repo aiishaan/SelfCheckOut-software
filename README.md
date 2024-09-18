@@ -37,6 +37,6 @@ This project heavily utilizes the Observer design pattern to manage the interact
 
 
 ## Contact
-For any questions or support, please open an issue on the GitHub repository or contact the maintainers.
+For any questions or support, please open an issue on the GitHub repository or contact the maintainers
 
 Enjoy using **SelfCheckOut-software** and contribute to making self-checkout systems more efficient and user-friendly!
