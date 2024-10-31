@@ -5,7 +5,7 @@
 
 ## Features
 - Implementation of the Observer design pattern for efficient event handling
-- Simulated hardware components for a realistic self-checkout experience
+- Simulated hardware components for a realistic self-checkout experience.
 - Object-Oriented Programming principles to ensure maintainability and scalability.
 - User-friendly interface for seamless interaction.
 
