@@ -11,7 +11,7 @@
 
 ## Requirements
 - Java Development Kit (JDK) 8 or higher
-- Integrated Development Environment (IDE) like IntelliJ IDEA, Eclipse, or NetBeans
+- Integrated Development Environment (IDE) like IntelliJ IDEA, Eclipse, or NetBeans.
 
 ## Setup Instructions
 1. **Clone the repository:**
