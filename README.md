@@ -10,7 +10,7 @@
 - User-friendly interface for seamless interaction
 
 ## Requirements
-- Java Development Kit (JDK) 8 or higher
+- Java Development Kit (JDK) 8 or higher.
 - Integrated Development Environment (IDE) like IntelliJ IDEA, Eclipse, or NetBeans
 
 ## Setup Instructions
