@@ -11,7 +11,7 @@ import com.autovend.products.Product;
 
 /**
  * Represents a cheap and dirty version of a set of databases that the
- * simulation can interact with
+ * simulation can interact with.
  */
 public class ProductDatabases {
 	/**
